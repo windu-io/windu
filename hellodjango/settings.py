@@ -1,3 +1,6 @@
+#! /usr/bin/env python
+# -*- coding: utf-8 -*-
+
 """
 Django settings for hellodjango project.
 
@@ -12,6 +15,10 @@ https://docs.djangoproject.com/en/1.8/ref/settings/
 
 # Build paths inside the project like this: os.path.join(BASE_DIR, ...)
 import os
+from wagent import WinduAgent
+
+agent  = WinduAgent.WinduAgent('5511940534245', 'Codefoco', WinduAgent.WinduAgent.AUTOREPLY_NONE,'8m4sCuv9g/EvOzo5UcstjByDXw4=')
+agent.sendMessage ('5511984969252', u'Zimbaaabue do heroku')
 
 BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 
