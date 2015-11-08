@@ -1,0 +1,590 @@
+{
+	"auto_complete":
+	{
+		"selected_items":
+		[
+			[
+				"da",
+				"datafiles"
+			],
+			[
+				"fi",
+				"filename"
+			],
+			[
+				"ind",
+				"indexesToRemove"
+			],
+			[
+				"prit",
+				"print_r"
+			],
+			[
+				"res",
+				"results"
+			],
+			[
+				"print",
+				"print_r"
+			],
+			[
+				"GetEvents",
+				"GetEventResultsFromName"
+			],
+			[
+				"Check",
+				"CheckFile"
+			],
+			[
+				"Write",
+				"WriteObject"
+			],
+			[
+				"uns",
+				"unset"
+			],
+			[
+				"phone",
+				"phoneNumber"
+			],
+			[
+				"locke",
+				"lockedElement"
+			],
+			[
+				"phon",
+				"phoneNumber"
+			],
+			[
+				"arr",
+				"array"
+			],
+			[
+				"phonen",
+				"phonenumber"
+			],
+			[
+				"GetE",
+				"GetEventFromIndex"
+			],
+			[
+				"fro",
+				"fromGetGroups"
+			],
+			[
+				"ev",
+				"eventName"
+			],
+			[
+				"IS",
+				"IsLoggedIn"
+			],
+			[
+				"msg",
+				"msgId"
+			]
+		]
+	},
+	"buffers":
+	[
+		{
+			"file": "Procfile",
+			"settings":
+			{
+				"buffer_size": 37,
+				"line_ending": "Unix"
+			}
+		}
+	],
+	"build_system": "",
+	"build_system_choices":
+	[
+	],
+	"build_varint": "",
+	"command_palette":
+	{
+		"height": 375.0,
+		"last_filter": "rei",
+		"selected_items":
+		[
+			[
+				"rei",
+				"Indentation: Reindent Lines"
+			],
+			[
+				"re",
+				"Indentation: Reindent Lines"
+			],
+			[
+				"reid",
+				"Indentation: Reindent Lines"
+			],
+			[
+				"Markdo",
+				"Markdown Preview: Preview in Browser"
+			],
+			[
+				"Install",
+				"Package Control: Install Package"
+			],
+			[
+				"Remov",
+				"Package Control: Remove Package"
+			],
+			[
+				"instap",
+				"Package Control: Install Package"
+			]
+		],
+		"width": 435.0
+	},
+	"console":
+	{
+		"height": 145.0,
+		"history":
+		[
+			"import urllib.request,os,hashlib; h = 'eb2297e1a458f27d836c04bb0cbaf282' + 'd0e7a3098092775ccb37ca9d6b2e4b7d'; pf = 'Package Control.sublime-package'; ipp = sublime.installed_packages_path(); urllib.request.install_opener( urllib.request.build_opener( urllib.request.ProxyHandler()) ); by = urllib.request.urlopen( 'http://packagecontrol.io/' + pf.replace(' ', '%20')).read(); dh = hashlib.sha256(by).hexdigest(); print('Error validating download (got %s instead of %s), please try manual install' % (dh, h)) if dh != h else open(os.path.join( ipp, pf), 'wb' ).write(by)"
+		]
+	},
+	"distraction_free":
+	{
+		"menu_visible": true,
+		"show_minimap": false,
+		"show_open_files": false,
+		"show_tabs": false,
+		"side_bar_visible": false,
+		"status_bar_visible": false
+	},
+	"expanded_folders":
+	[
+		"/Users/viniciusjarina/projects/codefoco/windu"
+	],
+	"file_history":
+	[
+		"/Users/viniciusjarina/projects/codefoco/windu/windu.sublime-project",
+		"/Users/viniciusjarina/projects/codefoco/windu/app.json",
+		"/Users/viniciusjarina/projects/codefoco/windu/manage.py",
+		"/Users/viniciusjarina/projects/codefoco/windu/.buildpacks",
+		"/Users/viniciusjarina/projects/codefoco/windu/windu/settings.py",
+		"/Users/viniciusjarina/projects/codefoco/windu/windu/wsgi.py",
+		"/Users/viniciusjarina/projects/xamarin/master/md-addins/Xamarin.Designer.iOS/MonoTouch.Design.Shared/Descriptors/UILabel.xml",
+		"/Users/viniciusjarina/projects/codefoco/wagent/wagent/php/external/chatapi/src/whatsprot.class.php",
+		"/Users/viniciusjarina/projects/codefoco/wagent/test-one.py",
+		"/Users/viniciusjarina/projects/codefoco/wagent/wagent/php/external/chatapi/src/Registration.php",
+		"/usr/local/etc/php/5.6/php.ini",
+		"/Users/viniciusjarina/.bash_profile",
+		"/Users/viniciusjarina/projects/nlua/NLua/Core/KeraLua/run_all.win64.bat",
+		"/Users/viniciusjarina/projects/nlua/NLua/Core/KeraLua/Makefile.Android",
+		"/Users/viniciusjarina/projects/nlua/NLua/Core/KeraLua/Makefile.iOS",
+		"/Users/viniciusjarina/projects/nlua/NLua/Core/KeraLua/.travis.yml",
+		"/Users/viniciusjarina/projects/nlua/NLua/Core/KeraLua/CI/travis.linux.install.deps.sh",
+		"/Users/viniciusjarina/projects/nlua/NLua/Core/KeraLua/travis.linux.install.deps.sh",
+		"/Users/viniciusjarina/projects/nlua/NLua/Core/KeraLua/run_all.win32.bat",
+		"/Users/viniciusjarina/projects/nlua/NLua/Core/KeraLua/run_all.linux32.sh",
+		"/Users/viniciusjarina/projects/nlua/NLua/Core/KeraLua/run_all.linux64.sh",
+		"/Users/viniciusjarina/projects/nlua/NLua/Core/KeraLua/run_all.linux.sh",
+		"/Users/viniciusjarina/Google Drive/Downloads/Backup-codes-viniciusjarina.txt",
+		"/Users/viniciusjarina/extractPW.py",
+		"/Users/viniciusjarina/.ssh/known_hosts",
+		"/Users/viniciusjarina/projects/nlua/NLua/Core/KeraLua/run_all.osx.sh",
+		"/Users/viniciusjarina/projects/nlua/NLua/Core/KeraLua/Makefile.OSX",
+		"/Users/viniciusjarina/projects/codefoco/wagent/setup.py",
+		"/Users/viniciusjarina/projects/codefoco/wagent/tests/testall.py",
+		"/Users/viniciusjarina/projects/viniciusjarina/allegro5/cmake/FindVorbis.cmake",
+		"/Users/viniciusjarina/.bash_history",
+		"/Users/viniciusjarina/Library/Application Support/Sublime Text 3/Packages/User/Preferences.sublime-settings",
+		"/Users/viniciusjarina/tests/testTV/testTV/Base.lproj/Main.storyboard",
+		"/Users/viniciusjarina/projects/xamarin/master/md-addins/X",
+		"/Users/viniciusjarina/Google Drive/Desktop/Cae.vcf",
+		"/Users/viniciusjarina/projects/codefoco/windu/external/wagent/php/wagent-prot.php",
+		"/Users/viniciusjarina/projects/codefoco/windu/external/wagent/wagent-prot.php",
+		"/Users/viniciusjarina/projects/codefoco/windu/external/wagent/.gitmodules",
+		"/Users/viniciusjarina/projects/codefoco/windu/external/wagent/test-agent",
+		"/Users/viniciusjarina/projects/codefoco/windu/external/wagent/whatsapp-agent",
+		"/Users/viniciusjarina/projects/codefoco/windu/external/wagent/external/chatapi/src/whatsprot.class.php",
+		"/Users/viniciusjarina/projects/codefoco/windu/external/wagent/agent-server.php",
+		"/private/etc/php.ini",
+		"/Users/viniciusjarina/projects/codefoco/windu/external/wagent/check_file.php",
+		"/Users/viniciusjarina/projects/codefoco/windu/external/wagent/testall.py",
+		"/Users/viniciusjarina/projects/xamarin/master/md-addins/watchkit.diff",
+		"/Users/viniciusjarina/projects/xamarin/master/md-addins/uikit.diff",
+		"/Users/viniciusjarina/projects/xamarin/master/md-addins/minmax.diff",
+		"/Users/viniciusjarina/tests/testWatch/testWatch WatchKit 1 App/Base.lproj/Interface.storyboard",
+		"/Users/viniciusjarina/projects/codefoco/Chats/README.md",
+		"/Users/viniciusjarina/projects/viniciusjarina/autotinder/Tweak.xm",
+		"/Users/viniciusjarina/Google Drive/Desktop/SenhaWifi",
+		"/Users/viniciusjarina/Google Drive/Documents/x",
+		"/Users/viniciusjarina/Google Drive/Desktop/WINDU_TODO.md",
+		"/Users/viniciusjarina/projects_disposable/testWatch/testWatch WatchKit App/Base.lproj/Interface.storyboard",
+		"/Users/viniciusjarina/projects_disposable/OlaMundo/OlaMundo/Base.lproj/Main.storyboard",
+		"/Users/viniciusjarina/projects/codefoco/windu/external/wagent/external/chatapi/src/events/AllEvents.php",
+		"/Users/viniciusjarina/projects/codefoco/windu/external/wagent/test-all.py",
+		"/Users/viniciusjarina/projects/xamarin/master/md-addins/Xamarin.Designer.iOS/MonoTouch.Design.Shared/Descriptors/UIViewSize.xml",
+		"/Users/viniciusjarina/projects/xamarin/master/md-addins/Xamarin.Designer.iOS/MonoTouch.Design.Shared/Descriptors/UIButton.xml",
+		"/Users/viniciusjarina/projects/codefoco/windu/external/wagent/external/chatapi/src/keystream.class.php",
+		"/Users/viniciusjarina/projects/codefoco/windu/external/wagent/lixo.php",
+		"/Users/viniciusjarina/Google Drive/Desktop/5511997681642",
+		"/Users/viniciusjarina/projects_disposable/Test/Test/View.xib",
+		"/Users/viniciusjarina/projects/codefoco/windu/external/wagent/external/chatapi/src/events/MyEvents.php",
+		"/Users/viniciusjarina/projects/Test1/Test1/NewViewController.xib",
+		"/Users/viniciusjarina/projects/xamarin/master/md-addins/patch.diff",
+		"/private/var/folders/7q/kh82rgzs4xj2fzbc20f9jgf40000gn/T/5511984158233/agent_server.txt",
+		"/Users/viniciusjarina/projects_disposable/Test/Test WatchKit App/Base.lproj/Interface.storyboard",
+		"/Users/viniciusjarina/Google Drive/Desktop/Item.xml",
+		"/Users/viniciusjarina/projects_disposable/Test/Test/Base.lproj/XMain.storyboard",
+		"/Applications/Xcode-beta.app/Contents/PlugIns/IDEInterfaceBuilderCocoaTouchIntegration.ideplugin/Contents/Resources/IBUISlider.inspector",
+		"/Users/viniciusjarina/projects/xamarin/master/md-addins/Xamarin.Designer.iOS/MonoTouch.Design.Shared/DataPack.cs",
+		"/Users/viniciusjarina/Library/Application Support/Sublime Text 3/Packages/Colorsublime-Themes/Xamarin Studio (based on Snappy Light).tmTheme",
+		"/Applications/Xcode-beta.app/Contents/PlugIns/IDEInterfaceBuilderCocoaTouchIntegration.ideplugin/Contents/Resources/IBUIStackView.inspector",
+		"/Users/viniciusjarina/Google Drive/Desktop/Dayle Rees Color Schemes.sublime-package",
+		"/Users/viniciusjarina/Library/Application Support/PyCharm40/availables.xml",
+		"/Users/viniciusjarina/projects/codefoco/windu/app/windu_engine/windu_controller.py",
+		"/Users/viniciusjarina/projects/codefoco/windu/external/wagent/check_gevent.py",
+		"/Users/viniciusjarina/projects/codefoco/windu/external/wagent/agent/AgentConnection.py",
+		"/Users/viniciusjarina/projects/codefoco/windu/app/__init__.py",
+		"/Users/viniciusjarina/Google Drive/Desktop/MazeGen.java",
+		"/Users/viniciusjarina/projects/xamarin/master/md-addins/Xamarin.Designer.iOS/tools/inspector_differ.rb",
+		"/Applications/Xcode-beta.app/Contents/PlugIns/IDEInterfaceBuilderCocoaTouchIntegration.ideplugin/Contents/Resources/IBUIView-Size.inspector",
+		"/Users/viniciusjarina/Google Drive/Downloads/launchd_sim_2015-06-22-145439_jerry-13-yosemite.crash",
+		"/Users/viniciusjarina/projects/xamarin/XamChat/XamChat/Screens/ChatView.xib",
+		"/Users/viniciusjarina/projects/xamarin/XamChat/XamChat/XamChatViewController.designer.cs",
+		"/Users/viniciusjarina/projects/xamarin/master/md-addins/README.md",
+		"/Users/viniciusjarina/projects/codefoco/windu/external/wagent/external/chatapi/examples/exampleFunctional.php",
+		"/Users/viniciusjarina/projects/xamarin/master/md-addins/Xamarin.Designer.iOS/MonoTouch.Design.Shared/ModelObjectWithConnections.cs",
+		"/Users/viniciusjarina/projects/xamarin/master/md-addins/Xamarin.Designer.iOS/MonoTouch.Design.Client/IPhoneDesignerSession.cs",
+		"/Users/viniciusjarina/projects/testX/testX/TestVC.xib",
+		"/Users/viniciusjarina/projects/xamarin/master/md-addins/Xamarin.Designer.iOS/MonoTouch.Design.Client/IPhoneDesignerOutlinePanel.cs",
+		"/Users/viniciusjarina/projects_disposable/Lixo/Lixo/Base.lproj/LaunchScreen.xib",
+		"/Users/viniciusjarina/projects/xamarin/md-addins/Xamarin.Designer.iOS/bin/Client/TempDirectoryForCodeGeneration/CustomViewController.cs",
+		"/Users/viniciusjarina/projects/nlua/NLua/Core/KeraLua/external/lua/ios_build/Makefile",
+		"/Users/viniciusjarina/projects/codefoco/windu/external/wagent/agent/WinduAgent.py",
+		"/Users/viniciusjarina/projects/codefoco/windu/external/wagent/external/whatsapi/src/whatsprot.class.php",
+		"/Users/viniciusjarina/projects/codefoco/windu/external/wagent/external/whatsapi/src/func.php",
+		"/Users/viniciusjarina/projects_disposable/Xpto/Xpto/Base.lproj/LaunchScreen.xib",
+		"/Users/viniciusjarina/projects/xamarin/master/md-addins/Xamarin.Designer.iOS/MonoTouch.Design.Client.Mac/NativeIPhoneDesignerSurface.cs"
+	],
+	"find":
+	{
+		"height": 37.0
+	},
+	"find_in_files":
+	{
+		"height": 320.0,
+		"where_history":
+		[
+			"/Users/viniciusjarina/projects/codefoco/wagent/wagent/php",
+			"/Users/viniciusjarina/projects/codefoco/windu/external/wagent",
+			"/Applications/Xcode-beta.app/Contents/PlugIns/IDEInterfaceBuilderCocoaTouchIntegration.ideplugin/Contents/Resources",
+			"/Applications/Xcode-beta.app/Contents/Developer/Platforms/WatchSimulator.platform/Developer/Library/Xcode/PrivatePlugIns/IDEInterfaceBuilderWatchKitIntegration.ideplugin/Contents/Resources",
+			"/Applications/Xcode-beta.app/Contents/PlugIns/IDEInterfaceBuilderCocoaTouchIntegration.ideplugin/Contents/Resources/",
+			"/Applications/Xcode.app/Contents/Developer/Platforms/iPhoneSimulator.platform/Developer/Library/Xcode/PrivatePlugIns/IDEInterfaceBuilderCocoaTouchIntegration.ideplugin/Contents/,*.*",
+			"/Users/viniciusjarina/projects/xamarin/XamChat/XamChat,/Applications/Xcode.app/Contents/Developer/Platforms/iPhoneSimulator.platform/Developer/Library/Xcode/PrivatePlugIns/IDEInterfaceBuilderCocoaTouchIntegration.ideplugin/Contents/Resources",
+			"/Users/viniciusjarina/projects/xamarin/XamChat/XamChat",
+			"/Users/viniciusjarina/projects/codefoco/windu/external/wagent",
+			"/Users/viniciusjarina/projects/xamarin/XamChat",
+			"/Users/viniciusjarina/projects/codefoco/windu/external/wagent"
+		]
+	},
+	"find_state":
+	{
+		"case_sensitive": false,
+		"find_history":
+		[
+			"hell",
+			"onMessageReceivedClient",
+			"sendReceipt",
+			"processInboundDataNode",
+			"processInboundData",
+			"setMessageId",
+			"createMsgId",
+			"messageId",
+			"__DIR__",
+			"axolotl-",
+			"checkCredentials",
+			"sync",
+			"extension",
+			"anim",
+			"anim_full",
+			"Sprite",
+			"HAIKU_DATA",
+			"backgroun",
+			"zend",
+			"GetEventResultsFromName",
+			"\"onpresence\"",
+			"OnLoginSuccess",
+			"GetEventResultsFromName",
+			"OnPresenceAvailableReceived",
+			"GetEventResult",
+			"GetEventResults",
+			"\"onpresence",
+			"sendPresence",
+			"OnPresenceAvailableReceived",
+			"GetEventResult",
+			"sendPresenceSubscription",
+			"SendPresenceSubscription",
+			"OnPresenceAva",
+			"SendPresenceSubscription",
+			"OnPresenceUnavailableReceived",
+			"presence",
+			"SafePollMessage",
+			"OnTime",
+			"presence",
+			"SendPresenceSubscription",
+			"filepath",
+			"4044004",
+			"SendMessageVideo",
+			"filepath",
+			"CheckF",
+			"GetEventResult",
+			"SendMessageImage",
+			"getMediaFile",
+			"sendCheckAndSendMedia",
+			"SendMessageImage",
+			"getMediaFile",
+			"sendCheckAndSendMedia",
+			"sendMessageImage",
+			"in_array",
+			"fileextension",
+			"sendCheckAndSendMedia",
+			"getMediaFile",
+			"get_mime",
+			"getMediaFile",
+			"sendCheckAndSendMedia",
+			"sendMessageVideo",
+			"processTempMediaFile",
+			"allowedExtensions",
+			"sendCheckAndSendMedia",
+			"sendMessageVideo",
+			"SendMessageVideo",
+			" print (",
+			"SendMessageVideo",
+			"sendCheckAndSendMedia",
+			"sendMessageVideo",
+			"SendMessageVideo",
+			"sendMessageVideo",
+			"sendRequestFileUpload",
+			"sendCheckAndSendMedia",
+			"sendMessageAudio",
+			"SendMessageAudio",
+			"sendRequestFileUpload",
+			"sendCheckAndSendMedia",
+			"sendMessageAudio",
+			"SendMessageAudio",
+			"SendMessageVideo",
+			"SendMessageAudio",
+			"sendMessageAudio",
+			"sendMessageVideo",
+			"SendMessageLocation",
+			"sendMessageLocation",
+			"sendMessageNode",
+			"sendMessageLocation",
+			"SendMessageLocation",
+			"sendMessageLocation",
+			"getMediaFile",
+			"filepath",
+			"sendCheckAndSendMedia",
+			"sendMessageImage",
+			"sendRequestFileUpload",
+			"sendCheckAndSendMedia",
+			"sendMessageIma",
+			"sendMessage",
+			"sendmessage",
+			"ReadBool",
+			"ReadLine",
+			"SendMessageImage",
+			"sendMessageImage",
+			"SendMessageImage",
+			"echo",
+			"print",
+			"print_r",
+			"ParseJID",
+			"parseJID",
+			"WhatsProt::parseJID",
+			"ParseJid",
+			"parseJID",
+			"parseJid",
+			"CheckCredentials",
+			"OnCredentialsBad",
+			"checkCredentials",
+			"CheckCredentials",
+			"checkCredentials",
+			"CheckCredentials",
+			"checkCredentials",
+			"CheckCredentials",
+			"Login",
+			"onParticipantAdded",
+			"print_r",
+			"print(",
+			"print",
+			"changePart",
+			"attributeHash"
+		],
+		"highlight": true,
+		"in_selection": false,
+		"preserve_case": false,
+		"regex": false,
+		"replace_history":
+		[
+			"ParseID",
+			"ParseJID",
+			"WagentProt::parseJID",
+			"XXXXXXXXXXXXX"
+		],
+		"reverse": false,
+		"show_context": true,
+		"use_buffer2": true,
+		"whole_word": false,
+		"wrap": true
+	},
+	"groups":
+	[
+		{
+			"selected": 0,
+			"sheets":
+			[
+				{
+					"buffer": 0,
+					"file": "Procfile",
+					"semi_transient": false,
+					"settings":
+					{
+						"buffer_size": 37,
+						"regions":
+						{
+						},
+						"selection":
+						[
+							[
+								37,
+								37
+							]
+						],
+						"settings":
+						{
+							"syntax": "Packages/Text/Plain text.tmLanguage"
+						},
+						"translation.x": 0.0,
+						"translation.y": 0.0,
+						"zoom_level": 1.0
+					},
+					"stack_index": 0,
+					"type": "text"
+				}
+			]
+		}
+	],
+	"incremental_find":
+	{
+		"height": 27.0
+	},
+	"input":
+	{
+		"height": 0.0
+	},
+	"layout":
+	{
+		"cells":
+		[
+			[
+				0,
+				0,
+				1,
+				1
+			]
+		],
+		"cols":
+		[
+			0.0,
+			1.0
+		],
+		"rows":
+		[
+			0.0,
+			1.0
+		]
+	},
+	"menu_visible": true,
+	"output.find_results":
+	{
+		"height": 0.0
+	},
+	"pinned_build_system": "",
+	"project": "windu.sublime-project",
+	"replace":
+	{
+		"height": 50.0
+	},
+	"save_all_on_build": true,
+	"select_file":
+	{
+		"height": 0.0,
+		"last_filter": "",
+		"selected_items":
+		[
+			[
+				"pro",
+				"external/chatapi/src/whatsprot.class.php"
+			],
+			[
+				"prot",
+				"external/chatapi/src/whatsprot.class.php"
+			],
+			[
+				"reg",
+				"external/chatapi/examples/registerTool.php"
+			],
+			[
+				"regis",
+				"external/chatapi/examples/registerTool.php"
+			],
+			[
+				"agen",
+				"agent-server.php"
+			],
+			[
+				"prot.",
+				"external/chatapi/src/whatsprot.class.php"
+			],
+			[
+				"control",
+				"windu/app/windu_engine/windu_controller.py"
+			],
+			[
+				"test",
+				"external/wagent/test-agent"
+			]
+		],
+		"width": 0.0
+	},
+	"select_project":
+	{
+		"height": 0.0,
+		"last_filter": "",
+		"selected_items":
+		[
+		],
+		"width": 0.0
+	},
+	"select_symbol":
+	{
+		"height": 375.0,
+		"last_filter": "",
+		"selected_items":
+		[
+		],
+		"width": 444.0
+	},
+	"selected_group": 0,
+	"settings":
+	{
+	},
+	"show_minimap": true,
+	"show_open_files": true,
+	"show_tabs": true,
+	"side_bar_visible": true,
+	"side_bar_width": 310.0,
+	"status_bar_visible": true,
+	"template_settings":
+	{
+	}
+}
