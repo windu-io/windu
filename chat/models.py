@@ -1,9 +1,11 @@
 from django.db import  models
+from django.contrib.auth.models import  User
 
 class Account(models.Model):
     id = models.CharField (max_length=64, primary_key=True)
     password = models.CharField (max_length=64, null=False)
     nick = models.CharField (max_length=256, null=True, blank=True)
+    user = models.ForeignKey(User)
     def __str__(self):
         return self.nick
 
@@ -44,7 +46,7 @@ class Message (models.Model):
     delivered = models.DateTimeField (null=True, blank=True)
     read = models.DateTimeField (null=True, blank=True)
     def __str__(self):
-        return self.message_id
+        return self.message_id + ' ' + self.data
 
 class Contact (models.Model):
     class Meta:
