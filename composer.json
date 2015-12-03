@@ -6,6 +6,7 @@
         "ext-mcrypt": "*",
         "ext-openssl" : "*",
         "ext-pdo" : "*",
-        "ext-sockets" : "*"
+        "ext-sockets" : "*",
+        "ext-protobuf" : "*"
     }
 }
