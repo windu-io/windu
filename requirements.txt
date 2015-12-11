@@ -1,9 +1,10 @@
 dj-database-url==0.3.0
 dj-static==0.0.6
-Django==1.8.7
+Django==1.9
 django-toolbelt==0.0.1
+django-postgrespool==0.3.0
 gunicorn==19.4.1
 psycopg2==2.6.1
-static3==0.6.1
 wheel==0.26.0
 wagent==1.0.169
+whitenoise==2.0.6
