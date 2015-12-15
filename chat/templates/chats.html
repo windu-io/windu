@@ -1,0 +1,19 @@
+<!DOCTYPE html>
+<html>
+<head>
+	<title>Chats</title>
+</head>
+<body>
+  <div class="media">
+      {% for chat in chat_list %}
+      <div class="media-left">
+      <img class="media-object" alt="message image" style="width: 64px; height: 64px;">
+       </div>
+      <div class="media-body">
+          <h4 class="media-heading">{{ chat.title }}</h4>
+          <p>{{ chat.snippet }} </p>
+      </div>
+      {% endfor %}
+  </div>
+</body>
+</html>
