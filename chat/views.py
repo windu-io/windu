@@ -3,7 +3,7 @@ from django.shortcuts import render
 from django.http import Http404
 
 # Create your views here.
-from .controller import get_controller
+
 
 def chats(request):
 
