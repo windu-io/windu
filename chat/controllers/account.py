@@ -1,43 +1,67 @@
 #! /usr/bin/env python
 # -*- coding: utf-8 -*-
 
-from wagent import WinduAgent
-from ..models import User, Account
+from .agent_factory import get_agent
 
-class account:
 
-    def __init__(self, account_number, user_id):
-        self.account_number = account_number
-        self.user_id
+class Account:
 
-    def _agent(self):
+    def __init__(self, account_number, account):
+        self.__account_number = account_number
+        self.__account = account
+
+    def __agent(self):
+        return get_agent (self.__account)
+
+    def __account(self):
         return None
 
-    def updateStatus(self, status_message):
-        return None
+    def update_status_message(self, status_message):
+        agent = self.__agent()
+        return agent.sendStatusUpdate(status_message)
 
-    def updateProfilePhoto(self, picture):
-        return None
+    def status_message (self):
+        agent = self.__agent()
+        return agent.sendGetStatuses([self.__account_number])
 
-    def removeProfilePicture (self):
-        return None
+    def update_profile_photo(self, picture):
+        agent = self.__agent()
+        return agent.sendSetProfilePicture(picture)
 
-    def statusOnline(self):
-        return None
+    def profile_photo(self):
+        agent = self.__agent()
+        return agent.sendGetProfilePicture (self.__account_number)
 
-    def statusOffline(self):
-        return None
+    def remove_profile_photo (self):
+        agent = self.__agent()
+        return agent.sendRemoveProfilePicture()
 
-    def updateNickname (self, nickname):
-        return None
+    def status_online(self):
+        agent = self.__agent()
+        return agent.sendActiveStatus()
 
-    def updatePrivacySetting (self, setting, value):
-        return None
+    def status_offline(self):
+        agent = self.__agent()
+        return agent.sendOfflineStatus()
 
-    def privacySetting (self):
-        return None
+    def update_nickname (self, nickname):
+        self.updateAccountNickname (nickname)
+        agent = self.__agent()
+        return agent.sendUpdateNickname(nickname)
 
-    def removeAccount (self, feedback):
-        return None
+    def nickname (self):
+        return self.__account ().nickname
+
+    def update_privacy_setting (self, setting, value):
+        agent = self.__agent()
+        return agent.sendSetPrivacySettings(setting, value)
+
+    def privacy_setting (self):
+        agent = self.__agent()
+        return agent.sendGetPrivacySettings()
+
+    def remove_account (self, feedback):
+        agent = self.__agent()
+        return agent.sendRemoveAccount(feedback)
 
 

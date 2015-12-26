@@ -6,7 +6,7 @@ from ..models import User, Account
 
 class account:
 
-    def __init__(self, account_number, credentials):
+    def __init__(self, account_number, user):
         self.account_number = account_number
         self.user_id
 
