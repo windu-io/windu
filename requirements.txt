@@ -6,5 +6,6 @@ django-postgrespool==0.3.0
 gunicorn==19.4.1
 psycopg2==2.6.1
 wheel==0.26.0
-wagent==1.0.174
+wagent==1.0.175
 whitenoise==2.0.6
+djangorestframework=3.3.2

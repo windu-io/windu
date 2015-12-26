@@ -1,14 +1,12 @@
-from django.http import HttpResponse
-from django.shortcuts import render
-from django.http import Http404
-from django.http import JsonResponse
-from django.views.decorators.csrf import csrf_exempt
+
+from rest_framework.decorators import api_view
+from rest_framework.response import Response
 
 from ..models import Account, User
 from ..controllers import account
 
 # Create your views here.
-
+@api_view(['GET', 'POST'])
 def status_message(request):
 
     user = User.objects.get(id=2)
@@ -24,6 +22,6 @@ def status_message(request):
     status_code = int (result.pop ("code"))
     if status_code == 200 and request.method == 'GET':
         result = {'status_message' : result ['statuses'][0]['data']}
-    response =  JsonResponse (result)
+    response = Response (result, status_code)
     response.status_code = status_code
     return response
