@@ -6,9 +6,9 @@ from .agent_factory import get_agent
 
 class Account:
 
-    def __init__(self, account_number, account):
-        self.__account_number = account_number
+    def __init__(self, account):
         self.__account = account
+        self.__account_number = account.id
 
     def __agent(self):
         return get_agent (self.__account)

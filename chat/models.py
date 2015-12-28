@@ -3,7 +3,8 @@ from django.contrib.auth.models import  User
 
 class Account(models.Model):
     id = models.CharField (max_length=64, primary_key=True)
-    password = models.CharField (max_length=64, null=False)
+    password = models.CharField (max_length=64, null=True, blank=False)
+    code_requested = models.DateTimeField (null=True)
     nick = models.CharField (max_length=256, null=True, blank=True)
     user = models.ForeignKey(User)
     def __str__(self):
