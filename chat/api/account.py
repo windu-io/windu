@@ -73,4 +73,7 @@ def __update_profile_photo(request):
 
 
 def __delete_profile_photo(request):
-    return Response ()
+    controller = account.Account(request.account)
+    result = controller.remove_profile_photo()
+    status_code = int (result.pop('code'))
+    return Response (result, status_code)
