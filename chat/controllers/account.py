@@ -50,7 +50,7 @@ class Account:
         return agent.sendUpdateNickname(nickname)
 
     def nickname (self):
-        return self.__account ().nickname
+        return self.__account.nickname
 
     def update_privacy_setting (self, setting, value):
         agent = self.__agent()

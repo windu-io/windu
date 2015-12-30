@@ -7,17 +7,16 @@ from oauth2_provider.decorators import protected_resource
 
 from ..controllers import account
 from ..decorators import active_account_required_400
-from django.http import HttpResponseBadRequest
+from django.http import HttpResponseNotAllowed
 
 
-# Create your views here.
+# /api/account/status-message
 @api_view(['GET','POST'])
 @protected_resource()
 @active_account_required_400()
 def status_message(request):
 
-    a = request.account
-    controller = account.Account(a)
+    controller = account.Account(request.account)
 
     if request.method == 'GET':
         result = controller.status_message ()
@@ -27,7 +26,7 @@ def status_message(request):
             return Response ('status_message missing', 400)
         result = controller.update_status_message (status)
 
-    status_code = int (result.pop ("code"))
+    status_code = int (result.pop('code'))
 
     if status_code == 200 and request.method == 'GET':
         result = {'status_message' : result ['statuses'][0]['data']}
@@ -35,3 +34,43 @@ def status_message(request):
     response = Response(result, status_code)
     response.status_code = status_code
     return response
+
+
+# /api/account/profile-photo
+@api_view(['GET','POST','DELETE'])
+@protected_resource()
+@active_account_required_400()
+def profile_photo(request):
+    if request.method == 'POST':
+        return __update_profile_photo (request)
+    if request.method == 'DELETE':
+        return __delete_profile_photo (request)
+    return __get_profile_photo (request)
+
+
+def __get_profile_photo(request):
+    controller = account.Account(request.account)
+    result     = controller.profile_photo()
+    status_code = int (result.pop('code'))
+    if status_code != 200:
+        result.pop ('type')
+        result.pop ('from')
+        result.pop ('id')
+        return Response (result, status_code)
+    return Response ()
+
+
+def __update_profile_photo(request):
+    photo_file = request.FILES.get ('photo')
+    if photo_file is None:
+        return Response({'error':'No photo file provided multi-part (photo)'}, 400)
+
+    picture = photo_file.temporary_file_path()
+    controller = account.Account(request.account)
+    result = controller.update_profile_photo(picture)
+    status_code = int (result.pop('code'))
+    return Response (result, status_code)
+
+
+def __delete_profile_photo(request):
+    return Response ()

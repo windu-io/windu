@@ -90,6 +90,8 @@ TEMPLATES = [
 WSGI_APPLICATION = 'windu.wsgi.application'
 
 
+FILE_UPLOAD_HANDLERS = ['chat.upload.uploadhandler.TemporaryNamedFileUploadHandler']
+
 
 # Database
 # https://docs.djangoproject.com/en/1.9/ref/settings/#databases
