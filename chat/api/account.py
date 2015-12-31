@@ -53,6 +53,7 @@ def profile_photo(request):
 
 
 def __get_profile_photo(request):
+
     controller = account.Account(request.account)
     result = controller.profile_photo()
     status_code = int (result.pop('code'))
@@ -61,6 +62,7 @@ def __get_profile_photo(request):
         result.pop ('from')
         result.pop ('id')
         return Response (result, status_code)
+
     picture = result.get ('filename')
     if not picture or not os.path.isfile(picture):
         return Response({'error':'Profile photo not found'}, 404)
@@ -84,5 +86,36 @@ def __update_profile_photo(request):
 def __delete_profile_photo(request):
     controller = account.Account(request.account)
     result = controller.remove_profile_photo()
+    status_code = int (result.pop('code'))
+    return Response (result, status_code)
+
+
+# /api/account/connected-status
+@api_view(['POST','GET'])
+@protected_resource()
+@active_account_required_400()
+def connected_status(request):
+    if request.method == 'POST':
+        return __update_connected_status (request)
+    return __get_connected_status (request)
+
+
+def __update_connected_status(request):
+
+    status = request.POST.get('status')
+    if not status:
+        return Response ({'error':'status missing (status=[online|offline])'}, 400)
+    if status != 'online' and status != 'offline':
+        return Response ({'error':'status wrong value (status=[online|offline])'}, 400)
+
+    controller = account.Account(request.account)
+    result = controller.update_connected_status(status)
+    status_code = int (result.pop('code'))
+    return Response (result, status_code)
+
+
+def __get_connected_status(request):
+    controller = account.Account(request.account)
+    result = controller.connected_status()
     status_code = int (result.pop('code'))
     return Response (result, status_code)

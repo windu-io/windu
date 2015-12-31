@@ -52,4 +52,16 @@ REST API
 
 		curl -X DELETE http://windu.herokuapp.com:8000/api/account/profile-photo/
 		
+### Connected Status
+
+* Get current connected status:
+
+		curl -X GET http://windu.herokuapp.com:8000/api/account/connected-status/
+		
+* Update connected status to *online* :
+
+		curl -X POST -d "status=online" http://windu.herokuapp.com/api/account/status-message/
+		
+
+		
 		

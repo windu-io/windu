@@ -36,16 +36,16 @@ class Account:
         agent = self.__agent()
         return agent.sendRemoveProfilePicture()
 
-    def status_online(self):
+    def update_connected_status(self, status):
         agent = self.__agent()
-        return agent.sendActiveStatus()
+        return agent.setConnectedStatus(status)
 
-    def status_offline(self):
+    def connected_status(self):
         agent = self.__agent()
-        return agent.sendOfflineStatus()
+        return agent.getConnectedStatus()
 
     def update_nickname (self, nickname):
-        self.updateAccountNickname (nickname)
+        self.__update_account_nickname (nickname)
         agent = self.__agent()
         return agent.sendUpdateNickname(nickname)
 
