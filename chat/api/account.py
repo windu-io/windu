@@ -7,7 +7,11 @@ from oauth2_provider.decorators import protected_resource
 
 from ..controllers import account
 from ..decorators import active_account_required_400
-from django.http import HttpResponseNotAllowed
+
+from django.http import HttpResponse
+
+import mimetypes
+import os
 
 
 # /api/account/status-message
@@ -23,7 +27,7 @@ def status_message(request):
     elif request.method == 'POST':
         status = request.POST.get('status_message')
         if not status:
-            return Response ('status_message missing', 400)
+            return Response ({'error':'status_message missing'}, 400)
         result = controller.update_status_message (status)
 
     status_code = int (result.pop('code'))
@@ -50,14 +54,19 @@ def profile_photo(request):
 
 def __get_profile_photo(request):
     controller = account.Account(request.account)
-    result     = controller.profile_photo()
+    result = controller.profile_photo()
     status_code = int (result.pop('code'))
     if status_code != 200:
         result.pop ('type')
         result.pop ('from')
         result.pop ('id')
         return Response (result, status_code)
-    return Response ()
+    picture = result.get ('filename')
+    if not picture or not os.path.isfile(picture):
+        return Response({'error':'Profile photo not found'}, 404)
+    picture_data = open(picture, "rb").read()
+    mime_type = mimetypes.guess_type(picture)
+    return HttpResponse (picture_data, mime_type)
 
 
 def __update_profile_photo(request):
