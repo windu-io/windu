@@ -148,3 +148,54 @@ def __get_nickname(request):
     result = controller.nickname()
     status_code = int (result.pop('code'))
     return Response (result, status_code)
+
+
+# /api/account/privacy-settings
+@api_view(['POST','GET'])
+@protected_resource()
+@active_account_required_400()
+def privacy_settings(request):
+    if request.method == 'POST':
+        return __update_privacy_settings(request)
+    return __get_privacy_settings(request)
+
+
+def __is_privacy_setting_valid(setting):
+    return setting == 'contacts' or setting == 'all' or setting == 'none'
+
+
+def __update_privacy_settings(request):
+
+    status_message = request.POST.get('status_message')
+    photo = request.POST.get('photo')
+    last_seen = request.POST.get('last_seen')
+    if not status_message and not photo and not last_seen:
+        return Response ({'error':'No privacy setting provided (status_message, photo, last_seen)'}, 400)
+
+    if status_message is not None and not __is_privacy_setting_valid(status_message):
+        return Response ({'error':'Invalid status_message value [all|contacts|none]'}, 400)
+    if photo is not None and not __is_privacy_setting_valid(photo):
+        return Response ({'error':'Invalid photo value [all|contacts|none]'}, 400)
+    if last_seen is not None and not __is_privacy_setting_valid(last_seen):
+        return Response ({'error':'Invalid last_seen value [all|contacts|none]'}, 400)
+
+    settings = {}
+
+    if not status_message is None:
+        settings ['status_message'] = status_message
+    if not photo is None:
+        settings ['photo'] = photo
+    if not last_seen is None:
+        settings ['last_seen'] = last_seen
+
+    controller = account.Account(request.account)
+    result = controller.update_privacy_settings(settings)
+    status_code = int (result.pop('code'))
+    return Response (result, status_code)
+
+
+def __get_privacy_settings(request):
+    controller = account.Account(request.account)
+    result = controller.privacy_settings()
+    status_code = int (result.pop('code'))
+    return Response(result, status_code)

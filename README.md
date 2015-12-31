@@ -72,6 +72,21 @@ REST API
 
 		curl -X POST -d "nickname=🚚🚎MyNick🚒" http://windu.herokuapp.com/api/account/nickname/
 		
+### Privacy settings
+
+* Get current privacy settings:
+
+		curl -X GET http://windu.herokuapp.com:8000/api/account/privacy-settings/
+		
+* Update your privacy settings (status_message, photo, last_seen) possible values `none`, `contacts` and `all` :
+
+		curl -X POST -d "photo=contacts&status_message=all" http://windu.herokuapp.com/api/account/privacy-settings/
+		
+
+
+		
+		
+		
 
 		
 		

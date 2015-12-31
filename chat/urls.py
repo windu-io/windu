@@ -10,4 +10,6 @@ urlpatterns = [
     url(r'^account/profile-photo/$', account.profile_photo, name='profile-photo'),
     url(r'^account/connected-status/$', account.connected_status, name='connected-status'),
     url(r'^account/nickname/$', account.nickname, name='nickname'),
+    url(r'^account/privacy-settings/$', account.privacy_settings, name='privacy-settings'),
 ]
+

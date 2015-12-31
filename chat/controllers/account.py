@@ -56,13 +56,47 @@ class Account:
     def nickname (self):
         return {'nickname':self.__account.nick, 'code':'200'}
 
-    def update_privacy_setting (self, setting, value):
-        agent = self.__agent()
-        return agent.sendSetPrivacySettings(setting, value)
+    def update_privacy_settings (self, settings):
 
-    def privacy_setting (self):
         agent = self.__agent()
-        return agent.sendGetPrivacySettings()
+        result = {}
+
+        status_message = settings.get ('status_message')
+        if status_message is not None:
+            r = agent.sendSetPrivacySettings('status', status_message)
+            code = r.get ('code')
+            if code is None or code != '200':
+                return r
+            result['status_message'] = r['values']['status']
+
+        photo = settings.get ('photo')
+        if photo is not None:
+            r = agent.sendSetPrivacySettings('profile', photo)
+            code = r.get ('code')
+            if code is None or code != '200':
+                return r
+            result['photo'] = r['values']['profile']
+
+        last_seen = settings.get ('last_seen')
+        if last_seen is not None:
+            r = agent.sendSetPrivacySettings('last', last_seen)
+            code = r.get ('code')
+            if code is None or code != '200':
+                return r
+            result['last_seen'] = r['values']['last']
+
+        result ['code'] = '200'
+        return result
+
+    def privacy_settings (self):
+        result = {}
+        agent = self.__agent()
+        ret = agent.sendGetPrivacySettings()
+        result['code'] = ret['code']
+        result['status_message'] = ret['values']['status']
+        result['photo'] = ret['values']['profile']
+        result['last_seen'] = ret['values']['last']
+        return result
 
     def remove_account (self, feedback):
         agent = self.__agent()
