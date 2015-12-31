@@ -9,4 +9,5 @@ urlpatterns = [
     url(r'^account/status-message/$', account.status_message, name='status-message'),
     url(r'^account/profile-photo/$', account.profile_photo, name='profile-photo'),
     url(r'^account/connected-status/$', account.connected_status, name='connected-status'),
+    url(r'^account/nickname/$', account.nickname, name='nickname'),
 ]

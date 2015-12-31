@@ -49,8 +49,12 @@ class Account:
         agent = self.__agent()
         return agent.sendUpdateNickname(nickname)
 
+    def __update_account_nickname(self, nickname):
+        self.__account.nick = nickname
+        self.__account.save ()
+
     def nickname (self):
-        return self.__account.nickname
+        return {'nickname':self.__account.nick, 'code':'200'}
 
     def update_privacy_setting (self, setting, value):
         agent = self.__agent()

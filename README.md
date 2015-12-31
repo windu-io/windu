@@ -62,6 +62,16 @@ REST API
 
 		curl -X POST -d "status=online" http://windu.herokuapp.com/api/account/status-message/
 		
+### Nickname
+
+* Get current nickname:
+
+		curl -X GET http://windu.herokuapp.com:8000/api/account/nickname/
+		
+* Update your nickname (The nickname will appear on your notifications):
+
+		curl -X POST -d "nickname=🚚🚎MyNick🚒" http://windu.herokuapp.com/api/account/nickname/
+		
 
 		
 		

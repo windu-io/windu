@@ -119,3 +119,32 @@ def __get_connected_status(request):
     result = controller.connected_status()
     status_code = int (result.pop('code'))
     return Response (result, status_code)
+
+
+# /api/account/nickname
+@api_view(['POST','GET'])
+@protected_resource()
+@active_account_required_400()
+def nickname(request):
+    if request.method == 'POST':
+        return __update_nickname (request)
+    return __get_nickname (request)
+
+
+def __update_nickname(request):
+
+    nick = request.POST.get('nickname')
+    if nick is None:
+        return Response ({'error':'nickname missing (nickname)'}, 400)
+
+    controller = account.Account(request.account)
+    result = controller.update_nickname(nick)
+    status_code = int (result.pop('code'))
+    return Response (result, status_code)
+
+
+def __get_nickname(request):
+    controller = account.Account(request.account)
+    result = controller.nickname()
+    status_code = int (result.pop('code'))
+    return Response (result, status_code)
