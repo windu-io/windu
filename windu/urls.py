@@ -15,9 +15,11 @@ Including another URLconf
 """
 from django.conf.urls import include, url
 from django.contrib import admin
-
+from django.contrib import auth
 urlpatterns = [
     url(r'^api/', include('chat.urls')),
     url(r'^admin/', admin.site.urls),
     url(r'^o/', include('oauth2_provider.urls', namespace='oauth2_provider')),
+    url(r'^accounts/login/$', auth.views.login, {'template_name': 'admin/login.html'}),
+    url(r'^accounts/logout/$', auth.views.logout, {'template_name': 'admin/logout.html'})
 ]

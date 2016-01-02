@@ -4,4 +4,4 @@
 from wagent import WinduAgent
 
 def get_agent (account):
-    return WinduAgent.WinduAgent (account.id, account.nick, account.password)
+    return WinduAgent.WinduAgent (account.account, account.nickname, account.password)

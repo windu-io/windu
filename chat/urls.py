@@ -11,5 +11,10 @@ urlpatterns = [
     url(r'^account/connected-status/$', account.connected_status, name='connected-status'),
     url(r'^account/nickname/$', account.nickname, name='nickname'),
     url(r'^account/privacy-settings/$', account.privacy_settings, name='privacy-settings'),
+    url(r'^account/create-account/$', account.create_account, name='create-account'),
+    url(r'^account/request-sms-code/$', account.request_sms_code, name='request-sms-code'),
+    url(r'^account/request-voice-code/$', account.request_voice_code, name='request-voice-code'),
+    url(r'^account/register-code/$', account.register_code, name='register-code'),
+    url(r'^account/remove-account/$', account.remove_account, name='remove-account'),
 ]
 

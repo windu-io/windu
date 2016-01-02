@@ -87,6 +87,8 @@ TEMPLATES = [
     },
 ]
 
+
+
 WSGI_APPLICATION = 'windu.wsgi.application'
 
 
@@ -134,5 +136,9 @@ STATICFILES_DIRS = [
 STATICFILES_STORAGE = 'whitenoise.django.GzipManifestStaticFilesStorage'
 
 CORS_ORIGIN_ALLOW_ALL = True
+
+OAUTH2_PROVIDER = {
+    'ACCESS_TOKEN_EXPIRE_SECONDS': 31536000,  # 1 year
+}
 
 

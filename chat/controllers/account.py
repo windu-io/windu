@@ -1,20 +1,87 @@
 #! /usr/bin/env python
 # -*- coding: utf-8 -*-
 
+import datetime
+
 from .agent_factory import get_agent
+
+from ..models import Account as ModelAccount
 
 
 class Account:
 
     def __init__(self, account):
         self.__account = account
-        self.__account_number = account.id
+
+    @staticmethod
+    def create_account (number, nickname, user):
+        if user is None or not user.is_active:
+            return {'error':'Invalid user', 'code': '403'}
+
+        if ModelAccount.objects.filter(account=number, user=user).exists():
+            return {'error':'Account already exists', 'code': '400'}
+
+        account = ModelAccount.objects.create(account=number, nickname=nickname, user=user)
+        controller = Account (account)
+        result = controller.request_sms_code()
+        status_code = result.get('code')
+        if status_code is None or status_code[0] != '2':
+            account.delete()
+            result['error'] = 'Error creating account' + number
+        return result
+
+    def request_sms_code(self):
+        result = {}
+        agent = self.__agent()
+        self.__account.code_requested = datetime.datetime.now()
+        self.__account.save()
+        try:
+            result = agent.codeRequestSMS()
+        except Exception as e:
+            result['error'] = str(e)
+            result['code'] = '500'
+        return result
+
+    def request_voice_code(self):
+        agent = self.__agent()
+        self.__account.code_requested = datetime.datetime.now()
+        self.__account.save()
+        try:
+            result = agent.codeRequestVoice()
+        except Exception as e:
+            result['error'] = str(e)
+            result['code'] = '500'
+        return result
+
+    def register_code(self,code):
+        agent = self.__agent()
+        result = agent.codeRegister(code)
+        status_code = result.get('code')
+        if status_code is None or status_code[0] != '2':
+            return result
+        password = result.get ('pw')
+        if not password:
+            result['code'] = '501'
+            result['error'] = 'Fail to register code, try again later'
+            return result
+        self.__account.password = password
+        self.__account.save()
+        return result
+
+    def remove_account(self, feedback):
+        if self.__account.is_registered():
+            agent = self.__agent()
+            result = agent.sendRemoveAccount(feedback)
+            status_code = result.get('code')
+            if status_code is None or status_code[0] != '2':
+                result['error'] = 'Error removing account' + self.__account.account
+                return result
+
+        self.__account.delete()
+        return result
 
     def __agent(self):
         return get_agent (self.__account)
-
-    def __account(self):
-        return None
 
     def update_status_message(self, status_message):
         agent = self.__agent()
@@ -22,7 +89,7 @@ class Account:
 
     def status_message (self):
         agent = self.__agent()
-        return agent.sendGetStatuses([self.__account_number])
+        return agent.sendGetStatuses([self.__account.account])
 
     def update_profile_photo(self, picture):
         agent = self.__agent()
@@ -30,7 +97,7 @@ class Account:
 
     def profile_photo(self):
         agent = self.__agent()
-        return agent.sendGetProfilePicture (self.__account_number)
+        return agent.sendGetProfilePicture (self.__account.account)
 
     def remove_profile_photo (self):
         agent = self.__agent()
@@ -50,13 +117,13 @@ class Account:
         return agent.sendUpdateNickname(nickname)
 
     def __update_account_nickname(self, nickname):
-        self.__account.nick = nickname
+        self.__account.nickname = nickname
         self.__account.save ()
 
     def nickname (self):
-        return {'nickname':self.__account.nick, 'code':'200'}
+        return {'nickname': self.__account.nickname, 'code': '200'}
 
-    def update_privacy_settings (self, settings):
+    def update_privacy_settings(self, settings):
 
         agent = self.__agent()
         result = {}
@@ -88,7 +155,7 @@ class Account:
         result ['code'] = '200'
         return result
 
-    def privacy_settings (self):
+    def privacy_settings(self):
         result = {}
         agent = self.__agent()
         ret = agent.sendGetPrivacySettings()
@@ -98,8 +165,5 @@ class Account:
         result['last_seen'] = ret['values']['last']
         return result
 
-    def remove_account (self, feedback):
-        agent = self.__agent()
-        return agent.sendRemoveAccount(feedback)
 
 
