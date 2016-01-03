@@ -10,8 +10,6 @@ from ..decorators import active_account_required_400
 from ..decorators import pending_account_required_400
 from ..decorators import account_to_remove_required_400
 
-from ..models import Account as ModelAccount
-
 from django.http import HttpResponse
 
 import mimetypes
@@ -194,8 +192,8 @@ def __update_privacy_settings(request):
 
     controller = account.Account(request.account)
     result = controller.update_privacy_settings(settings)
-    status_code = int (result.pop('code'))
-    return Response (result, status_code)
+    status_code = int(result.pop('code'))
+    return Response(result, status_code)
 
 
 def __get_privacy_settings(request):

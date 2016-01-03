@@ -38,24 +38,34 @@ class Account:
         try:
             result = agent.codeRequestSMS()
         except Exception as e:
-            result['error'] = str(e)
+            result['error'] = 'Error requesting SMS code: ' + str(e)
             result['code'] = '500'
         return result
 
     def request_voice_code(self):
+        result = {}
         agent = self.__agent()
         self.__account.code_requested = datetime.datetime.now()
         self.__account.save()
         try:
             result = agent.codeRequestVoice()
         except Exception as e:
-            result['error'] = str(e)
+            result['error'] = 'Error requesting voice code: ' + str(e)
+            result['code'] = '500'
+        return result
+
+    def __register_code(self, code):
+        result = {}
+        agent = self.__agent()
+        try:
+            result = agent.codeRegister(code)
+        except Exception as e:
+            result['error'] = 'Error registering code: ' + str(e)
             result['code'] = '500'
         return result
 
     def register_code(self,code):
-        agent = self.__agent()
-        result = agent.codeRegister(code)
+        result = self.__register_code(code)
         status_code = result.get('code')
         if status_code is None or status_code[0] != '2':
             return result
@@ -68,10 +78,19 @@ class Account:
         self.__account.save()
         return result
 
+    def __remove_account(self, feedback):
+        result = {}
+        agent = self.__agent()
+        try:
+            result = agent.sendRemoveAccount(feedback)
+        except Exception as e:
+            result['error'] = 'Error requesting voice code: ' + str(e)
+            result['code'] = '500'
+        return result
+
     def remove_account(self, feedback):
         if self.__account.is_registered():
-            agent = self.__agent()
-            result = agent.sendRemoveAccount(feedback)
+            result = self.__remove_account(feedback)
             status_code = result.get('code')
             if status_code is None or status_code[0] != '2':
                 result['error'] = 'Error removing account' + self.__account.account
@@ -83,54 +102,135 @@ class Account:
     def __agent(self):
         return get_agent (self.__account)
 
-    def update_status_message(self, status_message):
+    def __update_status_message(self, status_message):
+        result = {}
         agent = self.__agent()
-        return agent.sendStatusUpdate(status_message)
+        try:
+            result = agent.sendStatusUpdate(status_message)
+        except Exception as e:
+            result['error'] = 'Error updating status: ' + str(e)
+            result['code'] = '500'
+        return result
+
+    def update_status_message(self, status_message):
+        return self.__update_status_message(status_message)
+
+    def __status_message(self):
+        result = {}
+        agent = self.__agent()
+        try:
+            result = agent.sendGetStatuses([self.__account.account])
+        except Exception as e:
+            result['error'] = 'Error getting status: ' + str(e)
+            result['code'] = '500'
+        return result
 
     def status_message (self):
+        return self.__status_message()
+
+    def __update_profile_photo(self, picture):
+        result = {}
         agent = self.__agent()
-        return agent.sendGetStatuses([self.__account.account])
+        try:
+            result = agent.sendSetProfilePicture(picture)
+        except Exception as e:
+            result['error'] = 'Error updating profile photo: ' + str(e)
+            result['code'] = '500'
+        return result
 
     def update_profile_photo(self, picture):
+        return self.__update_profile_photo(picture)
+
+    def __profile_photo(self):
+        result = {}
         agent = self.__agent()
-        return agent.sendSetProfilePicture(picture)
+        try:
+            result = agent.sendGetProfilePicture (self.__account.account)
+        except Exception as e:
+            result['error'] = 'Error updating profile photo: ' + str(e)
+            result['code'] = '500'
+        return result
 
     def profile_photo(self):
+        return self.__profile_photo()
+
+    def __remove_profile_photo(self):
+        result = {}
         agent = self.__agent()
-        return agent.sendGetProfilePicture (self.__account.account)
+        try:
+            result = agent.sendRemoveProfilePicture()
+        except Exception as e:
+            result['error'] = 'Error removing profile photo: ' + str(e)
+            result['code'] = '500'
+        return result
 
     def remove_profile_photo (self):
+        return self.__remove_profile_photo()
+
+    def __update_connected_status(self, status):
+        result = {}
         agent = self.__agent()
-        return agent.sendRemoveProfilePicture()
+        try:
+            result = agent.setConnectedStatus(status)
+        except Exception as e:
+            result['error'] = 'Error updating connected status: ' + str(e)
+            result['code'] = '500'
+        return result
 
     def update_connected_status(self, status):
+        return self.__update_connected_status(status)
+
+    def __connected_status(self):
+        result = {}
         agent = self.__agent()
-        return agent.setConnectedStatus(status)
+        try:
+            result = agent.getConnectedStatus()
+        except Exception as e:
+            result['error'] = 'Error getting connected status: ' + str(e)
+            result['code'] = '500'
+        return result
 
     def connected_status(self):
+        return self.__connected_status()
+
+    def __update_nickname(self, nickname):
+        result = {}
         agent = self.__agent()
-        return agent.getConnectedStatus()
+        try:
+            result = agent.sendUpdateNickname(nickname)
+        except Exception as e:
+            result['error'] = 'Error updating nickname: ' + str(e)
+            result['code'] = '500'
+        return result
 
     def update_nickname (self, nickname):
         self.__update_account_nickname (nickname)
-        agent = self.__agent()
-        return agent.sendUpdateNickname(nickname)
+        return self.__update_nickname(nickname)
 
     def __update_account_nickname(self, nickname):
         self.__account.nickname = nickname
         self.__account.save ()
 
-    def nickname (self):
+    def nickname(self):
         return {'nickname': self.__account.nickname, 'code': '200'}
+
+    def __set_privacy_settings(self, setting, value):
+        result = {}
+        agent = self.__agent()
+        try:
+            result = agent.sendSetPrivacySettings(setting, value)
+        except Exception as e:
+            result['error'] = 'Error setting privacy setting: ' + str(e)
+            result['code'] = '500'
+        return result
 
     def update_privacy_settings(self, settings):
 
-        agent = self.__agent()
         result = {}
 
         status_message = settings.get ('status_message')
         if status_message is not None:
-            r = agent.sendSetPrivacySettings('status', status_message)
+            r = self.__set_privacy_settings('status', status_message)
             code = r.get ('code')
             if code is None or code != '200':
                 return r
@@ -138,7 +238,7 @@ class Account:
 
         photo = settings.get ('photo')
         if photo is not None:
-            r = agent.sendSetPrivacySettings('profile', photo)
+            r = self.__set_privacy_settings('profile', photo)
             code = r.get ('code')
             if code is None or code != '200':
                 return r
@@ -146,7 +246,7 @@ class Account:
 
         last_seen = settings.get ('last_seen')
         if last_seen is not None:
-            r = agent.sendSetPrivacySettings('last', last_seen)
+            r = self.__set_privacy_settings('last', last_seen)
             code = r.get ('code')
             if code is None or code != '200':
                 return r
@@ -155,10 +255,19 @@ class Account:
         result ['code'] = '200'
         return result
 
-    def privacy_settings(self):
+    def __privacy_settings(self):
         result = {}
         agent = self.__agent()
-        ret = agent.sendGetPrivacySettings()
+        try:
+            result = agent.sendGetPrivacySettings()
+        except Exception as e:
+            result['error'] = 'Error getting privacy setting: ' + str(e)
+            result['code'] = '500'
+        return result
+
+    def privacy_settings(self):
+        result = {}
+        ret = self.__privacy_settings()
         result['code'] = ret['code']
         result['status_message'] = ret['values']['status']
         result['photo'] = ret['values']['profile']
