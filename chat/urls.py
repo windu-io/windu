@@ -2,6 +2,7 @@ from django.conf.urls import url
 
 from . import views
 from api import account
+from api import contacts
 
 urlpatterns = [
     url(r'^chats/$', views.chats, name='chats'),
@@ -16,5 +17,8 @@ urlpatterns = [
     url(r'^account/request-voice-code/$', account.request_voice_code, name='request-voice-code'),
     url(r'^account/register-code/$', account.register_code, name='register-code'),
     url(r'^account/remove-account/$', account.remove_account, name='remove-account'),
+    # url(r'^contacts/add-contact/$', contacts.remove_account, name='add-contact'),
+    # url(r'^contacts/remove-contact/$', contacts.remove_account, name='remove-contact'),
 ]
+
 

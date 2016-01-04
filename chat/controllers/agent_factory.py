@@ -3,5 +3,6 @@
 
 from wagent import WinduAgent
 
-def get_agent (account):
+
+def create_agent(account):
     return WinduAgent.WinduAgent (account.account, account.nickname, account.password)

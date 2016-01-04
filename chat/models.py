@@ -7,9 +7,10 @@ class Account(models.Model):
         unique_together = (('account', 'user'),)
     account = models.CharField (max_length=64)
     password = models.CharField (max_length=64, null=True, blank=False)
-    code_requested = models.DateTimeField (null=True)
+    code_requested = models.DateTimeField (null=True, blank=True)
     nickname = models.CharField (max_length=256, null=True, blank=True)
     user = models.ForeignKey(User)
+    last_check_events = models.DateTimeField (null=True, blank=True)
 
     def __str__(self):
         return self.nickname + " (" + self.account + ")"

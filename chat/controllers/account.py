@@ -3,7 +3,7 @@
 
 import datetime
 
-from .agent_factory import get_agent
+from .agent import get_agent_and_check_events
 
 from ..models import Account as ModelAccount
 
@@ -100,7 +100,7 @@ class Account:
         return result
 
     def __agent(self):
-        return get_agent (self.__account)
+        return get_agent_and_check_events(self.__account)
 
     def __update_status_message(self, status_message):
         result = {}

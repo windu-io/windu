@@ -109,6 +109,8 @@ With exception of `create-account` every method accept an optional `account=0000
 
 		curl -X POST -d "photo=contacts&status_message=all" https://windu.herokuapp.com/api/account/privacy-settings/
 		
+## Contacts
+		
 
 
 		
