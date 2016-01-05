@@ -10,7 +10,8 @@ class Account(models.Model):
     code_requested = models.DateTimeField (null=True, blank=True)
     nickname = models.CharField (max_length=256, null=True, blank=True)
     user = models.ForeignKey(User)
-    last_check_events = models.DateTimeField (null=True, blank=True)
+    last_check_events = models.DateTimeField(null=True, blank=True)
+    last_sync_contacts = models.DateTimeField(null=True, blank=True)
 
     def __str__(self):
         return self.nickname + " (" + self.account + ")"
@@ -23,9 +24,9 @@ class Chat(models.Model):
     class Meta:
         unique_together = (('account', 'entity_id'),)
     account = models.ForeignKey (Account)
-    entity_id  = models.CharField (max_length=64, db_index=True,null=False)
-    title  = models.CharField (max_length=256,null=False)
-    snippet  = models.CharField (max_length=64, null=False)
+    entity_id = models.CharField (max_length=64, db_index=True,null=False)
+    title = models.CharField (max_length=256,null=False)
+    snippet = models.CharField (max_length=64, null=False)
     time = models.DateTimeField (null=True,blank=True)
 
     def __str__(self):
@@ -62,26 +63,36 @@ class Message(models.Model):
         return self.message_id + ' ' + self.data
 
 
+class MessageGroupRead(models.Model):
+    class Meta:
+        unique_together = (('message', 'participant'),)
+
+    message = models.ForeignKey(Message)
+    participant = models.CharField (max_length=64, null=True, blank=True)
+    delivered = models.DateTimeField (null=True, blank=True)
+    read = models.DateTimeField (null=True, blank=True)
+
+
 class Contact (models.Model):
     class Meta:
         unique_together = (('account', 'contact_id'),)
-    account = models.ForeignKey (Account)
-    contact_id  = models.CharField (max_length=64, db_index=True, null=False)
-    title  = models.CharField (max_length=256, null=True, blank=True)
-    status = models.CharField (max_length=256, null=True, blank=True)
-    last_seen = models.DateTimeField (null=True, blank=True)
+    account = models.ForeignKey(Account)
+    contact_id = models.CharField (max_length=64, db_index=True, null=False)
+    first_name = models.CharField (max_length=256, null=True, blank=True)
+    last_name = models.CharField (max_length=256, null=True, blank=True)
+    exists = models.BooleanField(null=False)
 
     def __str__(self):
-        return self.title
+        return self.first_name
 
 
-class Picture (models.Model):
-    class Meta:
-        unique_together = (('account', 'entity_id'),)
-    account = models.ForeignKey (Account)
-    entity_id  = models.CharField (max_length=64, db_index=True, null=False)
+class ProfilePicture (models.Model):
+    account = models.ForeignKey(Account)
+    entity_id = models.CharField(max_length=64, db_index=True, null=False)
     updated = models.DateTimeField (null=False,auto_now=True)
-    picture = models.URLField (null=False)
+    picture = models.URLField(null=False)
+    uploaded = models.DateTimeField(null=False, blank=True)
+    hash = models.CharField(max_length=64, db_index=True, null=False)
 
     def __str__(self):
         return self.picture

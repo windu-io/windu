@@ -17,8 +17,13 @@ urlpatterns = [
     url(r'^account/request-voice-code/$', account.request_voice_code, name='request-voice-code'),
     url(r'^account/register-code/$', account.register_code, name='register-code'),
     url(r'^account/remove-account/$', account.remove_account, name='remove-account'),
-    # url(r'^contacts/add-contact/$', contacts.remove_account, name='add-contact'),
-    # url(r'^contacts/remove-contact/$', contacts.remove_account, name='remove-contact'),
+    url(r'^contacts/$', contacts.list_contacts, name='contacts'),
+    url(r'^contacts/add-contact/$', contacts.add_contact, name='add-contact'),
+    url(r'^contacts/(?P<contact_id>[0-9]+)/remove/$', contacts.remove_contact, name='remove-contact'),
+    url(r'^contacts/(?P<contact_id>[0-9]+)/update/$', contacts.update_contact, name='update-contact'),
+    url(r'^contacts/remove-contacts/$', contacts.remove_contacts, name='remove-contacts'),
+    url(r'^contacts/import-contacts/$', contacts.import_contacts, name='import-contact'),
+    # url(r'^contacts/get-contacts/$', contacts.import_contacts, name='remove-contact'),
 ]
 
 

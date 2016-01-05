@@ -10,6 +10,8 @@ from ..decorators import active_account_required_400
 from ..decorators import pending_account_required_400
 from ..decorators import account_to_remove_required_400
 
+from normalize_id import normalize
+
 from django.http import HttpResponse
 
 import mimetypes
@@ -81,15 +83,15 @@ def __update_profile_photo(request):
     picture = photo_file.temporary_file_path()
     controller = account.Account(request.account)
     result = controller.update_profile_photo(picture)
-    status_code = int (result.pop('code'))
-    return Response (result, status_code)
+    status_code = int(result.pop('code'))
+    return Response(result, status_code)
 
 
 def __delete_profile_photo(request):
     controller = account.Account(request.account)
     result = controller.remove_profile_photo()
-    status_code = int (result.pop('code'))
-    return Response (result, status_code)
+    status_code = int(result.pop('code'))
+    return Response(result, status_code)
 
 
 # /api/account/connected-status
@@ -211,7 +213,7 @@ def create_account(request):
     if not number:
         return Response({'error':'No account number provided [account=<account number>]'}, 400)
 
-    number = number.translate(None,' +.()-').strip()
+    number = normalize(number)
     if not number or not number.isdigit():
         return Response ({'error':'Invalid account number [number=<account number>]'}, 400)
 
@@ -255,7 +257,7 @@ def register_code(request):
     if not code:
         return Response({'error': 'No code provided [code=<code received from SMS>]'}, 400)
 
-    code = code.translate(None,' +.()-').strip()
+    code = normalize(code)
     if not code or not code.isdigit():
         return Response ({'error':'Invalid account number [code=<code received from SMS>]'}, 400)
 

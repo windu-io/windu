@@ -110,6 +110,44 @@ With exception of `create-account` every method accept an optional `account=0000
 		curl -X POST -d "photo=contacts&status_message=all" https://windu.herokuapp.com/api/account/privacy-settings/
 		
 ## Contacts
+
+###Adding/Importing/Removing contacts
+
+* Adding contact:
+
+	**This method is to add a single contact, if you need to add in bulk use `import-contacts` instead.**
+	*(Adding a contact will sync all contacts)*
+
+
+		curl -X POST -d "contact_id=XXXXXX&first_name=John Malkovich"http://windu.herokuapp.com/api/contacts/import-contacts/
+		
+* Importing contacts:
+
+	**This method will import and replace all your contacts**
+	*(Importing will sync all contacts)*
+
+
+		curl -X POST -d "contact_id=XXXXXX&first_name=John Malkovich" http://windu.herokuapp.com/api/contacts/add-contact/
+		
+* Updating contacts:
+
+	This method will only update the `first_name` and/or `last_name` no sync will happen.
+
+		curl -X POST -d "contact_id=XXXXXX&first_name=Jon Arbuckle" http://windu.herokuapp.com/api/contacts/add-contact/
+		
+* Remove contact:
+
+	**This method is to remove a single contact, if you need to remove in bulk use `remove-contacts` instead.**
+	*(Removing a contact will sync all contacts)*
+	
+		curl -X POST -d "contact_id=XXXXXX&first_name=John Malkovich" http://windu.herokuapp.com/api/contacts/<contact-id>/remove-contact
+		
+	
+
+
+
+		
+
 		
 
 

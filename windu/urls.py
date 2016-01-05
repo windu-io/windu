@@ -16,10 +16,16 @@ Including another URLconf
 from django.conf.urls import include, url
 from django.contrib import admin
 from django.contrib import auth
+
+from oauth2_provider.views import base
+
 urlpatterns = [
     url(r'^api/', include('chat.urls')),
     url(r'^admin/', admin.site.urls),
-    url(r'^o/', include('oauth2_provider.urls', namespace='oauth2_provider')),
+#    url(r'^o/', include('oauth2_provider.urls', namespace='oauth2_provider')),
     url(r'^accounts/login/$', auth.views.login, {'template_name': 'admin/login.html'}),
-    url(r'^accounts/logout/$', auth.views.logout, {'template_name': 'admin/logout.html'})
+    url(r'^accounts/logout/$', auth.views.logout, {'template_name': 'admin/logout.html'}),
+    url(r'^o/token/$', base.TokenView.as_view(), name="token"),
+    url(r'^o/revoke-token/$', base.RevokeTokenView.as_view(), name="revoke-token")
+
 ]
