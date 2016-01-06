@@ -1,8 +1,7 @@
 {
    "require": {
         "php": ">=5.6",
-        "PDO": "*",
-        "pdo_sqlite": "*",
+        "ext-pdo_sqlite": "*",
         "ext-sqlite3": "*",
         "ext-curl": "*",
         "ext-curve25519" : "*",
