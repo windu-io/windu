@@ -34,6 +34,7 @@ def list_contacts(request):
 @protected_resource()
 @active_account_required_400()
 def add_contact(request):
+
     contact_id = str(request.POST.get('contact_id'))
     if not contact_id:
         return Response({'error': 'No contact_id provided (contact_id=XXXXXX)'}, 400)
@@ -54,19 +55,18 @@ def add_contact(request):
         status_code = 201
     return Response(result, status_code)
 
-
+# Should we use DELETE instead ??
 # /api/contacts/<contact-id>/remove/
 @api_view(['POST'])
 @protected_resource()
 @active_account_required_400()
 def remove_contact(request, contact_id):
 
-    contact_id = str(request.POST.get('contact_id'))
     if not contact_id:
         return Response({'error': 'No contact_id provided (contact_id=XXXXXX)'}, 400)
     contact_id = normalize(contact_id)
-    if not contact_id or not contact_id.isdigit():
-        return Response ({'error': 'Invalid contact_id value [contact_id=XXXXXX]'}, 400)
+    if contact_id is None:
+        return Response({'error': 'Invalid contact_id value [contact_id=XXXXXX]'}, 400)
 
     controller = contacts.Contacts(request.account)
 
@@ -77,22 +77,33 @@ def remove_contact(request, contact_id):
     return Response(result, status_code)
 
 
+# Should we use PATCH ?
 # /api/contacts/<contact-id>/update/
 @api_view(['POST'])
 @protected_resource()
 @active_account_required_400()
 def update_contact(request, contact_id):
-    contact_id = str(request.POST.get('contact_id'))
     if not contact_id:
         return Response({'error': 'No contact_id provided (contact_id=XXXXXX)'}, 400)
-    return Response()
+    contact_id = normalize(contact_id)
+    if contact_id is None:
+        return Response({'error': 'Invalid contact_id value [contact_id=XXXXXX]'}, 400)
+    controller = contacts.Contacts(request.account)
+
+    result = controller.remove_contact(contact_id)
+
+    status_code = int(result.pop('code'))
+
+    return Response(result, status_code)
 
 
 # /api/contacts/remove-contacts/
 @api_view(['POST'])
 @protected_resource()
+@parser_classes((JSONParser,))
 @active_account_required_400()
 def remove_contacts(request):
+    contacts = request.data
     return Response()
 
 

@@ -140,7 +140,14 @@ With exception of `create-account` every method accept an optional `account=0000
 	**This method is to remove a single contact, if you need to remove in bulk use `remove-contacts` instead.**
 	*(Removing a contact will sync all contacts)*
 	
-		curl -X POST -d "contact_id=XXXXXX&first_name=John Malkovich" http://windu.herokuapp.com/api/contacts/<contact-id>/remove-contact
+		curl -X POST -d "contact_id=XXXXXX&first_name=John Malkovich" http://windu.herokuapp.com/api/contacts/<contact-id>/remove-contact/
+		
+		
+* Remove several contacts:
+
+	*(Removing contacts will sync all contacts)*
+	
+		curl -X POST -H "Content-Type: application/json" -d "{contacts:[XXXXXX,YYYYYY,ZZZZZZZ]}" http://windu.herokuapp.com/api/contacts/<contact-id>/remove-contacts/
 		
 	
 

@@ -102,5 +102,20 @@ class Contacts:
         fail_deleted = contact_id in result['existing'] or contact_id in result['non_existing']
         if fail_deleted:
             return {'code': '500', 'contact_id': contact_id, 'error': 'Contact still synced :-('}
-        return {'code':'200', 'removed_contact': contact_id}
+        return {'code': '200', 'removed_contact': contact_id}
+
+    def update_contact(self, contact_id, first_name, last_name):
+
+        if contact_id is None:
+            return {'error': 'Invalid contact_id', 'code': '400'}
+        if not ModelContact.objects.filter(account=self.__account, contact_id=contact_id).exists():
+            return {'error': 'Contact doesn\'t exists', 'code': '400'}
+
+        c = ModelContact.objects.filter(account=self.__account, contact_id=contact_id).first()
+        c.first_name = first_name
+        c.last_name = last_name
+        c.save()
+        return {'code':'200', 'updated_contact': contact_id}
+
+
 

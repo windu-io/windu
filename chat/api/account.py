@@ -31,7 +31,7 @@ def status_message(request):
     elif request.method == 'POST':
         status = request.POST.get('status_message')
         if not status:
-            return Response ({'error':'status_message missing'}, 400)
+            return Response({'error':'status_message missing'}, 400)
         result = controller.update_status_message (status)
 
     status_code = int (result.pop('code'))
@@ -60,7 +60,7 @@ def __get_profile_photo(request):
 
     controller = account.Account(request.account)
     result = controller.profile_photo()
-    status_code = int (result.pop('code'))
+    status_code = int(result.pop('code'))
     if status_code != 200:
         result.pop ('type')
         result.pop ('from')

@@ -16,10 +16,10 @@ class Account:
     @staticmethod
     def create_account (number, nickname, user):
         if user is None or not user.is_active:
-            return {'error':'Invalid user', 'code': '403'}
+            return {'error': 'Invalid user', 'code': '403'}
 
         if ModelAccount.objects.filter(account=number, user=user).exists():
-            return {'error':'Account already exists', 'code': '400'}
+            return {'error': 'Account already exists', 'code': '400'}
 
         account = ModelAccount.objects.create(account=number, nickname=nickname, user=user)
         controller = Account (account)
