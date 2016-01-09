@@ -10,10 +10,12 @@ from rest_framework.parsers import JSONParser
 
 from oauth2_provider.decorators import protected_resource
 
-from ..controllers import contacts
+from ..controllers import contacts as contacts_controller
 from ..decorators import active_account_required_400
 
 from normalize_id import normalize
+from normalize_id import normalize_list
+from normalize_id import normalize_list_field
 
 
 # /api/contacts/
@@ -22,11 +24,11 @@ from normalize_id import normalize
 @active_account_required_400()
 def list_contacts(request):
 
-    controller = contacts.Contacts(request.account)
+    controller = contacts_controller.Contacts(request.account)
 
-    c = controller.list_contacts()
+    contacts = controller.list_contacts()
 
-    return Response(c)
+    return Response(contacts)
 
 
 # /api/contacts/add-contact/
@@ -45,7 +47,7 @@ def add_contact(request):
     first_name = request.POST.get('first_name')
     last_name = request.POST.get('last_name')
 
-    controller = contacts.Contacts(request.account)
+    controller = contacts_controller.Contacts(request.account)
 
     result = controller.add_contact(contact_id, first_name, last_name)
 
@@ -55,20 +57,36 @@ def add_contact(request):
         status_code = 201
     return Response(result, status_code)
 
-# Should we use DELETE instead ??
-# /api/contacts/<contact-id>/remove/
-@api_view(['POST'])
-@protected_resource()
-@active_account_required_400()
-def remove_contact(request, contact_id):
 
-    if not contact_id:
-        return Response({'error': 'No contact_id provided (contact_id=XXXXXX)'}, 400)
-    contact_id = normalize(contact_id)
-    if contact_id is None:
-        return Response({'error': 'Invalid contact_id value [contact_id=XXXXXX]'}, 400)
+def __update_contact(request, contact_id):
 
-    controller = contacts.Contacts(request.account)
+    first_name = request.POST.get('first_name')
+    last_name = request.POST.get('last_name')
+
+    if first_name is None and last_name is None:
+        return Response({'error': 'You must provide first_name or last_name'}, 400)
+
+    controller = contacts_controller.Contacts(request.account)
+
+    result = controller.update_contact(contact_id, first_name, last_name)
+
+    status_code = int(result.pop('code'))
+
+    return Response(result, status_code)
+
+
+def __list_contact(request, contact_id):
+    controller = contacts_controller.Contacts(request.account)
+
+    result = controller.list_contact(contact_id)
+
+    status_code = int(result.pop('code'))
+
+    return Response(result, status_code)
+
+
+def __remove_contact(request, contact_id):
+    controller = contacts_controller.Contacts(request.account)
 
     result = controller.remove_contact(contact_id)
 
@@ -77,24 +95,23 @@ def remove_contact(request, contact_id):
     return Response(result, status_code)
 
 
-# Should we use PATCH ?
-# /api/contacts/<contact-id>/update/
-@api_view(['POST'])
+# /api/contacts/<contact-id>/ (PATCH, DELETE, GET)
+@api_view(['PATCH','DELETE','GET'])
 @protected_resource()
 @active_account_required_400()
-def update_contact(request, contact_id):
+def handle_contact(request, contact_id):
+
     if not contact_id:
         return Response({'error': 'No contact_id provided (contact_id=XXXXXX)'}, 400)
     contact_id = normalize(contact_id)
     if contact_id is None:
         return Response({'error': 'Invalid contact_id value [contact_id=XXXXXX]'}, 400)
-    controller = contacts.Contacts(request.account)
 
-    result = controller.remove_contact(contact_id)
-
-    status_code = int(result.pop('code'))
-
-    return Response(result, status_code)
+    if request.method == 'PATCH':
+        return __update_contact(request, contact_id)
+    if request.method == 'DELETE':
+        return __remove_contact(request, contact_id)
+    return __list_contact(request, contact_id)
 
 
 # /api/contacts/remove-contacts/
@@ -103,8 +120,23 @@ def update_contact(request, contact_id):
 @parser_classes((JSONParser,))
 @active_account_required_400()
 def remove_contacts(request):
-    contacts = request.data
-    return Response()
+    data = request.data
+    if not data:
+        return Response({'error': 'No data provided (json:{contacts:[XXXXXX,YYYYYY,ZZZZZZZ]}'}, 400)
+    contacts = data.get('contacts')
+    if contacts is None or len(contacts) == 0:
+        return Response({'error': 'No contacts provided (json:{contacts:[XXXXXX,YYYYYY,ZZZZZZZ]}'}, 400)
+    contacts = normalize_list(contacts)
+    if len(contacts) == 0:
+        return Response({'error': 'Invalid contacts provided (json:{contacts:[XXXXXX,YYYYYY,ZZZZZZZ]}'}, 400)
+
+    controller = contacts_controller.Contacts(request.account)
+
+    result = controller.remove_contacts(contacts)
+
+    status_code = int(result.pop('code'))
+
+    return Response(result, status_code)
 
 
 # /api/contacts/import-contacts/
@@ -113,7 +145,23 @@ def remove_contacts(request):
 @parser_classes((JSONParser,))
 @active_account_required_400()
 def import_contacts(request):
-    return Response()
+    data = request.data
+    if not data:
+        return Response({'error': 'No data provided (json:{contacts:[{contact_id:XXXXXX,first_name:John},...]}'}, 400)
+    contacts = data.get('contacts')
+    if contacts is None or len(contacts) == 0:
+        return Response({'error': 'No contacts provided (json:{contacts:[{contact_id:XXXXXX,first_name:John},...]}'}, 400)
+    contacts = normalize_list_field(contacts, 'contact_id')
+    if len(contacts) == 0:
+        return Response({'error': 'Invalid contacts provided (json:{contacts:[{contact_id:XXXXXX,first_name:John},...]}'}, 400)
+
+    controller = contacts_controller.Contacts(request.account)
+
+    result = controller.import_contacts(contacts)
+
+    status_code = int(result.pop('code'))
+
+    return Response(result, status_code)
 
 
 

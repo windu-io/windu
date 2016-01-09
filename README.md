@@ -110,8 +110,9 @@ With exception of `create-account` every method accept an optional `account=0000
 		curl -X POST -d "photo=contacts&status_message=all" https://windu.herokuapp.com/api/account/privacy-settings/
 		
 ## Contacts
+You need to import or add your contacts before use any **Windu** method that interacts with any contact (photos, messages, groups, status).
 
-###Adding/Importing/Removing contacts
+###Adding/Importing/Removing/Listing contacts
 
 * Adding contact:
 
@@ -123,31 +124,64 @@ With exception of `create-account` every method accept an optional `account=0000
 		
 * Importing contacts:
 
-	**This method will import and replace all your contacts**
+	**This method will import and REPLACE ALL your contacts**
 	*(Importing will sync all contacts)*
 
+		curl -X POST -d -d "{\"contacts\":[{\"contact_id\":\"XXXXXX\",\"fist_name\":\"John\","}, "\"YYYYYY\",\"ZZZZZZZ\"]}" http://windu.herokuapp.com/api/contacts/import-contacts/
+		
+	Why no `merge-contacts`?
+	
+	- Merge is tricky (specially handling the remove), and lead to ghost records, you can do the merge yourself, listing all contacts and them, importing the merged result.
+		
+* Listing all contacts:
 
-		curl -X POST -d "contact_id=XXXXXX&first_name=John Malkovich" http://windu.herokuapp.com/api/contacts/add-contact/
+	List all contacts from your account:
+	
+		curl -X GET -d http://windu.herokuapp.com/api/contacts/
+		
+* Show contact info:
+	
+	Show contact information:
+
+		curl -X GET -d http://windu.herokuapp.com/api/contacts/<contact-id>/
 		
 * Updating contacts:
 
 	This method will only update the `first_name` and/or `last_name` no sync will happen.
 
-		curl -X POST -d "contact_id=XXXXXX&first_name=Jon Arbuckle" http://windu.herokuapp.com/api/contacts/add-contact/
+		curl -X PATCH -d "first_name=Jon Arbuckle" http://windu.herokuapp.com/api/contacts/<contact-id>/
 		
 * Remove contact:
 
 	**This method is to remove a single contact, if you need to remove in bulk use `remove-contacts` instead.**
 	*(Removing a contact will sync all contacts)*
 	
-		curl -X POST -d "contact_id=XXXXXX&first_name=John Malkovich" http://windu.herokuapp.com/api/contacts/<contact-id>/remove-contact/
+		curl -X DELETE http://windu.herokuapp.com/api/contacts/<contact-id>/
 		
 		
 * Remove several contacts:
 
 	*(Removing contacts will sync all contacts)*
 	
-		curl -X POST -H "Content-Type: application/json" -d "{contacts:[XXXXXX,YYYYYY,ZZZZZZZ]}" http://windu.herokuapp.com/api/contacts/<contact-id>/remove-contacts/
+		curl -X POST -H "Content-Type: application/json" -d "{\"contacts\":[\"XXXXXX\",\"YYYYYY\",\"ZZZZZZZ\"]}" http://windu.herokuapp.com/api/contacts/remove-contacts/
+		
+###Syncing
+
+* Force syncing your contacts:
+
+	**Your contacts are automatically synced every time you add, remove or import any contact, so you normally DONT'T NEED THIS METHOD. This is just in case you need for some reason force re-sync all contacts:**
+	
+		curl -X POST http://windu.herokuapp.com/api/contacts/force-sync/
+		
+###Status/Presence/Last Seen/Photo
+
+###Blocking/Unblocking
+
+##Messages
+
+##Groups
+	
+
 		
 	
 
