@@ -27,10 +27,19 @@ BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 SECRET_KEY = os.environ.get('WINDU_SECRET_KEY')
 
 # SECURITY WARNING: don't run with debug turned on in production!
-DEBUG = os.environ.get('WINDU_DEBUG') is None
+DEBUG = os.environ.get('WINDU_DEBUG') is not None
 
+EMAIL_USE_SSL = True
+EMAIL_USE_TLS = False
+EMAIL_SUBJECT_PREFIX = '[Windu]'
+EMAIL_HOST = os.environ.get('WINDU_EMAIL_HOST')
+EMAIL_PORT = os.environ.get('WINDU_EMAIL_PORT')
+EMAIL_HOST_USER = os.environ.get('WINDU_EMAIL_HOST_USER')
+EMAIL_HOST_PASSWORD = os.environ.get('WINDU_EMAIL_HOST_PASSWORD')
 
-ALLOWED_HOSTS = []
+DEFAULT_FROM_EMAIL = EMAIL_HOST_USER
+
+ALLOWED_HOSTS = ['*']
 
 STATIC_ROOT = 'static'
 MEDIA_ROOT  = 'media'
