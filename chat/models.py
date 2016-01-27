@@ -73,20 +73,35 @@ class MessageGroupRead(models.Model):
     read = models.DateTimeField (null=True, blank=True)
 
 
-class Contact (models.Model):
+class Contact(models.Model):
     class Meta:
         unique_together = (('account', 'contact_id'),)
     account = models.ForeignKey(Account)
     contact_id = models.CharField (max_length=64, db_index=True, null=False)
     first_name = models.CharField (max_length=256, null=True, blank=True)
     last_name = models.CharField (max_length=256, null=True, blank=True)
+    current_status = models.CharField(max_length=256, null=False, blank=False)
+    current_nickname = models.CharField(max_length=64, null=True,blank=True)
+    connected_status = models.CharField(max_length=16, null=True,blank=True)
+    last_seen = models.DateTimeField (null=True, blank=True)
     exists = models.BooleanField(null=False)
 
     def __str__(self):
         return self.first_name
 
 
-class ProfilePicture (models.Model):
+class ContactsFromMessage(models.Model):
+    class Meta:
+        unique_together = (('account', 'contact_id'),)
+    account = models.ForeignKey(Account)
+    contact_id = models.CharField (max_length=64, db_index=True, null=False)
+    current_nickname = models.CharField(max_length=64, null=True,blank=True)
+
+    def __str__(self):
+        return self.first_name
+
+
+class ProfilePicture(models.Model):
     account = models.ForeignKey(Account)
     entity_id = models.CharField(max_length=64, db_index=True, null=False)
     updated = models.DateTimeField (null=False,auto_now=True)
@@ -97,4 +112,23 @@ class ProfilePicture (models.Model):
     def __str__(self):
         return self.picture
 
+
+class StatusMessage(models.Model):
+    account = models.ForeignKey(Account)
+    contact_id = models.CharField(max_length=64, db_index=True, null=False)
+    updated = models.DateTimeField(null=False, auto_now=True)
+    status = models.CharField(max_length=256, null=False, blank=False)
+
+    def __str__(self):
+        return self.status
+
+
+class ContactsNickname(models.Model):
+    account = models.ForeignKey(Account)
+    contact_id = models.CharField(max_length=64, db_index=True, null=False)
+    nickname = models.CharField(max_length=64, null=True,blank=True)
+    updated = models.DateTimeField(null=False, auto_now=True)
+
+    def __str__(self):
+        return self.nickname
 

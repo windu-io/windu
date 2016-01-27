@@ -164,4 +164,76 @@ def import_contacts(request):
     return Response(result, status_code)
 
 
+# /api/contacts/force-sync/
+@api_view(['POST'])
+@protected_resource()
+@active_account_required_400()
+def force_sync(request):
+
+    controller = contacts_controller.Contacts(request.account)
+
+    result = controller.sync_contacts()
+
+    status_code = int(result.pop('code'))
+
+    return Response(result, status_code)
+
+
+# /api/contacts/<contact-id>/status-message/
+@api_view(['GET'])
+@protected_resource()
+@active_account_required_400()
+def status_message(request, contact_id):
+
+    if not contact_id:
+        return Response({'error': 'No contact_id provided (contact_id=XXXXXX)'}, 400)
+    contact_id = normalize(contact_id)
+    if contact_id is None:
+        return Response({'error': 'Invalid contact_id value [contact_id=XXXXXX]'}, 400)
+
+    controller = contacts_controller.Contacts(request.account)
+
+    result = controller.status_message(contact_id)
+
+    status_code = int(result.pop('code'))
+
+    return Response(result, status_code)
+
+
+# /api/contacts/<contact-id>/status-message-history/
+@api_view(['GET'])
+@protected_resource()
+@active_account_required_400()
+def status_message_history(request, contact_id):
+
+    if not contact_id:
+        return Response({'error': 'No contact_id provided (contact_id=XXXXXX)'}, 400)
+    contact_id = normalize(contact_id)
+    if contact_id is None:
+        return Response({'error': 'Invalid contact_id value [contact_id=XXXXXX]'}, 400)
+
+    controller = contacts_controller.Contacts(request.account)
+
+    result = controller.status_message_history(contact_id)
+
+    status_code = int(result.pop('code'))
+
+    return Response(result, status_code)
+
+
+# /api/contacts/statuses-messages/
+@api_view(['GET'])
+@protected_resource()
+@active_account_required_400()
+def statuses_messages(request):
+
+    controller = contacts_controller.Contacts(request.account)
+
+    result = controller.statuses_messages()
+
+    status_code = int(result.pop('code'))
+
+    return Response(result, status_code)
+
+
 

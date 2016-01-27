@@ -37,7 +37,7 @@ def status_message(request):
     status_code = int (result.pop('code'))
 
     if status_code == 200 and request.method == 'GET':
-        result = {'status_message' : result ['statuses'][0]['data']}
+        result = {'status_message' : result ['statuses'][0]['status']}
 
     response = Response(result, status_code)
     response.status_code = status_code

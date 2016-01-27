@@ -6,6 +6,8 @@ from .agent_factory import create_agent
 from bulk_update.helper import bulk_update
 
 from ..models import Contact as ModelContact
+from ..models import ContactsFromMessage
+from ..models import StatusMessage
 
 
 class Contacts:
@@ -29,7 +31,8 @@ class Contacts:
             result['code'] = '500'
         return result
 
-    def __adjust_sync_result(self,result):
+    @staticmethod
+    def __adjust_sync_result(result):
 
         ret = {'code': result.get('code')}
 
@@ -56,7 +59,7 @@ class Contacts:
             numbers.append(c.contact_id)
 
         result = self.__sync_contacts(numbers)
-        result = self.__adjust_sync_result(result)
+        result = Contacts.__adjust_sync_result(result)
         status_code = result.get('code')
 
         if status_code is None or status_code[0] != '2':
@@ -162,7 +165,7 @@ class Contacts:
         contacts_id = [contact['contact_id'] for contact in contacts_to_update]
         contacts = ModelContact.objects.filter(account=self.__account, contact_id__in=contacts_id).order_by('contact_id')
         update_contacts = False
-        for old_contact,new_contact in zip(contacts, contacts_to_update):
+        for old_contact, new_contact in zip(contacts, contacts_to_update):
 
             first_name = new_contact.get('first_name')
             last_name = new_contact.get('last_name')
@@ -238,11 +241,11 @@ class Contacts:
         synced = existing_count + non_existing_count
 
         return {'code': '200', 'added': total_added,
-                             'removed': total_deleted,
-                             'updated': total_updated,
-                              'synced': synced,
-                            'existing': existing_count,
-                        'non_existing': non_existing_count}
+                               'removed': total_deleted,
+                               'updated': total_updated,
+                               'synced': synced,
+                               'existing': existing_count,
+                               'non_existing': non_existing_count}
 
     def list_contact(self, contact_id):
 
@@ -258,4 +261,117 @@ class Contacts:
                 'first_name': contact.first_name,
                 'last_name': contact.last_name,
                 'exists': contact.exists, }
+
+    @staticmethod
+    def contact_valid (account, contact_id):
+        controller = Contacts(account)
+        return controller.check_contact(contact_id)
+
+    # Check if the contact is valid (was previously synced or sent a message)
+    def check_contact(self, contact_id):
+        if contact_id is None:
+            return {'error': 'Invalid contact_id', 'code': '400'}
+        if not ModelContact.objects.filter(account=self.__account, contact_id=contact_id, exists=True).exists():
+            if not ContactsFromMessage.objects.filter(account=self.__account, contact_id=contact_id).exists():
+                return {'error': 'Contact does not exists, you must sync your first or receive a message from him/her', 'code': '400'}
+
+        return {'code': '200'}
+
+    def __update_status_history(self, statuses):
+
+        contacts_ids = [status['from'] for status in statuses if status['status'] is not None]
+
+        new_statuses = {}
+
+        for s in statuses:
+            if s['status'] is None:
+                continue
+            new_statuses [s['from']] = s['status']
+
+        contacts = ModelContact.objects.filter(account=self.__account, contact_id__in=contacts_ids)\
+            .order_by('contact_id')
+
+        status_messages = []
+
+        for contact in contacts:
+            # Just in case, some contact was deleted
+            contact_id = contact.contact_id
+            if contact_id not in contacts_ids:
+                continue
+
+            current_status = contact.current_status
+            new_status = new_statuses [contact_id]
+
+            if not current_status or new_status != current_status:
+                status_messages.append(StatusMessage(contact_id=contact_id,
+                                                     status=new_status,
+                                                     account=self.__account))
+                contact.current_status = new_status
+
+        update_existing = len(status_messages) > 0
+
+        if not update_existing:
+            return
+
+        StatusMessage.objects.bulk_create(status_messages)
+        bulk_update(contacts)
+
+    def status_message_history(self, contact_id):
+
+        if contact_id is None:
+            return {'error': 'Invalid contact_id', 'code': '400'}
+        result = self.check_contact(contact_id)
+        if result.get('code') != '200':
+            return result
+
+        values = StatusMessage.objects.filter(account=self.__account, contact_id=contact_id).\
+                                       order_by('-updated').\
+                                       values('contact_id', 'status', 'updated')
+
+        return {'code': '200', 'values': values}
+
+    def __get_statuses(self, contacts):
+        result = {}
+        agent = self.__agent()
+        try:
+            result = agent.sendGetStatuses(contacts)
+        except Exception as e:
+            result['error'] = 'Error getting statuses: ' + str(e)
+            result['code'] = '500'
+        return result
+
+    def status_message(self, contact_id):
+
+        if contact_id is None:
+            return {'error': 'Invalid contact_id', 'code': '400'}
+        result = self.check_contact(contact_id)
+        if result.get('code') != '200':
+            return result
+
+        contacts = [contact_id]
+
+        result = self.__get_statuses(contacts)
+        status_code = result.get('code')
+
+        if status_code is None or status_code[0] != '2':
+            return result
+
+        self.__update_status_history(result.get('statuses'))
+
+        return result
+
+    def statuses_messages(self):
+
+        contacts = ModelContact.objects.filter(account=self.__account, exists=True).values_list('contact_id', flat=True)
+
+        result = self.__get_statuses(contacts)
+        status_code = result.get('code')
+
+        if status_code is None or status_code[0] != '2':
+            return result
+
+        self.__update_status_history(result.get('statuses'))
+
+        return result
+
 

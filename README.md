@@ -120,14 +120,14 @@ You need to import or add your contacts before use any **Windu** method that int
 	*(Adding a contact will sync all contacts)*
 
 
-		curl -X POST -d "contact_id=XXXXXX&first_name=John Malkovich"http://windu.herokuapp.com/api/contacts/import-contacts/
+		curl -X POST -d "contact_id=XXXXXX&first_name=John Malkovich" http://windu.herokuapp.com/api/contacts/add-contact/
 		
 * Importing contacts:
 
 	**This method will import and REPLACE ALL your contacts**
 	*(Importing will sync all contacts)*
 
-		curl -X POST -d -d "{\"contacts\":[{\"contact_id\":\"XXXXXX\",\"fist_name\":\"John\","}, "\"YYYYYY\",\"ZZZZZZZ\"]}" http://windu.herokuapp.com/api/contacts/import-contacts/
+		curl -X POST -H "Content-Type: application/json" https://windu.herokuapp.com/api/contacts/import-contacts/ -d "{\"contacts\":[{\"contact_id\":\"3333333\",\"first_name\":\"John\"},{\"contact_id\":\"11111111\",\"first_name\":\"Tony\",\"last_name\":\"Stark\"},{\"contact_id\":\"22222222\",\"first_name\":\"Hulk\"}]}"
 		
 	Why no `merge-contacts`?
 	
@@ -173,7 +173,26 @@ You need to import or add your contacts before use any **Windu** method that int
 	
 		curl -X POST http://windu.herokuapp.com/api/contacts/force-sync/
 		
-###Status/Presence/Last Seen/Photo
+##Status, Presence and Photo
+
+###Status
+
+* Get contact latest status:
+
+		curl -X GET -d http://windu.herokuapp.com/api/contacts/<contact-id>/status-message/
+		
+* Get contact status history:
+
+		curl -X GET -d http://windu.herokuapp.com/api/contacts/<contact-id>/status-message-history/
+		
+* Get all contacts statuses:
+	
+		curl -X GET -d http://windu.herokuapp.com/api/contacts/statuses-messages/
+		
+
+### Presence
+		
+
 
 ###Blocking/Unblocking
 
