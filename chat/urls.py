@@ -23,9 +23,11 @@ urlpatterns = [
     url(r'^contacts/remove-contacts/$', contacts.remove_contacts, name='remove-contacts'),
     url(r'^contacts/import-contacts/$', contacts.import_contacts, name='import-contact'),
     url(r'^contacts/force-sync/$', contacts.force_sync, name='force-sync'),
-    url(r'^contacts/(?P<contact_id>[0-9]+)/status-message/$', contacts.status_message, name='status-message'),
+    url(r'^contacts/(?P<contact_id>[0-9]+)/status-message/$', contacts.status_message, name='contact-status-message'),
     url(r'^contacts/(?P<contact_id>[0-9]+)/status-message-history/$', contacts.status_message_history, name='status-message-history'),
     url(r'^contacts/statuses-messages/$', contacts.statuses_messages, name='statuses-messages'),
+    url(r'^contacts/(?P<contact_id>[0-9]+)/connected-status/$', contacts.connected_status, name='contact-connected-status'),
+    url(r'^contacts/connected-statuses/$', contacts.connected_statuses, name='contact-connected-statuses'),
 ]
 
 

@@ -17,6 +17,8 @@ from normalize_id import normalize
 from normalize_id import normalize_list
 from normalize_id import normalize_list_field
 
+# Adding/Importing/Removing/Listing contacts
+
 
 # /api/contacts/
 @api_view(['GET'])
@@ -178,6 +180,8 @@ def force_sync(request):
 
     return Response(result, status_code)
 
+# Status
+
 
 # /api/contacts/<contact-id>/status-message/
 @api_view(['GET'])
@@ -230,6 +234,44 @@ def statuses_messages(request):
     controller = contacts_controller.Contacts(request.account)
 
     result = controller.statuses_messages()
+
+    status_code = int(result.pop('code'))
+
+    return Response(result, status_code)
+
+#  Connected Status & Last seen
+
+
+# /api/contacts/<contact-id>/connected-status/
+@api_view(['GET'])
+@protected_resource()
+@active_account_required_400()
+def connected_status(request, contact_id):
+
+    if not contact_id:
+        return Response({'error': 'No contact_id provided (contact_id=XXXXXX)'}, 400)
+    contact_id = normalize(contact_id)
+    if contact_id is None:
+        return Response({'error': 'Invalid contact_id value [contact_id=XXXXXX]'}, 400)
+
+    controller = contacts_controller.Contacts(request.account)
+
+    result = controller.connected_status(contact_id)
+
+    status_code = int(result.pop('code'))
+
+    return Response(result, status_code)
+
+
+# /api/contacts/connected-statuses/
+@api_view(['GET'])
+@protected_resource()
+@active_account_required_400()
+def connected_statuses(request):
+
+    controller = contacts_controller.Contacts(request.account)
+
+    result = controller.connected_statuses()
 
     status_code = int(result.pop('code'))
 

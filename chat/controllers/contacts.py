@@ -1,10 +1,12 @@
 #! /usr/bin/env python
 # -*- coding: utf-8 -*-
 
+import datetime
 
 from .agent_factory import create_agent
 from bulk_update.helper import bulk_update
 
+from .account import Account
 from ..models import Contact as ModelContact
 from ..models import ContactsFromMessage
 from ..models import StatusMessage
@@ -267,6 +269,14 @@ class Contacts:
         controller = Contacts(account)
         return controller.check_contact(contact_id)
 
+    @staticmethod
+    def current_contacts(account):
+        controller = Contacts(account)
+        return controller.__current_contacts()
+
+    def __current_contacts(self):
+        return ModelContact.objects.filter(account=self.__account, exists=True).values_list('contact_id', flat=True)
+
     # Check if the contact is valid (was previously synced or sent a message)
     def check_contact(self, contact_id):
         if contact_id is None:
@@ -277,19 +287,18 @@ class Contacts:
 
         return {'code': '200'}
 
-    def __update_status_history(self, statuses):
+    def __update_status_message_history(self, statuses_messages):
 
-        contacts_ids = [status['from'] for status in statuses if status['status'] is not None]
+        contacts_ids = [status['contact_id'] for status in statuses_messages if status['status_message'] is not None]
 
-        new_statuses = {}
+        new_statuses_messages = {}
 
-        for s in statuses:
-            if s['status'] is None:
+        for s in statuses_messages:
+            if s['status_message'] is None:
                 continue
-            new_statuses [s['from']] = s['status']
+            new_statuses_messages[s['contact_id']] = s['status_message']
 
-        contacts = ModelContact.objects.filter(account=self.__account, contact_id__in=contacts_ids)\
-            .order_by('contact_id')
+        contacts = ModelContact.objects.filter(account=self.__account, contact_id__in=contacts_ids)
 
         status_messages = []
 
@@ -299,14 +308,14 @@ class Contacts:
             if contact_id not in contacts_ids:
                 continue
 
-            current_status = contact.current_status
-            new_status = new_statuses [contact_id]
+            current_status_message = contact.status_message
+            new_status_message = new_statuses_messages [contact_id]
 
-            if not current_status or new_status != current_status:
+            if not current_status_message or new_status_message != current_status_message:
                 status_messages.append(StatusMessage(contact_id=contact_id,
-                                                     status=new_status,
+                                                     status_message=new_status_message,
                                                      account=self.__account))
-                contact.current_status = new_status
+                contact.status_message = new_status_message
 
         update_existing = len(status_messages) > 0
 
@@ -314,7 +323,7 @@ class Contacts:
             return
 
         StatusMessage.objects.bulk_create(status_messages)
-        bulk_update(contacts)
+        bulk_update(contacts, update_fields=['status_message'])
 
     def status_message_history(self, contact_id):
 
@@ -326,11 +335,11 @@ class Contacts:
 
         values = StatusMessage.objects.filter(account=self.__account, contact_id=contact_id).\
                                        order_by('-updated').\
-                                       values('contact_id', 'status', 'updated')
+                                       values('contact_id', 'status_message', 'updated')
 
         return {'code': '200', 'values': values}
 
-    def __get_statuses(self, contacts):
+    def __get_statuses_messages(self, contacts):
         result = {}
         agent = self.__agent()
         try:
@@ -341,7 +350,6 @@ class Contacts:
         return result
 
     def status_message(self, contact_id):
-
         if contact_id is None:
             return {'error': 'Invalid contact_id', 'code': '400'}
         result = self.check_contact(contact_id)
@@ -350,28 +358,130 @@ class Contacts:
 
         contacts = [contact_id]
 
-        result = self.__get_statuses(contacts)
+        result = self.__get_statuses_messages(contacts)
         status_code = result.get('code')
 
         if status_code is None or status_code[0] != '2':
             return result
 
-        self.__update_status_history(result.get('statuses'))
+        self.__update_status_message_history(result.get('statuses_messages'))
 
         return result
 
     def statuses_messages(self):
 
-        contacts = ModelContact.objects.filter(account=self.__account, exists=True).values_list('contact_id', flat=True)
+        contacts = self.__current_contacts()
 
-        result = self.__get_statuses(contacts)
+        result = self.__get_statuses_messages(contacts)
         status_code = result.get('code')
 
         if status_code is None or status_code[0] != '2':
             return result
 
-        self.__update_status_history(result.get('statuses'))
+        self.__update_status_message_history(result.get('statuses_messages'))
 
         return result
+
+    def __get_connected_statuses(self, contacts):
+        result = {}
+        agent = self.__agent()
+        try:
+            result = agent.sendGetPresences(contacts)
+        except Exception as e:
+            result['error'] = 'Error getting connected status: ' + str(e)
+            result['code'] = '500'
+        return result
+
+    def __last_connected_status(self, contacts_ids):
+        connected_statuses = ModelContact.objects\
+            .filter(account=self.__account, contact_id__in=contacts_ids)\
+            .values('contact_id', 'last_seen', 'connected_status')
+        return {'code': '200', 'connected_statuses': connected_statuses}
+
+    def __update_connected_status(self, new_connected_statuses):
+
+        connected_statuses = []
+        contacts_ids = new_connected_statuses.keys()
+
+        contacts = ModelContact.objects.filter(account=self.__account, contact_id__in=contacts_ids)
+
+        update_existing = False
+
+        for contact in contacts:
+            # Just in case, some contact was deleted/added
+            contact_id = contact.contact_id
+
+            current_connected_status = contact.connected_status
+            last_seen_str = new_connected_statuses[contact_id]
+
+            if last_seen_str == 'online':
+                new_connected_status = 'online'
+                last_seen = datetime.datetime.now()
+            elif last_seen_str == 'deny':
+                new_connected_status = 'deny'
+                last_seen = None
+            elif last_seen_str.isdigit():
+                new_connected_status = 'offline'
+                last_seen = datetime.datetime.fromtimestamp(int(last_seen_str))
+            else:
+                continue
+
+            connected_statuses.append({'contact_id': contact_id, 'last_seen': last_seen, 'connected_status': new_connected_status})
+
+            if not current_connected_status or new_connected_status != current_connected_status:
+                contact.connected_status = new_connected_status
+                update_existing = True
+
+            if contact.last_seen != last_seen:
+                contact.last_seen = last_seen
+                update_existing = True
+
+        if not update_existing:
+            return
+
+        bulk_update(contacts, update_fields=['last_seen', 'connected_status'])
+
+        return {'code': '200', 'connected_statuses': connected_statuses}
+
+    def connected_status(self, contact_id):
+
+        if contact_id is None:
+            return {'error': 'Invalid contact_id', 'code': '400'}
+        result = self.check_contact(contact_id)
+        if result.get('code') != '200':
+            return result
+
+        our_connected_status = Account.account_connected_status(self.__account)
+
+        contacts = [contact_id]
+
+        if our_connected_status != 'online':
+            return self.__last_connected_status (contacts)
+
+        result = self.__get_connected_statuses(contacts)
+        status_code = result.get('code')
+
+        if status_code is None or status_code[0] != '2':
+            return result
+
+        return self.__update_connected_status(result.get('connected_status'))
+
+    def connected_statuses(self):
+
+        contacts = self.__current_contacts()
+
+        our_connected_status = Account.account_connected_status(self.__account)
+
+        if our_connected_status != 'online':
+            return self.__last_connected_status (contacts)
+
+        result = self.__get_connected_statuses(contacts)
+        status_code = result.get('code')
+
+        if status_code is None or status_code[0] != '2':
+            return result
+
+        return self.__update_connected_status(result.get('connected_status'))
+
 
 

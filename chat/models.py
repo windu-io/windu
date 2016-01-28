@@ -80,8 +80,8 @@ class Contact(models.Model):
     contact_id = models.CharField (max_length=64, db_index=True, null=False)
     first_name = models.CharField (max_length=256, null=True, blank=True)
     last_name = models.CharField (max_length=256, null=True, blank=True)
-    current_status = models.CharField(max_length=256, null=False, blank=False)
-    current_nickname = models.CharField(max_length=64, null=True,blank=True)
+    status_message = models.CharField(max_length=256, null=False, blank=False)
+    nickname = models.CharField(max_length=64, null=True,blank=True)
     connected_status = models.CharField(max_length=16, null=True,blank=True)
     last_seen = models.DateTimeField (null=True, blank=True)
     exists = models.BooleanField(null=False)
@@ -117,7 +117,7 @@ class StatusMessage(models.Model):
     account = models.ForeignKey(Account)
     contact_id = models.CharField(max_length=64, db_index=True, null=False)
     updated = models.DateTimeField(null=False, auto_now=True)
-    status = models.CharField(max_length=256, null=False, blank=False)
+    status_message = models.CharField(max_length=256, null=False, blank=False)
 
     def __str__(self):
         return self.status

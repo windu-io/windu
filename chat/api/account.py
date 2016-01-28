@@ -27,17 +27,17 @@ def status_message(request):
     controller = account.Account(request.account)
 
     if request.method == 'GET':
-        result = controller.status_message ()
+        result = controller.status_message()
     elif request.method == 'POST':
         status = request.POST.get('status_message')
         if not status:
             return Response({'error':'status_message missing'}, 400)
         result = controller.update_status_message (status)
 
-    status_code = int (result.pop('code'))
+    status_code = int(result.pop('code'))
 
     if status_code == 200 and request.method == 'GET':
-        result = {'status_message' : result ['statuses'][0]['status']}
+        result = {'status_message' : result ['statuses_messages'][0]['status_message']}
 
     response = Response(result, status_code)
     response.status_code = status_code
@@ -78,7 +78,7 @@ def __get_profile_photo(request):
 def __update_profile_photo(request):
     photo_file = request.FILES.get ('photo')
     if photo_file is None:
-        return Response({'error':'No photo file provided multi-part (photo)'}, 400)
+        return Response({'error': 'No photo file provided multi-part (photo)'}, 400)
 
     picture = photo_file.temporary_file_path()
     controller = account.Account(request.account)
@@ -106,14 +106,14 @@ def connected_status(request):
 
 def __update_connected_status(request):
 
-    status = request.POST.get('status')
-    if not status:
-        return Response ({'error':'status missing (status=[online|offline])'}, 400)
-    if status != 'online' and status != 'offline':
-        return Response ({'error':'status wrong value (status=[online|offline])'}, 400)
+    connected_status = request.POST.get('connected_status')
+    if not connected_status:
+        return Response ({'error':'Connected status missing (connected_status=[online|offline])'}, 400)
+    if connected_status != 'online' and connected_status != 'offline':
+        return Response ({'error':'Connected status wrong value (connected_status=[online|offline])'}, 400)
 
     controller = account.Account(request.account)
-    result = controller.update_connected_status(status)
+    result = controller.update_connected_status(connected_status)
     status_code = int (result.pop('code'))
     return Response (result, status_code)
 
@@ -259,7 +259,7 @@ def register_code(request):
 
     code = normalize(code)
     if not code or not code.isdigit():
-        return Response ({'error':'Invalid account number [code=<code received from SMS>]'}, 400)
+        return Response({'error':'Invalid account number [code=<code received from SMS>]'}, 400)
 
     controller = account.Account(request.account)
     result = controller.register_code(code)
@@ -275,7 +275,7 @@ def remove_account(request):
     feedback = request.POST.get('feedback')
     controller = account.Account(request.account)
     result = controller.remove_account(feedback)
-    status_code = int (result.pop('code'))
+    status_code = int(result.pop('code'))
     return Response(result, status_code)
 
 

@@ -30,6 +30,12 @@ class Account:
             result['error'] = 'Error creating account' + number
         return result
 
+    @staticmethod
+    def account_connected_status(account):
+        controller = Account (account)
+        status = controller.connected_status()
+        return status.get('connected_status')
+
     def request_sms_code(self):
         result = {}
         agent = self.__agent()
@@ -167,18 +173,18 @@ class Account:
     def remove_profile_photo (self):
         return self.__remove_profile_photo()
 
-    def __update_connected_status(self, status):
+    def __update_connected_status(self, connected_status):
         result = {}
         agent = self.__agent()
         try:
-            result = agent.setConnectedStatus(status)
+            result = agent.setConnectedStatus(connected_status)
         except Exception as e:
             result['error'] = 'Error updating connected status: ' + str(e)
             result['code'] = '500'
         return result
 
-    def update_connected_status(self, status):
-        return self.__update_connected_status(status)
+    def update_connected_status(self, connected_status):
+        return self.__update_connected_status(connected_status)
 
     def __connected_status(self):
         result = {}
@@ -252,7 +258,7 @@ class Account:
                 return r
             result['last_seen'] = r['values']['last']
 
-        result ['code'] = '200'
+        result['code'] = '200'
         return result
 
     def __privacy_settings(self):

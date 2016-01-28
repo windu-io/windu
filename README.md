@@ -1,6 +1,6 @@
 # Windu API
 
-![Windu icon](https://avatars3.githubusercontent.com/u/12955363?v=3&s=200)
+![Windu icon](https://pbs.twimg.com/profile_images/613690247495446528/F8NnOJPn_bigger.png)
 
 
 
@@ -85,9 +85,9 @@ With exception of `create-account` every method accept an optional `account=0000
 
 		curl -X GET https://windu.herokuapp.com/api/account/connected-status/
 		
-* Update connected status to *online* :
+* Update connected status to `online` :
 
-		curl -X POST -d "status=online" https://windu.herokuapp.com/api/account/connected-status/
+		curl -X POST -d "connected_status=online" https://windu.herokuapp.com/api/account/connected-status/
 		
 ### Nickname
 
@@ -173,7 +173,15 @@ You need to import or add your contacts before use any **Windu** method that int
 	
 		curl -X POST http://windu.herokuapp.com/api/contacts/force-sync/
 		
-##Status, Presence and Photo
+
+
+---------
+#### To perform any operation with contacts, get the status message, connected status, profile photo, sending a message, add to a group, the contact MUST be in your contact list, see above how to import or add a contact 
+------
+
+
+##Status, Connected Status and Photo
+
 
 ###Status
 
@@ -190,8 +198,20 @@ You need to import or add your contacts before use any **Windu** method that int
 		curl -X GET -d http://windu.herokuapp.com/api/contacts/statuses-messages/
 		
 
-### Presence
+### Connected Status & Last seen
+
+__Contact presence and last seen will only work if YOUR connected status is `online`, otherwise you will get an out of date value.__
+
+* Get contact connected status `online` or `offline`, if the connected status is `offline` this will also return the `last-seen`:
+
+		curl -X GET -d http://windu.herokuapp.com/api/contacts/<contact-id>/connected-status/
 		
+* Get connected status from **ALL** your contacts:
+
+		curl -X GET -d http://windu.herokuapp.com/api/contacts/connected-statuses/
+		
+
+### Profile photo
 
 
 ###Blocking/Unblocking
