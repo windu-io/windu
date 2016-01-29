@@ -213,6 +213,47 @@ __Contact presence and last seen will only work if YOUR connected status is `onl
 
 ### Profile photo
 
+The profile photo method will return the contact photo as `Content-Type` **`image/jpeg`**, to retrieve the photo as url use the methods ended by `-url` sufix.
+
+The profile photo can be retrived as **preview** or **full**. The preview photo will be much smaller and much faster to be retrieved.
+
+* #### Preview photo
+
+* Get contact **preview** profile photo (as image):
+
+		curl -X GET -d http://windu.herokuapp.com/api/contacts/<contact-id>/preview-photo/
+
+* Get contact **preview** profile photo URL:
+
+		curl -X GET -d http://windu.herokuapp.com/api/contacts/<contact-id>/preview-photo-url/
+		
+* Get contact **preview** profile photo history URLs:
+
+		curl -X GET -d http://windu.herokuapp.com/api/contacts/<contact-id>/preview-photo-history-urls/
+		
+* Get **preview** profile photo URL from **ALL** contacts:
+
+		curl -X GET -d http://windu.herokuapp.com/api/contacts/preview-photos-urls/
+		
+* ####Full photo
+
+* Get contact profile photo (as image):
+
+		curl -X GET -d http://windu.herokuapp.com/api/contacts/<contact-id>/photo/
+
+* Get contact profile photo URL:
+
+		curl -X GET -d http://windu.herokuapp.com/api/contacts/<contact-id>/photo-url/
+		
+* Get contact profile photo history URLs:
+
+		curl -X GET -d http://windu.herokuapp.com/api/contacts/<contact-id>/photo-history-urls/
+		
+* Get profile photo URLs from **ALL** contacts:
+
+		curl -X GET -d http://windu.herokuapp.com/api/contacts/photos-urls/
+		
+
 
 ###Blocking/Unblocking
 

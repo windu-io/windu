@@ -62,14 +62,14 @@ def __get_profile_photo(request):
     result = controller.profile_photo()
     status_code = int(result.pop('code'))
     if status_code != 200:
-        result.pop ('type')
-        result.pop ('from')
-        result.pop ('id')
+        result.pop('type')
+        result.pop('from')
+        result.pop('id')
         return Response (result, status_code)
 
     picture = result.get ('filename')
     if not picture or not os.path.isfile(picture):
-        return Response({'error':'Profile photo not found'}, 404)
+        return Response({'error': 'Profile photo not found'}, 404)
     picture_data = open(picture, "rb").read()
     mime_type = mimetypes.guess_type(picture)
     return HttpResponse (picture_data, mime_type)

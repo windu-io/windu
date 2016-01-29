@@ -277,6 +277,9 @@ class Contacts:
     def __current_contacts(self):
         return ModelContact.objects.filter(account=self.__account, exists=True).values_list('contact_id', flat=True)
 
+    def __contacts_from_contacts_ids(self, contacts_ids):
+        return ModelContact.objects.filter(account=self.__account, contact_id__in=contacts_ids)
+
     # Check if the contact is valid (was previously synced or sent a message)
     def check_contact(self, contact_id):
         if contact_id is None:
@@ -298,7 +301,7 @@ class Contacts:
                 continue
             new_statuses_messages[s['contact_id']] = s['status_message']
 
-        contacts = ModelContact.objects.filter(account=self.__account, contact_id__in=contacts_ids)
+        contacts = self.__contacts_from_contacts_ids(contacts_ids)
 
         status_messages = []
 
@@ -393,8 +396,7 @@ class Contacts:
         return result
 
     def __last_connected_status(self, contacts_ids):
-        connected_statuses = ModelContact.objects\
-            .filter(account=self.__account, contact_id__in=contacts_ids)\
+        connected_statuses = self.__contacts_from_contacts_ids(contacts_ids)\
             .values('contact_id', 'last_seen', 'connected_status')
         return {'code': '200', 'connected_statuses': connected_statuses}
 
@@ -403,14 +405,12 @@ class Contacts:
         connected_statuses = []
         contacts_ids = new_connected_statuses.keys()
 
-        contacts = ModelContact.objects.filter(account=self.__account, contact_id__in=contacts_ids)
+        contacts = self.__contacts_from_contacts_ids(contacts_ids)
 
         update_existing = False
 
         for contact in contacts:
-            # Just in case, some contact was deleted/added
             contact_id = contact.contact_id
-
             current_connected_status = contact.connected_status
             last_seen_str = new_connected_statuses[contact_id]
 
@@ -426,7 +426,9 @@ class Contacts:
             else:
                 continue
 
-            connected_statuses.append({'contact_id': contact_id, 'last_seen': last_seen, 'connected_status': new_connected_status})
+            connected_statuses.append({'contact_id': contact_id,
+                                       'last_seen': last_seen,
+                                       'connected_status': new_connected_status})
 
             if not current_connected_status or new_connected_status != current_connected_status:
                 contact.connected_status = new_connected_status
@@ -482,6 +484,137 @@ class Contacts:
             return result
 
         return self.__update_connected_status(result.get('connected_status'))
+
+# Photo
+
+    def __get_preview_photos(self, contact_ids):
+        return None
+
+    def __update_preview_photos_history(self, results):
+        return None
+
+    def preview_photo(self, contact_id):
+
+        if contact_id is None:
+            return {'error': 'Invalid contact_id', 'code': '400'}
+        result = self.check_contact(contact_id)
+        if result.get('code') != '200':
+            return result
+
+        contacts = [contact_id]
+
+        result = self.__get_preview_photos(contacts)
+        status_code = result.get('code')
+
+        if status_code is None or status_code[0] != '2':
+            return result
+
+        return self.__update_preview_photos_history(result)
+
+    def preview_photo_url(self, contact_id):
+
+        if contact_id is None:
+            return {'error': 'Invalid contact_id', 'code': '400'}
+        result = self.check_contact(contact_id)
+        if result.get('code') != '200':
+            return result
+
+        contacts = [contact_id]
+
+        result = self.__get_preview_photos(contacts)
+        status_code = result.get('code')
+
+        if status_code is None or status_code[0] != '2':
+            return result
+
+        return self.__update_preview_photos_history(result)
+
+    def preview_photo_history_urls(self, contact_id):
+
+        if contact_id is None:
+            return {'error': 'Invalid contact_id', 'code': '400'}
+        result = self.check_contact(contact_id)
+        if result.get('code') != '200':
+            return result
+        return None
+
+    def preview_photos_urls(self):
+
+        contacts = self.__current_contacts()
+
+        result = self.__get_preview_photos(contacts)
+        status_code = result.get('code')
+
+        if status_code is None or status_code[0] != '2':
+            return result
+
+        return self.__update_preview_photos_history(result)
+
+    def __get_photos(self, contact_ids):
+        return None
+
+    def __update_photos_history(self, results):
+        return None
+
+    def photo(self, contact_id):
+
+        if contact_id is None:
+            return {'error': 'Invalid contact_id', 'code': '400'}
+        result = self.check_contact(contact_id)
+        if result.get('code') != '200':
+            return result
+
+        contacts = [contact_id]
+
+        result = self.__get_photos(contacts)
+        status_code = result.get('code')
+
+        if status_code is None or status_code[0] != '2':
+            return result
+
+        return self.__update_preview_photos_history(result)
+
+    def photo_url(self, contact_id):
+
+        if contact_id is None:
+            return {'error': 'Invalid contact_id', 'code': '400'}
+        result = self.check_contact(contact_id)
+        if result.get('code') != '200':
+            return result
+
+        contacts = [contact_id]
+
+        result = self.__get_photos(contacts)
+        status_code = result.get('code')
+
+        if status_code is None or status_code[0] != '2':
+            return result
+
+        return self.__update_preview_photos_history(result)
+
+    def photo_history_urls(self, contact_id):
+
+        if contact_id is None:
+            return {'error': 'Invalid contact_id', 'code': '400'}
+        result = self.check_contact(contact_id)
+        if result.get('code') != '200':
+            return result
+        return None
+
+    def photos_urls(self):
+
+        contacts = self.__current_contacts()
+
+        result = self.__get_preview_photos(contacts)
+        status_code = result.get('code')
+
+        if status_code is None or status_code[0] != '2':
+            return result
+
+        return self.__update_preview_photos_history(result)
+
+
+
 
 
 

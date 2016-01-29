@@ -34,10 +34,10 @@ def __on_get_message(data):
 
 def __find_event_handler(name):
     handlers = {
-        'onmessagereceivedserver':__on_message_received_server,
-        'onmessagereceivedclient':__on_message_received_client,
-        'ongetreceipt':__on_get_receipt,
-        'ongetgroupimage':__on_get_group_message,
-        'ongetmessage':__on_get_message,
+        'onmessagereceivedserver': __on_message_received_server,
+        'onmessagereceivedclient': __on_message_received_client,
+        'ongetreceipt': __on_get_receipt,
+        'ongetgroupimage': __on_get_group_message,
+        'ongetmessage': __on_get_message,
     }
     return handlers.get(name)

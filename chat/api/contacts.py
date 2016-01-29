@@ -277,5 +277,160 @@ def connected_statuses(request):
 
     return Response(result, status_code)
 
+# Profile photo
 
 
+# /api/contacts/<contact-id>/preview-photo/
+@api_view(['GET'])
+@protected_resource()
+@active_account_required_400()
+def preview_photo(request, contact_id):
+
+    if not contact_id:
+        return Response({'error': 'No contact_id provided (contact_id=XXXXXX)'}, 400)
+    contact_id = normalize(contact_id)
+    if contact_id is None:
+        return Response({'error': 'Invalid contact_id value [contact_id=XXXXXX]'}, 400)
+
+    controller = contacts_controller.Contacts(request.account)
+
+    result = controller.preview_photo(contact_id)
+
+    status_code = int(result.pop('code'))
+
+    return Response(result, status_code)
+
+
+# /api/contacts/<contact-id>/preview-photo-url/
+@api_view(['GET'])
+@protected_resource()
+@active_account_required_400()
+def preview_photo_url(request, contact_id):
+
+    if not contact_id:
+        return Response({'error': 'No contact_id provided (contact_id=XXXXXX)'}, 400)
+    contact_id = normalize(contact_id)
+    if contact_id is None:
+        return Response({'error': 'Invalid contact_id value [contact_id=XXXXXX]'}, 400)
+
+    controller = contacts_controller.Contacts(request.account)
+
+    result = controller.preview_photo_url(contact_id)
+
+    status_code = int(result.pop('code'))
+
+    return Response(result, status_code)
+
+
+# /api/contacts/<contact-id>/preview-photo-history-urls/
+@api_view(['GET'])
+@protected_resource()
+@active_account_required_400()
+def preview_photo_history_urls(request, contact_id):
+
+    if not contact_id:
+        return Response({'error': 'No contact_id provided (contact_id=XXXXXX)'}, 400)
+    contact_id = normalize(contact_id)
+    if contact_id is None:
+        return Response({'error': 'Invalid contact_id value [contact_id=XXXXXX]'}, 400)
+
+    controller = contacts_controller.Contacts(request.account)
+
+    result = controller.preview_photo_history_urls(contact_id)
+
+    status_code = int(result.pop('code'))
+
+    return Response(result, status_code)
+
+
+# /api/contacts/preview-photos-urls/
+@api_view(['GET'])
+@protected_resource()
+@active_account_required_400()
+def preview_photos_urls(request):
+
+    controller = contacts_controller.Contacts(request.account)
+
+    result = controller.preview_photos_urls()
+
+    status_code = int(result.pop('code'))
+
+    return Response(result, status_code)
+
+
+# /api/contacts/<contact-id>/photo/
+@api_view(['GET'])
+@protected_resource()
+@active_account_required_400()
+def photo(request, contact_id):
+
+    if not contact_id:
+        return Response({'error': 'No contact_id provided (contact_id=XXXXXX)'}, 400)
+    contact_id = normalize(contact_id)
+    if contact_id is None:
+        return Response({'error': 'Invalid contact_id value [contact_id=XXXXXX]'}, 400)
+
+    controller = contacts_controller.Contacts(request.account)
+
+    result = controller.photo(contact_id)
+
+    status_code = int(result.pop('code'))
+
+    return Response(result, status_code)
+
+
+# /api/contacts/<contact-id>/photo-url/
+@api_view(['GET'])
+@protected_resource()
+@active_account_required_400()
+def photo_url(request, contact_id):
+
+    if not contact_id:
+        return Response({'error': 'No contact_id provided (contact_id=XXXXXX)'}, 400)
+    contact_id = normalize(contact_id)
+    if contact_id is None:
+        return Response({'error': 'Invalid contact_id value [contact_id=XXXXXX]'}, 400)
+
+    controller = contacts_controller.Contacts(request.account)
+
+    result = controller.photo_url(contact_id)
+
+    status_code = int(result.pop('code'))
+
+    return Response(result, status_code)
+
+
+# /api/contacts/<contact-id>/photo-history-urls/
+@api_view(['GET'])
+@protected_resource()
+@active_account_required_400()
+def photo_history_urls(request, contact_id):
+
+    if not contact_id:
+        return Response({'error': 'No contact_id provided (contact_id=XXXXXX)'}, 400)
+    contact_id = normalize(contact_id)
+    if contact_id is None:
+        return Response({'error': 'Invalid contact_id value [contact_id=XXXXXX]'}, 400)
+
+    controller = contacts_controller.Contacts(request.account)
+
+    result = controller.photo_history_urls(contact_id)
+
+    status_code = int(result.pop('code'))
+
+    return Response(result, status_code)
+
+
+# /api/contacts/photos-urls/
+@api_view(['GET'])
+@protected_resource()
+@active_account_required_400()
+def photos_urls(request):
+
+    controller = contacts_controller.Contacts(request.account)
+
+    result = controller.photos_urls()
+
+    status_code = int(result.pop('code'))
+
+    return Response(result, status_code)
