@@ -13,6 +13,6 @@ django-oauth-toolkit==0.10.0
 django-cors-headers==1.1.0
 django-bulk-update==1.1.9
 requests==2.9.1
--e git+https://github.com/Imgur/imgurpython.git
+-e git+https://github.com/Imgur/imgurpython.git#egg=Package
 
 
