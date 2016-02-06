@@ -6,13 +6,13 @@ django-postgrespool==0.3.0
 gunicorn==19.4.5
 psycopg2==2.6.1
 wheel==0.26.0
-wagent==1.0.218
+wagent==1.0.222
 whitenoise==2.0.6
 djangorestframework==3.3.2
 django-oauth-toolkit==0.10.0
 django-cors-headers==1.1.0
-django-bulk-update==1.1.8
+django-bulk-update==1.1.9
 requests==2.9.1
-imgurpython==1.1.6
+-e git+https://github.com/Imgur/imgurpython.git
 
 

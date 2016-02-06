@@ -10,6 +10,14 @@ from .account import Account
 from ..models import Contact as ModelContact
 from ..models import ContactsFromMessage
 from ..models import StatusMessage
+from ..models import ProfilePhoto
+from ..models import ImageUpload
+
+from ..util.image_uploader import ImageUploader
+
+import hashlib
+import mimetypes
+import os
 
 
 class Contacts:
@@ -487,11 +495,141 @@ class Contacts:
 
 # Photo
 
-    def __get_preview_photos(self, contact_ids):
+    def __get_preview_photo_from_server(self, contact_id):
+        result = {}
+        agent = self.__agent()
+        try:
+            result = agent.sendGetProfilePicturePreview (contact_id)
+        except Exception as e:
+            result['error'] = 'Error getting profile photo preview: ' + str(e)
+            result['code'] = '500'
+        return result
+
+    @staticmethod
+    def __process_profile_photo (path):
+
+        h = hashlib.sha1()
+
+        file_picture = open(path, "rb")
+        picture_data = file_picture.read()
+        file_picture.close()
+        mime_type = mimetypes.guess_type(path)
+
+        h.update(picture_data)
+        digest = h.hexdigest()
+
+        return {
+                'code': '200',
+                'path': path,
+                'picture_data': picture_data,
+                'mime_type': mime_type,
+                'hash': digest
+                }
+
+    def __get_preview_photo(self, contact_id):
+
+        server_result = self.__get_preview_photo_from_server(contact_id)
+
+        status_code = server_result.get('code')
+        if status_code is None or status_code[0] != '2':
+            return server_result
+        path = server_result.get ('filename')
+        if not path or not os.path.isfile(path):
+            return {'error': 'Profile photo not found', 'code': '404'}
+
+        return Contacts.__process_profile_photo(path)
+
+    @staticmethod
+    def __upload_photo(photo_info, uploader):
+
+        photo_hash = photo_info['hash']
+        photo = Contacts.__check_uploaded_photo(photo_hash)
+        if photo is not None:
+            return photo
+
+        return uploader.upload_photo(photo_info['path'])
+
+    @staticmethod
+    def __code_to_photo_status (code):
+        if code == '404':
+            return 'i'
+        if code == '401':
+            return 'u'
+        if code == '200':
+            return 'k'
         return None
 
-    def __update_preview_photos_history(self, results):
-        return None
+    @staticmethod
+    def __ensure_images_are_uploaded (preview_photo_results):
+
+        uploader = ImageUploader()
+        new_images = []
+        for contact_id in preview_photo_results:
+            photo_info = preview_photo_results[contact_id]
+            photo_status = Contacts.__code_to_photo_status(photo_info.get('code'))
+            if photo_status != 'k':
+                continue
+
+            hash_photo = photo_info.get('hash')
+            if ImageUpload.objects.filter(hash=hash_photo).exists():
+                continue
+
+            path = photo_info.get('path')
+            photo_url = uploader.upload_photo(hash_photo, path)
+            new_images.append(ImageUpload(hash=hash_photo, photo_url=photo_url))
+
+        if len(new_images) == 0:
+            return
+
+        ImageUpload.objects.bulk_create(new_images)
+
+    def __update_preview_photos_history(self, preview_photo_results):
+
+        Contacts.__ensure_images_are_uploaded(preview_photo_results)
+
+        contact_ids = preview_photo_results.keys()
+        contacts = self.__contacts_from_contacts_ids(contact_ids)
+
+        profile_photos = []
+
+        for contact in contacts:
+
+            contact_id = contact.contact_id
+
+            current_photo_status = contact.preview_photo_status
+            current_photo_hash = contact.preview_photo_hash
+            photo_info = preview_photo_results[contact_id]
+
+            new_photo_status = Contacts.__code_to_photo_status(photo_info.get('code'))
+            if not new_photo_status:
+                continue
+
+            photo_hash = photo_info.get('hash')
+
+            if current_photo_status != new_photo_status or photo_hash != current_photo_hash:
+
+                contact.preview_photo_status = new_photo_status
+
+                if new_photo_status == 'i' or new_photo_status == 'u':
+                    contact.preview_photo = None
+                    contact.preview_photo_hash = None
+                else:
+                    contact.preview_photo = ImageUpload.objects.get(hash=photo_hash)
+                    contact.preview_photo_hash = photo_hash
+
+                profile_photos.append(ProfilePhoto(account=self.__account,
+                                                   contact_id=contact_id,
+                                                   photo=contact.preview_photo,
+                                                   photo_status=contact.preview_photo_status,
+                                                   preview=True))
+
+        update_existing = len(profile_photos) > 0
+
+        if not update_existing:
+            return
+
+        ProfilePhoto.objects.bulk_create(profile_photos)
+        bulk_update(contacts, update_fields=['preview_photo', 'preview_photo_hash', 'preview_photo_status'])
 
     def preview_photo(self, contact_id):
 
@@ -501,15 +639,18 @@ class Contacts:
         if result.get('code') != '200':
             return result
 
-        contacts = [contact_id]
+        result = self.__get_preview_photo(contact_id)
 
-        result = self.__get_preview_photos(contacts)
         status_code = result.get('code')
 
-        if status_code is None or status_code[0] != '2':
+        if status_code is None or status_code[0] == '5':
             return result
 
-        return self.__update_preview_photos_history(result)
+        photo_data = {contact_id: result}
+
+        self.__update_preview_photos_history(photo_data)
+
+        return result
 
     def preview_photo_url(self, contact_id):
 
@@ -521,7 +662,7 @@ class Contacts:
 
         contacts = [contact_id]
 
-        result = self.__get_preview_photos(contacts)
+        result = self.__get_preview_photo_url(contacts)
         status_code = result.get('code')
 
         if status_code is None or status_code[0] != '2':

@@ -70,7 +70,9 @@ def __get_profile_photo(request):
     picture = result.get ('filename')
     if not picture or not os.path.isfile(picture):
         return Response({'error': 'Profile photo not found'}, 404)
-    picture_data = open(picture, "rb").read()
+    file_picture = open(picture, "rb")
+    picture_data = file_picture.read()
+    file_picture.close()
     mime_type = mimetypes.guess_type(picture)
     return HttpResponse (picture_data, mime_type)
 

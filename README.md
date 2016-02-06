@@ -1,4 +1,4 @@
-# Windu API
+    # Windu API
 
 ![Windu icon](https://pbs.twimg.com/profile_images/613690247495446528/F8NnOJPn_bigger.png)
 
@@ -8,7 +8,10 @@
 
 REST API
 ========
+
+
 ## Login/Token Request
+
 * Request OAuth token
 
 		curl -X POST -d "grant_type=password&username=<user>&password=<password>&client_id=RoVMZF1EIpC2vcfGC864gr4NZsv0mJlyPlE3gtQY" https://windu.herokuapp.com/o/token/

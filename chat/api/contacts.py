@@ -7,6 +7,7 @@ from rest_framework.response import Response
 from rest_framework.decorators import parser_classes
 from rest_framework.parsers import JSONParser
 
+from django.http import HttpResponse
 
 from oauth2_provider.decorators import protected_resource
 
@@ -298,7 +299,12 @@ def preview_photo(request, contact_id):
 
     status_code = int(result.pop('code'))
 
-    return Response(result, status_code)
+    if status_code != 200:
+        return Response (result, status_code)
+
+    picture_data = result['picture_data']
+    mime_type = result['mime_type']
+    return HttpResponse (picture_data, mime_type)
 
 
 # /api/contacts/<contact-id>/preview-photo-url/

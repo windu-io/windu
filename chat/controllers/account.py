@@ -40,7 +40,7 @@ class Account:
         result = {}
         agent = self.__agent()
         self.__account.code_requested = timezone.now()
-        self.__account.save()
+        self.__account.save(update_field=['code_requested'])
         try:
             result = agent.codeRequestSMS()
         except Exception as e:
@@ -52,7 +52,7 @@ class Account:
         result = {}
         agent = self.__agent()
         self.__account.code_requested = timezone.now()
-        self.__account.save()
+        self.__account.save(update_field=['code_requested'])
         try:
             result = agent.codeRequestVoice()
         except Exception as e:
@@ -81,7 +81,7 @@ class Account:
             result['error'] = 'Fail to register code, try again later'
             return result
         self.__account.password = password
-        self.__account.save()
+        self.__account.save(update_fields=['password'])
         return result
 
     def __remove_account(self, feedback):
@@ -153,7 +153,7 @@ class Account:
         try:
             result = agent.sendGetProfilePicture (self.__account.account)
         except Exception as e:
-            result['error'] = 'Error updating profile photo: ' + str(e)
+            result['error'] = 'Error getting profile photo: ' + str(e)
             result['code'] = '500'
         return result
 
@@ -215,7 +215,7 @@ class Account:
 
     def __update_account_nickname(self, nickname):
         self.__account.nickname = nickname
-        self.__account.save ()
+        self.__account.save(update_fields=['nickname'])
 
     def nickname(self):
         return {'nickname': self.__account.nickname, 'code': '200'}
