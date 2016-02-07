@@ -571,12 +571,16 @@ class Contacts:
                 continue
 
             hash_photo = photo_info.get('hash')
-            if ImageUpload.objects.filter(hash=hash_photo).exists():
+            image_upload = ImageUpload.objects.filter(hash=hash_photo).first()
+
+            if image_upload is not None:
+                preview_photo_results[contact_id]['photo_url'] = image_upload.photo_url
                 continue
 
             path = photo_info.get('path')
             photo_url = uploader.upload_photo(hash_photo, path)
             new_images.append(ImageUpload(hash=hash_photo, photo_url=photo_url))
+            preview_photo_results[contact_id]['photo_url'] = photo_url
 
         if len(new_images) == 0:
             return
@@ -651,24 +655,6 @@ class Contacts:
         self.__update_preview_photos_history(photo_data)
 
         return result
-
-    def preview_photo_url(self, contact_id):
-
-        if contact_id is None:
-            return {'error': 'Invalid contact_id', 'code': '400'}
-        result = self.check_contact(contact_id)
-        if result.get('code') != '200':
-            return result
-
-        contacts = [contact_id]
-
-        result = self.__get_preview_photo_url(contacts)
-        status_code = result.get('code')
-
-        if status_code is None or status_code[0] != '2':
-            return result
-
-        return self.__update_preview_photos_history(result)
 
     def preview_photo_history_urls(self, contact_id):
 

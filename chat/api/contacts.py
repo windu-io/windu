@@ -321,11 +321,16 @@ def preview_photo_url(request, contact_id):
 
     controller = contacts_controller.Contacts(request.account)
 
-    result = controller.preview_photo_url(contact_id)
+    result = controller.preview_photo(contact_id)
 
     status_code = int(result.pop('code'))
 
-    return Response(result, status_code)
+    if status_code != 200:
+        return Response (result, status_code)
+
+    photo_url = result['photo_url']
+
+    return Response({'photo_url': photo_url}, status_code)
 
 
 # /api/contacts/<contact-id>/preview-photo-history-urls/
