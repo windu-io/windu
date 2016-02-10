@@ -123,6 +123,41 @@ class Contact(models.Model):
     def __str__(self):
         return self.first_name
 
+    def get_photo(self, preview):
+        if preview:
+            return self.preview_photo
+        return self.photo
+
+    def get_photo_status(self, preview):
+        if preview:
+            return self.preview_photo_status
+        return self.photo_status
+
+    def get_photo_hash(self, preview):
+        if preview:
+            return self.preview_photo_hash
+        return self.photo_hash
+
+    def update_photo(self, preview, photo):
+        if preview:
+            self.preview_photo = photo
+        else:
+            self.photo = photo
+
+    def update_photo_status(self, preview, status):
+        if preview:
+            self.preview_photo_status = status
+        else:
+            self.photo_status = status
+
+    def update_photo_hash(self, preview, hash):
+        if preview:
+            self.preview_photo_hash = hash
+        else:
+            self.photo_hash = hash
+
+
+
 
 class ContactsFromMessage(models.Model):
     class Meta:
