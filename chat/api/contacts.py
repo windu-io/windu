@@ -295,7 +295,7 @@ def preview_photo(request, contact_id):
 
     controller = contacts_controller.Contacts(request.account)
 
-    result = controller.preview_photo(contact_id)
+    result = controller.photo(contact_id, preview=True, url=False)
 
     status_code = int(result.pop('code'))
 
@@ -321,12 +321,12 @@ def preview_photo_url(request, contact_id):
 
     controller = contacts_controller.Contacts(request.account)
 
-    result = controller.preview_photo(contact_id)
+    result = controller.photo(contact_id, preview=True, url=True)
 
     status_code = int(result.pop('code'))
 
     if status_code != 200:
-        return Response (result, status_code)
+        return Response(result, status_code)
 
     photo_url = result['photo_url']
 
@@ -347,7 +347,7 @@ def preview_photo_history_urls(request, contact_id):
 
     controller = contacts_controller.Contacts(request.account)
 
-    result = controller.preview_photo_history_urls(contact_id)
+    result = controller.photo_history_urls(contact_id, preview=True)
 
     status_code = int(result.pop('code'))
 
@@ -362,7 +362,7 @@ def preview_photos_urls(request):
 
     controller = contacts_controller.Contacts(request.account)
 
-    result = controller.preview_photos_urls()
+    result = controller.photos_urls(preview=True)
 
     status_code = int(result.pop('code'))
 
@@ -383,12 +383,12 @@ def photo(request, contact_id):
 
     controller = contacts_controller.Contacts(request.account)
 
-    result = controller.photo(contact_id)
+    result = controller.photo(contact_id, preview=False, url=False)
 
     status_code = int(result.pop('code'))
 
     if status_code != 200:
-        return Response (result, status_code)
+        return Response(result, status_code)
 
     picture_data = result['picture_data']
     mime_type = result['mime_type']
@@ -409,12 +409,12 @@ def photo_url(request, contact_id):
 
     controller = contacts_controller.Contacts(request.account)
 
-    result = controller.photo(contact_id)
+    result = controller.photo(contact_id, preview=False, url=True)
 
     status_code = int(result.pop('code'))
 
     if status_code != 200:
-        return Response (result, status_code)
+        return Response(result, status_code)
 
     photo_url = result['photo_url']
 
@@ -435,7 +435,7 @@ def photo_history_urls(request, contact_id):
 
     controller = contacts_controller.Contacts(request.account)
 
-    result = controller.photo_history_urls(contact_id)
+    result = controller.photo_history_urls(contact_id, preview=False)
 
     status_code = int(result.pop('code'))
 
@@ -450,7 +450,7 @@ def photos_urls(request):
 
     controller = contacts_controller.Contacts(request.account)
 
-    result = controller.photos_urls()
+    result = controller.photos_urls(preview=False)
 
     status_code = int(result.pop('code'))
 

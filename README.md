@@ -183,20 +183,20 @@ You need to import or add your contacts before use any **Windu** method that int
 ------
 
 
-##Status, Connected Status and Photo
+##Status Message, Connected Status and Photo
 
 
-###Status
+###Status Message
 
-* Get contact latest status:
+* Get contact latest status message:
 
 		curl -X GET -d http://windu.herokuapp.com/api/contacts/<contact-id>/status-message/
 		
-* Get contact status history:
+* Get contact status message history:
 
 		curl -X GET -d http://windu.herokuapp.com/api/contacts/<contact-id>/status-message-history/
 		
-* Get all contacts statuses:
+* Get all contacts statuses messages:
 	
 		curl -X GET -d http://windu.herokuapp.com/api/contacts/statuses-messages/
 		

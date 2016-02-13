@@ -118,6 +118,8 @@ class Contact(models.Model):
     preview_photo_status = models.CharField (max_length=1, null=False, default='i')
     photo_hash = models.CharField(max_length=64, db_index=True, null=True)
     preview_photo_hash = models.CharField(max_length=64, db_index=True, null=True)
+    preview_photo_updated = models.DateTimeField(null=True, blank=True)
+    photo_updated = models.DateTimeField(null=True, blank=True)
     exists = models.BooleanField(null=False)
 
     def __str__(self):
@@ -156,7 +158,16 @@ class Contact(models.Model):
         else:
             self.photo_hash = hash
 
+    def get_photo_updated(self, preview):
+        if preview:
+            return self.preview_photo_updated
+        return self.photo_updated
 
+    def update_photo_updated(self, preview, updated):
+        if preview:
+            self.preview_photo_updated = updated
+        else:
+            self.photo_updated = updated
 
 
 class ContactsFromMessage(models.Model):
