@@ -300,7 +300,7 @@ class Contacts:
             return {'error': 'Invalid contact_id', 'code': '400'}
         contact = ModelContact.objects.filter(account=self.__account, contact_id=contact_id, exists=True).first()
         if contact is not None:
-            return {'code':'200', 'contact' : contact }
+            return {'code': '200', 'contact': contact }
         if not ContactsFromMessage.objects.filter(account=self.__account, contact_id=contact_id).exists():
             return {'error': 'Contact does not exists, you must sync your first or receive a message from him/her', 'code': '400'}
 
@@ -600,6 +600,9 @@ class Contacts:
 
     def __update_photos_history(self, photo_results, preview):
 
+        if len(photo_results) == 0:
+            return
+
         Contacts.__ensure_images_are_uploaded(photo_results)
 
         contact_ids = photo_results.keys()
@@ -622,6 +625,8 @@ class Contacts:
 
             photo_hash = photo_info.get('hash')
 
+            contact.update_photo_updated(preview, timezone.now())
+
             if current_photo_status != new_photo_status or photo_hash != current_photo_hash:
 
                 contact.update_photo_status(preview, new_photo_status)
@@ -632,7 +637,6 @@ class Contacts:
                 else:
                     contact.update_photo(preview, ImageUpload.objects.get(hash=photo_hash))
                     contact.update_photo_hash(preview, photo_hash)
-                    contact.update_photo_updated(preview, timezone.now())
 
                 profile_photos.append(ProfilePhoto(account=self.__account,
                                                    contact_id=contact_id,
@@ -643,6 +647,10 @@ class Contacts:
         update_existing = len(profile_photos) > 0
 
         if not update_existing:
+            if preview:
+                bulk_update(contacts, update_fields=['preview_photo_updated'])
+            else:
+                bulk_update(contacts, update_fields=['photo_updated'])
             return
 
         ProfilePhoto.objects.bulk_create(profile_photos)
@@ -662,10 +670,10 @@ class Contacts:
 
         if not url:
             return None
-        photo_url = Contacts.__cached_photo_from_contact(contact, preview=preview)
-        if photo_url is None:
+        cached_photo = Contacts.__cached_photo_from_contact(contact, preview=preview)
+        if cached_photo is None:
             return None
-        return {'code': '200', 'photo_url': photo_url}
+        return cached_photo
 
     def photo(self, contact_id, preview, url):
 
@@ -675,8 +683,8 @@ class Contacts:
         if result.get('code') != '200':
             return result
         # if is an URL is asked we can check the cache
-
-        photo = Contacts.__cached_photo(url=url, preview=preview, contact=result.get('contact'))
+        contact = result.get('contact') # type: ModelContact
+        photo = Contacts.__cached_photo(url=url, preview=preview, contact=contact)
         if photo is not None:
             return photo
 
@@ -708,38 +716,29 @@ class Contacts:
 
         photo_urls = []
         for v in values:
-            photo_urls.append({'photo_status': self.__photo_status_to_code(v['photo_status']),
+            photo_urls.append({'photo_status': Contacts.__photo_status_to_code(v['photo_status']),
                                'photo_url': v['photo__photo_url'],
                                'updated': v['updated']})
 
         return {'code': '200', 'contact_id': contact_id, 'photo_urls': photo_urls}
 
     @staticmethod
-    def __can_use_contact_photo_preview_cache (contact):
+    def __can_use_contact_preview_photo_cache(contact):
 
         timeout_cache = WINDU_PROFILE_PHOTO_CACHE_MINUTES
         timeout_limit = timezone.now() - timedelta(0, 0, 0, 0, timeout_cache)
 
         if contact.preview_photo_updated is None:
             return False
-        if contact.preview_photo_id is None:
-            return False
-        if contact.preview_photo.photo_url is None:
-            return False
-
-        return  contact.preview_photo_updated >= timeout_limit
+        return contact.preview_photo_updated >= timeout_limit
 
     @staticmethod
-    def __can_use_contact_photo_cache (contact):
+    def __can_use_contact_photo_cache(contact):
 
         timeout_cache = WINDU_PROFILE_PHOTO_CACHE_MINUTES
         timeout_limit = timezone.now() - timedelta(0, 0, 0, 0, timeout_cache)
 
         if contact.photo_updated is None:
-            return False
-        if contact.photo_id is None:
-            return False
-        if contact.photo.photo_url is None:
             return False
         return  contact.photo_updated >= timeout_limit
 
@@ -750,32 +749,38 @@ class Contacts:
             return None
 
         if preview:
-            if not Contacts.__can_use_contact_photo_preview_cache(contact):
+            if not Contacts.__can_use_contact_preview_photo_cache(contact):
                 return None
-            return contact.preview_photo.photo_url
-        if not Contacts.__can_use_contact_photo_cache(contact):
+        elif not Contacts.__can_use_contact_photo_cache(contact):
             return None
-        return contact.photo.photo_url
+
+        return {'photo_url': contact.get_photo_url(preview),
+                'code': Contacts.__photo_status_to_code(contact.get_photo_status(preview)) }
 
     def __cached_contacts_photos(self, preview):
 
+        cached_photo_info = {}
         timeout_cache = WINDU_PROFILE_PHOTO_CACHE_MINUTES
         timeout_limit = timezone.now() - timedelta(0, 0, 0, 0, timeout_cache)
 
         if preview:
+            photo_url_field = 'preview_photo__photo_url'
+            photo_status_field = 'preview_photo_status'
             contacts = ModelContact.objects.filter(account=self.__account,
-                                                   preview_photo_updated__gte=timeout_limit,
-                                                   preview_photo_status='k', preview_photo__photo_url__isnull=False).\
-                                                   values('contact_id',
-                                                          'preview_photo__photo_url')
+                                                   preview_photo_updated__gte=timeout_limit).\
+                                                   values('contact_id', photo_status_field, photo_url_field)
         else:
+            photo_url_field = 'photo__photo_url'
+            photo_status_field = 'preview_photo_status'
             contacts = ModelContact.objects.filter(account=self.__account,
-                                                   photo_updated__gte=timeout_limit,
-                                                   photo_status='k',
-                                                   photo__photo_url__isnull=False).\
+                                                   photo_updated__gte=timeout_limit).\
                                                    values('contact_id',
-                                                          'photo__photo_url')
-        return contacts
+                                                          photo_status_field, photo_url_field)
+        for contact in contacts:
+            contact_id = contact['contact_id']
+            cached_photo_info[contact_id] = {'code': Contacts.__photo_status_to_code(contact[photo_status_field]),
+                                             'photo_url': contact[photo_url_field]}
+        return cached_photo_info
 
     def __contacts_without_cached_photos(self, preview):
 
@@ -784,21 +789,21 @@ class Contacts:
 
         if preview:
             return ModelContact.objects.\
-                filter(Q(account=self.__account),
-                       Q(preview_photo_updated__lt=timeout_limit) | Q(preview_photo_id__isnull=True)).\
+                filter(Q(account=self.__account, exists=True),
+                       Q(preview_photo_updated__lt=timeout_limit) | Q(preview_photo_updated__isnull=True)).\
                 values_list('contact_id', flat=True)
         else:
             return ModelContact.objects.\
-                filter(Q(account=self.__account),
-                       Q(photo_updated__lt=timeout_limit) | Q(photo_id__isnull=True)).\
+                filter(Q(account=self.__account, exists=True),
+                       Q(photo_updated__lt=timeout_limit) | Q(photo_updated__isnull=True)).\
                 values_list('contact_id', flat=True)
 
     def photos_urls(self, preview):
 
         photo_urls = []
 
-        cached_photos = self.__cached_contacts_photos(preview)
-        contact_ids = self.__contacts_without_cached_photos()
+        cached_photo_data = self.__cached_contacts_photos(preview)
+        contact_ids = self.__contacts_without_cached_photos(preview)
 
         photo_data = {}
 
@@ -814,12 +819,17 @@ class Contacts:
 
         self.__update_photos_history(photo_data, preview)
 
-        for contact_id in cached_photos:
-            photo_urls.append({'contact_id': contact_id, 'photo_url': cached_photos[contact_id], 'photo_status': '200'})
-
         for contact_id in photo_data:
             photo_info = photo_data[contact_id]
-            photo_urls.append({'contact_id': contact_id, 'photo_url': photo_info.get('photo_url'), 'photo_status': photo_info.get('code')})
+            photo_urls.append({'contact_id': contact_id,
+                               'photo_url': photo_info.get('photo_url'),
+                               'photo_status': photo_info.get('code')})
+
+        for contact_id in cached_photo_data:
+            photo_info = cached_photo_data[contact_id]
+            photo_urls.append({'contact_id': contact_id,
+                               'photo_url': photo_info.get('photo_url'),
+                               'photo_status': photo_info.get('code')})
 
         return {'code':'200', 'photo_urls': photo_urls}
 

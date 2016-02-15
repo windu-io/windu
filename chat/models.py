@@ -169,6 +169,15 @@ class Contact(models.Model):
         else:
             self.photo_updated = updated
 
+    def get_photo_url (self, preview):
+        if preview:
+            if self.preview_photo is None:
+                return None
+            return self.preview_photo.photo_url
+        if self.photo is None:
+            return None
+        return self.photo.photo_url
+
 
 class ContactsFromMessage(models.Model):
     class Meta:

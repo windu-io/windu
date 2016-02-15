@@ -323,14 +323,14 @@ def preview_photo_url(request, contact_id):
 
     result = controller.photo(contact_id, preview=True, url=True)
 
-    status_code = int(result.pop('code'))
+    status_code = result.pop('code')
+    if status_code is None or status_code[0] == '5':
+        return Response(result, int(status_code))
 
-    if status_code != 200:
-        return Response(result, status_code)
+    response = {'photo_url': result['photo_url'],
+                'photo_status': status_code }
 
-    photo_url = result['photo_url']
-
-    return Response({'photo_url': photo_url}, status_code)
+    return Response(response)
 
 
 # /api/contacts/<contact-id>/preview-photo-history-urls/
@@ -411,14 +411,14 @@ def photo_url(request, contact_id):
 
     result = controller.photo(contact_id, preview=False, url=True)
 
-    status_code = int(result.pop('code'))
+    status_code = result.pop('code')
+    if status_code is None or status_code[0] == '5':
+        return Response(result, int(status_code))
 
-    if status_code != 200:
-        return Response(result, status_code)
+    response = {'photo_url': result['photo_url'],
+                'photo_status': status_code }
 
-    photo_url = result['photo_url']
-
-    return Response({'photo_url': photo_url}, status_code)
+    return Response(response)
 
 
 # /api/contacts/<contact-id>/photo-history-urls/
