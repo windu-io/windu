@@ -455,3 +455,94 @@ def photos_urls(request):
     status_code = int(result.pop('code'))
 
     return Response(result, status_code)
+
+# Blocking/Unblocking
+
+
+# /api/contacts/<contact-id>/block/
+@api_view(['POST'])
+@protected_resource()
+@active_account_required_400()
+def block(request, contact_id):
+
+    if not contact_id:
+        return Response({'error': 'No contact_id provided (contact_id=XXXXXX)'}, 400)
+    contact_id = normalize(contact_id)
+    if contact_id is None:
+        return Response({'error': 'Invalid contact_id value [contact_id=XXXXXX]'}, 400)
+
+    controller = contacts_controller.Contacts(request.account)
+
+    result = controller.block(contact_id)
+
+    status_code = int(result.pop('code'))
+
+    return Response(result, status_code)
+
+
+# /api/contacts/<contact-id>/unblock/
+@api_view(['POST'])
+@protected_resource()
+@active_account_required_400()
+def unblock(request, contact_id):
+
+    if not contact_id:
+        return Response({'error': 'No contact_id provided (contact_id=XXXXXX)'}, 400)
+    contact_id = normalize(contact_id)
+    if contact_id is None:
+        return Response({'error': 'Invalid contact_id value [contact_id=XXXXXX]'}, 400)
+
+    controller = contacts_controller.Contacts(request.account)
+
+    result = controller.unblock(contact_id)
+
+    status_code = int(result.pop('code'))
+
+    return Response(result, status_code)
+
+
+def __set_blocked_list (request):
+
+    data = request.data
+    if not data:
+        return Response({'error': 'No data provided (json:{contacts:[XXXXXX,YYYYYY,ZZZZZZZ]}'}, 400)
+    numbers = data.get('contacts')
+    if numbers is None or len(numbers) == 0:
+        return Response({'error': 'No number provided (json:{contacts:[XXXXXX,YYYYYY,ZZZZZZZ]}'}, 400)
+    contacts = normalize_list(numbers)
+    if len(numbers) == 0:
+        return Response({'error': 'Invalid numbers provided (json:{contacts:[XXXXXX,YYYYYY,ZZZZZZZ]}'}, 400)
+
+    controller = contacts_controller.Contacts(request.account)
+
+    result = controller.set_blocked_list(numbers)
+
+    status_code = int(result.pop('code'))
+
+    return Response(result, status_code)
+
+
+def __get_blocked_list (request):
+
+    controller = contacts_controller.Contacts(request.account)
+
+    result = controller.get_blocked_list()
+
+    status_code = int(result.pop('code'))
+
+    return Response(result, status_code)
+
+
+# /api/contacts/blocked-list/
+@api_view(['GET', 'POST'])
+@protected_resource()
+@active_account_required_400()
+@parser_classes((JSONParser,))
+def blocked_list(request):
+
+    if request.method == 'POST':
+        return __set_blocked_list(request)
+    return __get_blocked_list(request)
+
+
+

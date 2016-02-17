@@ -42,6 +42,10 @@ urlpatterns = [
     url(r'^contacts/(?P<contact_id>[0-9]+)/photo-url/$', contacts.photo_url, name='photo-url'),
     url(r'^contacts/(?P<contact_id>[0-9]+)/photo-history-urls/$', contacts.photo_history_urls, name='photo-history-urls'),
     url(r'^contacts/preview-photos-urls/$', contacts.preview_photos_urls, name='preview-photos-urls'),
+
+    url(r'^contacts/(?P<contact_id>[0-9]+)/block/$', contacts.block, name='block'),
+    url(r'^contacts/(?P<contact_id>[0-9]+)/unblock/$', contacts.unblock, name='unblock'),
+    url(r'^contacts/blocked-list/$', contacts.blocked_list, name='blocked-list'),
 ]
 
 

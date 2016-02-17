@@ -31,6 +31,7 @@ class Contacts:
     def __init__(self, account):
         self.__account = account
 
+    # Contact syncing/adding/removing management -----------------------------------------------------------------------
     def list_contacts(self):
         return ModelContact.objects.filter(account=self.__account).values('contact_id', 'first_name', 'last_name', 'exists')
 
@@ -306,6 +307,8 @@ class Contacts:
 
         return {'code': '200'}
 
+    # Contact status message/connected status -----------------------------------------------------------------------
+
     def __update_status_message_history(self, statuses_messages):
 
         contacts_ids = [status['contact_id'] for status in statuses_messages if status['status_message'] is not None]
@@ -501,7 +504,7 @@ class Contacts:
 
         return self.__update_connected_status(result.get('connected_status'))
 
-# Photo
+    # Contact profile photo ------------------------------------------------------------------------------------
 
     def __get_photo_from_server(self, contact_id, preview):
         result = {}
@@ -833,3 +836,78 @@ class Contacts:
 
         return {'code':'200', 'photo_urls': photo_urls}
 
+    # Contact block/unblock ------------------------------------------------------------------------------------
+
+    def __get_blocked_list(self):
+        result = {}
+        agent = self.__agent()
+        try:
+                result = agent.sendGetPrivacyBlockedList()
+        except Exception as e:
+            result['error'] = 'Error getting blocked list: ' + str(e)
+            result['code'] = '500'
+        return result
+
+    def set_blocked_list(self, numbers):
+        result = {}
+        agent = self.__agent()
+        try:
+                result = agent.sendSetPrivacyBlockedList(numbers)
+        except Exception as e:
+            result['error'] = 'Error getting blocked list: ' + str(e)
+            result['code'] = '500'
+        return result
+
+    def block(self, contact_id):
+
+        result = self.get_blocked_list()
+
+        status_code = result.get('code')
+
+        if status_code is None or status_code[0] != '2':
+            return result
+
+        blocked_numbers = result['numbers']
+
+        if contact_id in blocked_numbers:
+            return {'code': '200', 'text': 'already-blocked'}
+
+        blocked_numbers.append(contact_id)
+
+        return self.set_blocked_list(blocked_numbers)
+
+    def unblock(self, contact_id):
+
+        result = self.get_blocked_list()
+
+        status_code = result.get('code')
+
+        if status_code is None or status_code[0] != '2':
+            return result
+
+        blocked_numbers = result['numbers']
+
+        if contact_id not in blocked_numbers:
+            return {'code': '200', 'text': 'not-blocked'}
+
+        blocked_numbers.remove(contact_id)
+
+        return self.set_blocked_list(blocked_numbers)
+
+    def get_blocked_list(self):
+
+        result = self.__get_blocked_list()
+
+        status_code = result.get('code')
+
+        if status_code is None or status_code[0] == '5':
+            return result
+
+        if status_code == '404':
+            return {'code': '200', 'numbers': []}
+
+        blocked_numbers = result.get('result')
+        if blocked_numbers is None:
+            return {'code': '500', 'error': 'Error retrieving blocked list'}
+
+        return {'code': '200', 'numbers': blocked_numbers}

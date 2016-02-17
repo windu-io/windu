@@ -1,4 +1,4 @@
-    # Windu API
+# Windu API
 
 ![Windu icon](https://pbs.twimg.com/profile_images/613690247495446528/F8NnOJPn_bigger.png)
 
@@ -140,13 +140,13 @@ You need to import or add your contacts before use any **Windu** method that int
 
 	List all contacts from your account:
 	
-		curl -X GET -d http://windu.herokuapp.com/api/contacts/
+		curl -X GET http://windu.herokuapp.com/api/contacts/
 		
 * Show contact info:
 	
 	Show contact information:
 
-		curl -X GET -d http://windu.herokuapp.com/api/contacts/<contact-id>/
+		curl -X GET http://windu.herokuapp.com/api/contacts/<contact-id>/
 		
 * Updating contacts:
 
@@ -190,15 +190,15 @@ You need to import or add your contacts before use any **Windu** method that int
 
 * Get contact latest status message:
 
-		curl -X GET -d http://windu.herokuapp.com/api/contacts/<contact-id>/status-message/
+		curl -X GET http://windu.herokuapp.com/api/contacts/<contact-id>/status-message/
 		
 * Get contact status message history:
 
-		curl -X GET -d http://windu.herokuapp.com/api/contacts/<contact-id>/status-message-history/
+		curl -X GET http://windu.herokuapp.com/api/contacts/<contact-id>/status-message-history/
 		
 * Get all contacts statuses messages:
 	
-		curl -X GET -d http://windu.herokuapp.com/api/contacts/statuses-messages/
+		curl -X GET http://windu.herokuapp.com/api/contacts/statuses-messages/
 		
 
 ### Connected Status & Last seen
@@ -207,11 +207,11 @@ __Contact presence and last seen will only work if YOUR connected status is `onl
 
 * Get contact connected status `online` or `offline`, if the connected status is `offline` this will also return the `last-seen`:
 
-		curl -X GET -d http://windu.herokuapp.com/api/contacts/<contact-id>/connected-status/
+		curl -X GET http://windu.herokuapp.com/api/contacts/<contact-id>/connected-status/
 		
 * Get connected status from **ALL** your contacts:
 
-		curl -X GET -d http://windu.herokuapp.com/api/contacts/connected-statuses/
+		curl -X GET http://windu.herokuapp.com/api/contacts/connected-statuses/
 		
 
 ### Profile photo
@@ -222,43 +222,57 @@ The profile photo can be retrived as **preview** or **full**. The preview photo 
 
 * #### Preview photo
 
-* Get contact **preview** profile photo (as image):
-
-		curl -X GET -d http://windu.herokuapp.com/api/contacts/<contact-id>/preview-photo/
 
 * Get contact **preview** profile photo URL:
 
-		curl -X GET -d http://windu.herokuapp.com/api/contacts/<contact-id>/preview-photo-url/
+		curl -X GET http://windu.herokuapp.com/api/contacts/<contact-id>/preview-photo-url/
 		
 * Get contact **preview** profile photo history URLs:
 
-		curl -X GET -d http://windu.herokuapp.com/api/contacts/<contact-id>/preview-photo-history-urls/
+		curl -X GET http://windu.herokuapp.com/api/contacts/<contact-id>/preview-photo-history-urls/
 		
 * Get **preview** profile photo URL from **ALL** contacts:
 
-		curl -X GET -d http://windu.herokuapp.com/api/contacts/preview-photos-urls/
+		curl -X GET http://windu.herokuapp.com/api/contacts/preview-photos-urls/
 		
 * ####Full photo
 
-* Get contact profile photo (as image):
-
-		curl -X GET -d http://windu.herokuapp.com/api/contacts/<contact-id>/photo/
 
 * Get contact profile photo URL:
 
-		curl -X GET -d http://windu.herokuapp.com/api/contacts/<contact-id>/photo-url/
+		curl -X GET http://windu.herokuapp.com/api/contacts/<contact-id>/photo-url/
 		
 * Get contact profile photo history URLs:
 
-		curl -X GET -d http://windu.herokuapp.com/api/contacts/<contact-id>/photo-history-urls/
+		curl -X GET http://windu.herokuapp.com/api/contacts/<contact-id>/photo-history-urls/
 		
 * Get profile photo URLs from **ALL** contacts:
 
-		curl -X GET -d http://windu.herokuapp.com/api/contacts/photos-urls/
+		curl -X GET http://windu.herokuapp.com/api/contacts/photos-urls/
 		
 
-
 ###Blocking/Unblocking
+
+
+* To block a number/contact:
+
+		curl -X POST http://windu.herokuapp.com/api/contacts/<contact-id>/block/
+		
+* To unblock a number/contact:
+
+		curl -X POST http://windu.herokuapp.com/api/contacts/<contact-id>/unblock/
+		
+* To get a list of blocked numbers:
+
+		curl -X GET http://windu.herokuapp.com/api/contacts/blocked-list/
+		
+* Block a list of numbers:
+		
+	*(This will replace all current blocked numbers)*
+	
+		curl -X POST -H "Content-Type: application/json" -d "{\"numbers\":[\"XXXXXX\",\"YYYYYY\",\"ZZZZZZZ\"]}" http://windu.herokuapp.com/api/contacts/blocked-list/
+
+
 
 ##Messages
 
