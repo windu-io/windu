@@ -123,7 +123,7 @@ You need to import or add your contacts before use any **Windu** method that int
 	*(Adding a contact will sync all contacts)*
 
 
-		curl -X POST -d "contact_id=XXXXXX&first_name=John Malkovich" http://windu.herokuapp.com/api/contacts/add-contact/
+		curl -X POST -d "contact_id=XXXXXX&first_name=John Malkovich" https://windu.herokuapp.com/api/contacts/add-contact/
 		
 * Importing contacts:
 
@@ -140,33 +140,33 @@ You need to import or add your contacts before use any **Windu** method that int
 
 	List all contacts from your account:
 	
-		curl -X GET http://windu.herokuapp.com/api/contacts/
+		curl -X GET https://windu.herokuapp.com/api/contacts/
 		
 * Show contact info:
 	
 	Show contact information:
 
-		curl -X GET http://windu.herokuapp.com/api/contacts/<contact-id>/
+		curl -X GET https://windu.herokuapp.com/api/contacts/<contact-id>/
 		
 * Updating contacts:
 
 	This method will only update the `first_name` and/or `last_name` no sync will happen.
 
-		curl -X PATCH -d "first_name=Jon Arbuckle" http://windu.herokuapp.com/api/contacts/<contact-id>/
+		curl -X PATCH -d "first_name=Jon Arbuckle" https://windu.herokuapp.com/api/contacts/<contact-id>/
 		
 * Remove contact:
 
 	**This method is to remove a single contact, if you need to remove in bulk use `remove-contacts` instead.**
 	*(Removing a contact will sync all contacts)*
 	
-		curl -X DELETE http://windu.herokuapp.com/api/contacts/<contact-id>/
+		curl -X DELETE https://windu.herokuapp.com/api/contacts/<contact-id>/
 		
 		
 * Remove several contacts:
 
 	*(Removing contacts will sync all contacts)*
 	
-		curl -X POST -H "Content-Type: application/json" -d "{\"contacts\":[\"XXXXXX\",\"YYYYYY\",\"ZZZZZZZ\"]}" http://windu.herokuapp.com/api/contacts/remove-contacts/
+		curl -X POST -H "Content-Type: application/json" -d "{\"contacts\":[\"XXXXXX\",\"YYYYYY\",\"ZZZZZZZ\"]}" https://windu.herokuapp.com/api/contacts/remove-contacts/
 		
 ###Syncing
 
@@ -174,7 +174,7 @@ You need to import or add your contacts before use any **Windu** method that int
 
 	**Your contacts are automatically synced every time you add, remove or import any contact, so you normally DONT'T NEED THIS METHOD. This is just in case you need for some reason force re-sync all contacts:**
 	
-		curl -X POST http://windu.herokuapp.com/api/contacts/force-sync/
+		curl -X POST https://windu.herokuapp.com/api/contacts/force-sync/
 		
 
 
@@ -190,15 +190,15 @@ You need to import or add your contacts before use any **Windu** method that int
 
 * Get contact latest status message:
 
-		curl -X GET http://windu.herokuapp.com/api/contacts/<contact-id>/status-message/
+		curl -X GET https://windu.herokuapp.com/api/contacts/<contact-id>/status-message/
 		
 * Get contact status message history:
 
-		curl -X GET http://windu.herokuapp.com/api/contacts/<contact-id>/status-message-history/
+		curl -X GET https://windu.herokuapp.com/api/contacts/<contact-id>/status-message-history/
 		
 * Get all contacts statuses messages:
 	
-		curl -X GET http://windu.herokuapp.com/api/contacts/statuses-messages/
+		curl -X GET https://windu.herokuapp.com/api/contacts/statuses-messages/
 		
 
 ### Connected Status & Last seen
@@ -207,11 +207,11 @@ __Contact presence and last seen will only work if YOUR connected status is `onl
 
 * Get contact connected status `online` or `offline`, if the connected status is `offline` this will also return the `last-seen`:
 
-		curl -X GET http://windu.herokuapp.com/api/contacts/<contact-id>/connected-status/
+		curl -X GET https://windu.herokuapp.com/api/contacts/<contact-id>/connected-status/
 		
 * Get connected status from **ALL** your contacts:
 
-		curl -X GET http://windu.herokuapp.com/api/contacts/connected-statuses/
+		curl -X GET https://windu.herokuapp.com/api/contacts/connected-statuses/
 		
 
 ### Profile photo
@@ -225,56 +225,64 @@ The profile photo can be retrived as **preview** or **full**. The preview photo 
 
 * Get contact **preview** profile photo URL:
 
-		curl -X GET http://windu.herokuapp.com/api/contacts/<contact-id>/preview-photo-url/
+		curl -X GET https://windu.herokuapp.com/api/contacts/<contact-id>/preview-photo-url/
 		
 * Get contact **preview** profile photo history URLs:
 
-		curl -X GET http://windu.herokuapp.com/api/contacts/<contact-id>/preview-photo-history-urls/
+		curl -X GET https://windu.herokuapp.com/api/contacts/<contact-id>/preview-photo-history-urls/
 		
 * Get **preview** profile photo URL from **ALL** contacts:
 
-		curl -X GET http://windu.herokuapp.com/api/contacts/preview-photos-urls/
+		curl -X GET https://windu.herokuapp.com/api/contacts/preview-photos-urls/
 		
 * ####Full photo
 
 
 * Get contact profile photo URL:
 
-		curl -X GET http://windu.herokuapp.com/api/contacts/<contact-id>/photo-url/
+		curl -X GET https://windu.herokuapp.com/api/contacts/<contact-id>/photo-url/
 		
 * Get contact profile photo history URLs:
 
-		curl -X GET http://windu.herokuapp.com/api/contacts/<contact-id>/photo-history-urls/
+		curl -X GET https://windu.herokuapp.com/api/contacts/<contact-id>/photo-history-urls/
 		
 * Get profile photo URLs from **ALL** contacts:
 
-		curl -X GET http://windu.herokuapp.com/api/contacts/photos-urls/
+		curl -X GET https://windu.herokuapp.com/api/contacts/photos-urls/
 		
 
 ###Blocking/Unblocking
 
 
+The blocked number doesn't need to be synced, you can block any arbitrary number.
+
 * To block a number/contact:
 
-		curl -X POST http://windu.herokuapp.com/api/contacts/<contact-id>/block/
+		curl -X POST https://windu.herokuapp.com/api/contacts/<contact-id>/block/
 		
 * To unblock a number/contact:
 
-		curl -X POST http://windu.herokuapp.com/api/contacts/<contact-id>/unblock/
+		curl -X POST https://windu.herokuapp.com/api/contacts/<contact-id>/unblock/
 		
 * To get a list of blocked numbers:
 
-		curl -X GET http://windu.herokuapp.com/api/contacts/blocked-list/
+		curl -X GET https://windu.herokuapp.com/api/contacts/blocked-list/
 		
 * Block a list of numbers:
 		
 	*(This will replace all current blocked numbers)*
 	
-		curl -X POST -H "Content-Type: application/json" -d "{\"numbers\":[\"XXXXXX\",\"YYYYYY\",\"ZZZZZZZ\"]}" http://windu.herokuapp.com/api/contacts/blocked-list/
+		curl -X POST -H "Content-Type: application/json" -d "{\"numbers\":[\"XXXXXX\",\"YYYYYY\",\"ZZZZZZZ\"]}" https://windu.herokuapp.com/api/contacts/blocked-list/
 
 
 
-##Messages
+## Messages
+
+* Sending a text message:
+
+		curl -X POST -d "message=😍&contact=XXXXXXX" https://windu.herokuapp.com/api/message/send-message/
+
+
 
 ##Groups
 	

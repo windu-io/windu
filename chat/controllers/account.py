@@ -1,7 +1,6 @@
 #! /usr/bin/env python
 # -*- coding: utf-8 -*-
 
-import datetime
 from django.utils import timezone
 from .agent import get_agent_and_check_events
 

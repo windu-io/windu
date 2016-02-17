@@ -44,7 +44,7 @@ def add_contact(request):
     if not contact_id:
         return Response({'error': 'No contact_id provided (contact_id=XXXXXX)'}, 400)
     contact_id = normalize(contact_id)
-    if not contact_id or not contact_id.isdigit():
+    if contact_id is None:
         return Response({'error': 'Invalid contact_id value [contact_id=XXXXXX]'}, 400)
 
     first_name = request.POST.get('first_name')

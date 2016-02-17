@@ -3,6 +3,7 @@ from django.conf.urls import url
 from . import views
 from api import account
 from api import contacts
+from api import messages
 
 urlpatterns = [
     url(r'^chats/$', views.chats, name='chats'),
@@ -46,6 +47,8 @@ urlpatterns = [
     url(r'^contacts/(?P<contact_id>[0-9]+)/block/$', contacts.block, name='block'),
     url(r'^contacts/(?P<contact_id>[0-9]+)/unblock/$', contacts.unblock, name='unblock'),
     url(r'^contacts/blocked-list/$', contacts.blocked_list, name='blocked-list'),
+
+    url(r'^messages/send-message/$', messages.send_message, name='send-message'),
 ]
 
 
