@@ -20,9 +20,8 @@ from ..models import ProfilePhoto
 from ..models import ImageUpload
 
 from ..util.image_uploader import ImageUploader
+from ..util.file_process import process_file
 
-import hashlib
-import mimetypes
 import os
 
 
@@ -519,27 +518,6 @@ class Contacts:
             result['code'] = '500'
         return result
 
-    @staticmethod
-    def __process_profile_photo(path):
-
-        h = hashlib.sha256()
-
-        file_picture = open(path, "rb")
-        picture_data = file_picture.read()
-        file_picture.close()
-        mime_type = mimetypes.guess_type(path)
-
-        h.update(picture_data)
-        digest = h.hexdigest()
-
-        return {
-                'code': '200',
-                'path': path,
-                'picture_data': picture_data,
-                'mime_type': mime_type,
-                'hash': digest
-                }
-
     def __get_photo(self, contact_id, preview):
 
         server_result = self.__get_photo_from_server(contact_id, preview)
@@ -551,7 +529,7 @@ class Contacts:
         if not path or not os.path.isfile(path):
             return {'error': 'Profile photo not found', 'code': '404'}
 
-        return Contacts.__process_profile_photo(path)
+        return process_file(path)
 
     @staticmethod
     def __code_to_photo_status (code):
@@ -592,7 +570,7 @@ class Contacts:
                 continue
 
             path = photo_info.get('path')
-            photo_url = uploader.upload_photo(hash_photo, path)
+            photo_url = uploader.upload_photo(path)
             new_images.append(ImageUpload(hash=hash_photo, photo_url=photo_url))
             photo_results[contact_id]['photo_url'] = photo_url
 

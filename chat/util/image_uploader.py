@@ -26,26 +26,25 @@ class ImageUploader:
                                   self.auth.refresh_token)
         return self.client
 
-    @staticmethod
-    def __check_uploaded_photo(image_hash):
-
-        image_upload = ImageUpload.objects.filter(hash=image_hash).first()
-        if image_upload is None:
-            return None
-
-        return image_upload
-
-    def upload_photo(self, image_hash, path, check_db_cache=False):
-
-        if check_db_cache:
-            upload = ImageUploader.__check_uploaded_photo(image_hash)
-            if upload is not None:
-                return upload.photo_url
+    def upload_photo(self, path):
 
         client = self.__get_client()
         image = client.upload_from_path(path)
         ThirdAuth.update_credentials(self.auth,
                                      self.client.auth.get_current_access_token(),
                                      self.client.auth.get_refresh_token())
+        return image['link']
+
+    def upload_photo_from_url(self, url):
+
+        try:
+            client = self.__get_client()
+            image = client.upload_from_url(url)
+            ThirdAuth.update_credentials(self.auth,
+                                         self.client.auth.get_current_access_token(),
+                                         self.client.auth.get_refresh_token())
+        except:
+            return None
+
         return image['link']
 

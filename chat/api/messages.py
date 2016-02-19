@@ -15,8 +15,6 @@ from ..controllers import messages as messages_controller
 from ..decorators import active_account_required_400
 
 from normalize_id import normalize
-from normalize_id import normalize_list
-from normalize_id import normalize_list_field
 
 
 def __get_contact (request):
@@ -37,6 +35,7 @@ def __get_message(request):
         return {'code': 400, 'error': 'No message provided (message=XXXXXX)'}
     return {'message': message, 'code': 200}
 
+
 # /api/message/send-message/
 @api_view(['POST'])
 @protected_resource()
@@ -56,6 +55,51 @@ def send_message(request):
     controller = messages_controller.Messages(request.account)
 
     result = controller.send_message (contact, message)
+
+    status_code = int(result.pop('code'))
+
+    return Response(result, status_code)
+
+
+def __get_uploaded_filename(request):
+    temp_filename =  request.FILES.get ('filename')
+    if temp_filename is None:
+        return None
+    return temp_filename.temporary_file_path()
+
+
+def __get_url(request):
+    return request.POST.get ('url')
+
+
+def __get_caption(request):
+    return request.POST.get ('caption')
+
+
+# /api/message/send-image/
+@api_view(['POST'])
+@protected_resource()
+@active_account_required_400()
+def send_image(request):
+
+    result_contact = __get_contact(request)
+    if result_contact['code'] != 200:
+        return Response(result_contact['error'], result_contact['code'])
+    contact = result_contact['contact']
+
+    url = None
+    filename = __get_uploaded_filename(request)
+    if filename is None:
+        url = __get_url(request)
+
+    if filename is None and url is None:
+        return Response('No image provided, you must pass a file (filename) or a url as parameter', 400)
+
+    caption = __get_caption(request)
+
+    controller = messages_controller.Messages(request.account)
+
+    result = controller.send_image (contact, filename, url, caption)
 
     status_code = int(result.pop('code'))
 

@@ -49,6 +49,7 @@ urlpatterns = [
     url(r'^contacts/blocked-list/$', contacts.blocked_list, name='blocked-list'),
 
     url(r'^messages/send-message/$', messages.send_message, name='send-message'),
+    url(r'^messages/send-image/$', messages.send_image, name='send-image'),
 ]
 
 

@@ -278,9 +278,39 @@ The blocked number doesn't need to be synced, you can block any arbitrary number
 
 ## Messages
 
+### Sending Messages (Text, Images, Location, ...)
+
+
+The response of a send message request will contain the `message-id` which you can use later query when the message was delivered or read.
+
+For *Media messages* (**Image**, **Video** and **Voice/Audio**) you can either pass the parameter as an `URL` (`url=http://x.o/myfile.jpg`) or as uploaded file `-F "photo=@photo.jpg"`
+
 * Sending a text message:
 
 		curl -X POST -d "message=😍&contact=XXXXXXX" https://windu.herokuapp.com/api/message/send-message/
+
+* Sending an image (uploaded):
+
+		curl -X POST -F "caption=Cool Image☺️" -F"contact=XXXXXXX" -F "filename=@photo.jpg"  https://windu.herokuapp.com/api/message/send-image/
+		
+	From URL:
+		
+		curl -X POST -d "caption=Cool Image😏&contact=XXXXXXXurl=http://i.imgur.com/Vi4wcC3.jpg" https://windu.herokuapp.com/api/message/send-image/
+
+
+* Send location message:
+
+* Send quick voice message:
+
+* Send vCard message:
+
+*
+### Typing Status
+
+### Read/Delivered Receipts
+
+### Receiving Messages
+
 
 
 
