@@ -49,7 +49,7 @@ def __get_longitude(request):
     longitude = request.POST.get('longitude')
     if not longitude or len(longitude) == 0:
         return {'code': 400, 'error': 'No longitude provided (longitude=XXXXXX)'}
-    return {'message': longitude, 'code': 200}
+    return {'longitude': longitude, 'code': 200}
 
 
 # /api/message/send-message/
@@ -133,21 +133,62 @@ def send_location(request):
         return Response(result_contact['error'], result_contact['code'])
     contact = result_contact['contact']
 
+    result_latitude = __get_latitude(request)
+    if result_contact['code'] != 200:
+        return Response(result_latitude['error'], result_latitude['code'])
+    latitude = result_latitude['latitude']
+
     result_longitude = __get_longitude(request)
     if result_longitude['code'] != 200:
         return Response(result_longitude['error'], result_longitude['code'])
     longitude = result_longitude['longitude']
 
-    result_latitude = __get_latitude(request)
-    if result_contact['code'] != 200:
-        return Response(result_latitude['error'], result_latitude['code'])
-    latitude = result_contact['latitude']
-
     caption = __get_caption(request)
 
     controller = messages_controller.Messages(request.account)
 
-    result = controller.send_location(contact, longitude, latitude, caption)
+    result = controller.send_location(contact, latitude, longitude, caption)
+
+    status_code = int(result.pop('code'))
+
+    return Response(result, status_code)
+
+
+# /api/message/send-audio/
+@api_view(['POST'])
+@protected_resource()
+@active_account_required_400()
+def send_audio(request):
+    return __send_voice(request, voice=False)
+
+# /api/message/send-voice/
+@api_view(['POST'])
+@protected_resource()
+@active_account_required_400()
+def send_voice(request):
+    return __send_voice(request, voice=True)
+
+
+def __send_voice(request, voice):
+
+    result_contact = __get_contact(request)
+    if result_contact['code'] != 200:
+        return Response(result_contact['error'], result_contact['code'])
+    contact = result_contact['contact']
+
+    url = None
+    filename = __get_uploaded_filename(request)
+    if filename is None:
+        url = __get_url(request)
+
+    if filename is None and url is None:
+        return Response('No image provided, you must pass a file (filename) or a url as parameter', 400)
+
+    caption = __get_caption(request)
+    # ['3gp', 'caf', 'wav', 'mp3', 'wma', 'ogg', 'aif', 'aac', 'm4a'];
+    controller = messages_controller.Messages(request.account)
+
+    result = controller.send_image(contact, filename, url, caption)
 
     status_code = int(result.pop('code'))
 

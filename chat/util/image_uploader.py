@@ -5,8 +5,6 @@
 from imgurpython import ImgurClient
 from .third_auth import ThirdAuth
 
-from ..models import ImageUpload
-
 
 class ImageUploader:
 

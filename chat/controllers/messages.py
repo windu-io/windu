@@ -39,11 +39,11 @@ class Messages:
             result['code'] = '500'
         return result
 
-    def __send_location(self, contact_id, longitude, latitude, caption):
+    def __send_location(self, contact_id, latitude, longitude, caption):
         result = {}
         agent = self.__agent()
         try:
-            result = agent.sendMessageLocation(contact_id, longitude, latitude, caption)
+            result = agent.sendMessageLocation(contact_id, latitude, longitude, caption)
         except Exception as e:
             result['error'] = 'Error sending location: ' + str(e)
             result['code'] = '500'
@@ -109,6 +109,8 @@ class Messages:
 
         allowed_extensions = ['.jpg', '.jpeg', '.gif', '.png']
 
+        file_extension = file_extension.lower()
+
         if file_extension not in allowed_extensions:
             return {'error': 'Invalid image extension (jpg, jpeg, gif, png)'}
 
@@ -118,7 +120,7 @@ class Messages:
 
         cached_url = Messages.__ensure_image_uploaded(file_info)
 
-        return {'filename' : path,
+        return {'filename': path,
                 'length': file_info['length'],
                 'hash': file_info['hash'],
                 'url': cached_url }
@@ -128,10 +130,10 @@ class Messages:
         uploader = ImageUploader()
         cached_url = uploader.upload_photo_from_url(url)
 
-        return {'filename' : url,
+        return {'filename': url,
                 'length': 0,
                 'hash': '',
-                'url': cached_url }
+                'url': cached_url}
 
     @staticmethod
     def __get_image_data(filename, url):
@@ -169,7 +171,7 @@ class Messages:
 
         return result
 
-    def send_location(self, contact_id, longitude, latitude, caption):
+    def send_location(self, contact_id, latitude, longitude, caption):
 
         if contact_id is None:
             return {'error': 'Invalid contact_id', 'code': '400'}
@@ -177,7 +179,7 @@ class Messages:
         if contact.get('code') != '200':
             return contact
 
-        result = self.__send_location(contact_id, longitude, latitude, caption)
+        result = self.__send_location(contact_id, latitude, longitude, caption)
 
         status_code = result.get('code')
 
