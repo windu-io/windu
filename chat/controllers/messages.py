@@ -35,7 +35,17 @@ class Messages:
         try:
             result = agent.sendMessage(contact_id, message)
         except Exception as e:
-            result['error'] = 'Error getting statuses: ' + str(e)
+            result['error'] = 'Error sending message: ' + str(e)
+            result['code'] = '500'
+        return result
+
+    def __send_location(self, contact_id, longitude, latitude, caption):
+        result = {}
+        agent = self.__agent()
+        try:
+            result = agent.sendMessageLocation(contact_id, longitude, latitude, caption)
+        except Exception as e:
+            result['error'] = 'Error sending location: ' + str(e)
             result['code'] = '500'
         return result
 
@@ -116,7 +126,7 @@ class Messages:
     @staticmethod
     def __get_image_data_from_url(url):
         uploader = ImageUploader()
-        cached_url = uploader.upload_photo(url)
+        cached_url = uploader.upload_photo_from_url(url)
 
         return {'filename' : url,
                 'length': 0,
@@ -158,3 +168,23 @@ class Messages:
         self.__update_message_store(result)
 
         return result
+
+    def send_location(self, contact_id, longitude, latitude, caption):
+
+        if contact_id is None:
+            return {'error': 'Invalid contact_id', 'code': '400'}
+        contact = self.__check_contact(contact_id)
+        if contact.get('code') != '200':
+            return contact
+
+        result = self.__send_location(contact_id, longitude, latitude, caption)
+
+        status_code = result.get('code')
+
+        if status_code is None or status_code[0] != '2':
+            return result
+
+        self.__update_message_store (result)
+
+        return result
+

@@ -300,6 +300,9 @@ For *Media messages* (**Image**, **Video** and **Voice/Audio**) you can either p
 
 * Send location message:
 
+		curl -X POST -d "caption=Cool Place🗼&contact=XXXXXXXlatitude=48.8571&longitude=2.2943" https://windu.herokuapp.com/api/message/send-location/
+
+
 * Send quick voice message:
 
 * Send vCard message:

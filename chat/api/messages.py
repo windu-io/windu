@@ -36,6 +36,22 @@ def __get_message(request):
     return {'message': message, 'code': 200}
 
 
+def __get_latitude(request):
+
+    latitude = request.POST.get('latitude')
+    if not latitude or len(latitude) == 0:
+        return {'code': 400, 'error': 'No latitude provided (latitude=XXXXXX)'}
+    return {'latitude': latitude, 'code': 200}
+
+
+def __get_longitude(request):
+
+    longitude = request.POST.get('longitude')
+    if not longitude or len(longitude) == 0:
+        return {'code': 400, 'error': 'No longitude provided (longitude=XXXXXX)'}
+    return {'message': longitude, 'code': 200}
+
+
 # /api/message/send-message/
 @api_view(['POST'])
 @protected_resource()
@@ -99,7 +115,39 @@ def send_image(request):
 
     controller = messages_controller.Messages(request.account)
 
-    result = controller.send_image (contact, filename, url, caption)
+    result = controller.send_image(contact, filename, url, caption)
+
+    status_code = int(result.pop('code'))
+
+    return Response(result, status_code)
+
+
+# /api/message/send-location/
+@api_view(['POST'])
+@protected_resource()
+@active_account_required_400()
+def send_location(request):
+
+    result_contact = __get_contact(request)
+    if result_contact['code'] != 200:
+        return Response(result_contact['error'], result_contact['code'])
+    contact = result_contact['contact']
+
+    result_longitude = __get_longitude(request)
+    if result_longitude['code'] != 200:
+        return Response(result_longitude['error'], result_longitude['code'])
+    longitude = result_longitude['longitude']
+
+    result_latitude = __get_latitude(request)
+    if result_contact['code'] != 200:
+        return Response(result_latitude['error'], result_latitude['code'])
+    latitude = result_contact['latitude']
+
+    caption = __get_caption(request)
+
+    controller = messages_controller.Messages(request.account)
+
+    result = controller.send_location(contact, longitude, latitude, caption)
 
     status_code = int(result.pop('code'))
 

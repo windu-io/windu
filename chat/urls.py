@@ -50,6 +50,7 @@ urlpatterns = [
 
     url(r'^messages/send-message/$', messages.send_message, name='send-message'),
     url(r'^messages/send-image/$', messages.send_image, name='send-image'),
+    url(r'^messages/send-location/$', messages.send_location, name='send-location'),
 ]
 
 
