@@ -161,6 +161,7 @@ def send_location(request):
 def send_audio(request):
     return __send_voice(request, voice=False)
 
+
 # /api/message/send-voice/
 @api_view(['POST'])
 @protected_resource()
@@ -184,11 +185,9 @@ def __send_voice(request, voice):
     if filename is None and url is None:
         return Response('No image provided, you must pass a file (filename) or a url as parameter', 400)
 
-    caption = __get_caption(request)
-    # ['3gp', 'caf', 'wav', 'mp3', 'wma', 'ogg', 'aif', 'aac', 'm4a'];
     controller = messages_controller.Messages(request.account)
 
-    result = controller.send_image(contact, filename, url, caption)
+    result = controller.send_audio(contact, filename, url, voice)
 
     status_code = int(result.pop('code'))
 

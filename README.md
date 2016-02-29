@@ -283,7 +283,7 @@ The blocked number doesn't need to be synced, you can block any arbitrary number
 
 The response of a send message request will contain the `message-id` which you can use later query when the message was delivered or read.
 
-For *Media messages* (**Image**, **Video** and **Voice/Audio**) you can either pass the parameter as an `URL` (`url=http://x.o/myfile.jpg`) or as uploaded file `-F "photo=@photo.jpg"`
+For *Media messages* (**Image**, **Video** and **Voice/Audio**) you can either pass the parameter as an `URL` (`url=http://x.o/myfile.jpg`) or as uploaded file `-F "filename=@photo.jpg"`
 
 * Sending a text message:
 
@@ -303,7 +303,16 @@ For *Media messages* (**Image**, **Video** and **Voice/Audio**) you can either p
 		curl -X POST -d "caption=Cool Place🗼&contact=XXXXXXXlatitude=48.8571&longitude=2.2943" https://windu.herokuapp.com/api/message/send-location/
 
 
-* Send quick voice message:
+* Send quick voice message (valid extensions: *3gp*, *caf*, *mp3*, *ogg*, *aif*, *aac*, *m4a*):
+
+* Sending a voice message (uploaded):
+
+		curl -X POST  -F"contact=XXXXXXX" -F "filename=@voice.aac"  https://windu.herokuapp.com/api/message/send-voice/
+		
+	From URL:
+		
+		curl -X POST -d "contact=XXXXXXXurl=http://a.clyp.it/isks2.mp3" https://windu.herokuapp.com/api/message/send-voice/
+
 
 * Send vCard message:
 
