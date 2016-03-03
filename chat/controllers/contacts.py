@@ -17,7 +17,7 @@ from ..models import Contact as ModelContact
 from ..models import ContactsFromMessage
 from ..models import StatusMessage
 from ..models import ProfilePhoto
-from ..models import ImageUpload
+from ..models import FileUpload
 
 from ..util.image_uploader import ImageUploader
 from ..util.file_process import process_file
@@ -563,7 +563,7 @@ class Contacts:
                 continue
 
             hash_photo = photo_info.get('hash')
-            image_upload = ImageUpload.objects.filter(hash=hash_photo).first()
+            image_upload = FileUpload.objects.filter(hash=hash_photo).first()
 
             if image_upload is not None:
                 photo_results[contact_id]['photo_url'] = image_upload.photo_url
@@ -571,13 +571,13 @@ class Contacts:
 
             path = photo_info.get('path')
             photo_url = uploader.upload_photo(path)
-            new_images.append(ImageUpload(hash=hash_photo, photo_url=photo_url))
+            new_images.append(FileUpload(hash=hash_photo, photo_url=photo_url))
             photo_results[contact_id]['photo_url'] = photo_url
 
         if len(new_images) == 0:
             return
 
-        ImageUpload.objects.bulk_create(new_images)
+        FileUpload.objects.bulk_create(new_images)
 
     def __update_photos_history(self, photo_results, preview):
 
@@ -616,7 +616,7 @@ class Contacts:
                     contact.update_photo(preview, None)
                     contact.update_photo_hash(preview, None)
                 else:
-                    contact.update_photo(preview, ImageUpload.objects.get(hash=photo_hash))
+                    contact.update_photo(preview, FileUpload.objects.get(hash=photo_hash))
                     contact.update_photo_hash(preview, photo_hash)
 
                 profile_photos.append(ProfilePhoto(account=self.__account,

@@ -8,13 +8,14 @@ from .contacts import Contacts
 from ..models import Account as ModelAccount
 from ..models import Message
 from ..models import MessageGroupRead
-from ..models import ImageUpload
+from ..models import FileUpload
 
 from ..util.image_uploader import ImageUploader
 from ..util.audio_uploader import AudioUploader
 from ..util.file_process import process_file
 
 import os
+
 
 class Messages:
 
@@ -108,14 +109,14 @@ class Messages:
 
         uploader = ImageUploader()
         hash_image = file_info.get('hash')
-        image_upload = ImageUpload.objects.filter(hash=hash_image).first()
+        image_upload = FileUpload.objects.filter(hash=hash_image).first()
 
         if image_upload is not None:
             return image_upload.photo_url
 
         path = file_info.get('path')
         image_url = uploader.upload_photo(path)
-        image_upload = ImageUpload.objects.create(hash=hash_image, photo_url=image_url)
+        image_upload = FileUpload.objects.create(hash=hash_image, photo_url=image_url)
 
         return image_upload.photo_url
 
@@ -128,14 +129,14 @@ class Messages:
             mime_type = 'audio/mpeg'
         else:
             mime_type = mime_type[0]
-        file_upload = ImageUpload.objects.filter(hash=hash_audio).first()
+        file_upload = FileUpload.objects.filter(hash=hash_audio).first()
 
         if file_upload is not None:
             return file_upload.photo_url
 
         path = file_info.get('path')
         audio_url = AudioUploader.upload_audio(path, mime_type)
-        image_upload = ImageUpload.objects.create(hash=hash_audio, photo_url=audio_url)
+        image_upload = FileUpload.objects.create(hash=hash_audio, photo_url=audio_url)
 
         return image_upload.photo_url
 

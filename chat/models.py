@@ -1,5 +1,12 @@
+
+from datetime import timedelta
+
 from django.db import  models
-from django.contrib.auth.models import  User
+from django.contrib.auth.models import User
+
+from django.utils import timezone
+
+from windu.settings import WINDU_PROFILE_PHOTO_CACHE_MINUTES
 
 
 class ThirdAuthToken(models.Model):
@@ -90,13 +97,13 @@ class MessageGroupRead(models.Model):
     read = models.DateTimeField(null=True, blank=True)
 
 
-class ImageUpload (models.Model):
+class FileUpload (models.Model):
 
     hash = models.CharField(max_length=64, db_index=True, null=False, blank=False, unique=True)
-    photo_url = models.URLField(null=False)
+    file_url = models.URLField(null=False)
 
     def __str__(self):
-        return self.photo_url
+        return self.file_url
 
 
 class Contact(models.Model):
@@ -112,14 +119,14 @@ class Contact(models.Model):
     nickname = models.CharField(max_length=64, null=True,blank=True)
     connected_status = models.CharField(max_length=16, null=True,blank=True)
     last_seen = models.DateTimeField(null=True, blank=True)
-    photo = models.ForeignKey(ImageUpload, on_delete=models.SET_NULL, blank=True, null=True, related_name='photo')
+    photo = models.ForeignKey(FileUpload, on_delete=models.SET_NULL, blank=True, null=True, related_name='photo')
     photo_status = models.CharField(max_length=1, null=False, default='i')
-    preview_photo = models.ForeignKey(ImageUpload, on_delete=models.SET_NULL, blank=True, null=True, related_name='preview_photo')
+    preview_photo = models.ForeignKey(FileUpload, on_delete=models.SET_NULL, blank=True, null=True, related_name='preview_photo')
     preview_photo_status = models.CharField (max_length=1, null=False, default='i')
     photo_hash = models.CharField(max_length=64, db_index=True, null=True)
     preview_photo_hash = models.CharField(max_length=64, db_index=True, null=True)
-    preview_photo_updated = models.DateTimeField(null=True, blank=True)
-    photo_updated = models.DateTimeField(null=True, blank=True)
+    preview_photo_updated = models.DateTimeField(null=False, blank=False, default=timezone.now() - timedelta(0, 0, 0, 0, WINDU_PROFILE_PHOTO_CACHE_MINUTES))
+    photo_updated = models.DateTimeField(null=False, blank=False, default=timezone.now() - timedelta(0, 0, 0, 0, WINDU_PROFILE_PHOTO_CACHE_MINUTES))
     exists = models.BooleanField(null=False)
 
     def __str__(self):
@@ -194,7 +201,7 @@ class ProfilePhoto(models.Model):
     account = models.ForeignKey(Account)
     contact_id = models.CharField(max_length=64, db_index=True, null=False)
     updated = models.DateTimeField (null=False,auto_now=True)
-    photo = models.ForeignKey(ImageUpload, on_delete=models.SET_NULL, blank=True, null=True)
+    photo = models.ForeignKey(FileUpload, on_delete=models.SET_NULL, blank=True, null=True)
     preview = models.BooleanField(null=False)
     photo_status = models.CharField(max_length=1, null=False, default='i')
 

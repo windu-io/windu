@@ -303,7 +303,7 @@ For *Media messages* (**Image**, **Video** and **Voice/Audio**) you can either p
 		curl -X POST -d "caption=Cool Place🗼&contact=XXXXXXXlatitude=48.8571&longitude=2.2943" https://windu.herokuapp.com/api/message/send-location/
 
 
-* Send quick voice message (valid extensions: *3gp*, *caf*, *mp3*, *ogg*, *aif*, *aac*, *m4a*):
+* **Send voice/audio message (valid extensions: *3gp*, *caf*, *mp3*, *ogg*, *aif*, *aac*, *m4a*)**:
 
 * Sending a voice message (uploaded):
 
@@ -312,7 +312,25 @@ For *Media messages* (**Image**, **Video** and **Voice/Audio**) you can either p
 	From URL:
 		
 		curl -X POST -d "contact=XXXXXXXurl=http://a.clyp.it/isks2.mp3" https://windu.herokuapp.com/api/message/send-voice/
+		
 
+
+* Sending an audio message (uploaded):
+
+		curl -X POST  -F"contact=XXXXXXX" -F "filename=@voice.aac"  https://windu.herokuapp.com/api/message/send-audio/
+		
+	From URL:
+		
+		curl -X POST -d "contact=XXXXXXXurl=http://a.clyp.it/isks2.mp3" https://windu.herokuapp.com/api/message/send-audio/
+
+
+* Sending a video message (uploaded):
+
+		curl -X POST  -F"contact=XXXXXXX" -F "filename=@video.mp4"  https://windu.herokuapp.com/api/message/send-video/
+		
+	From URL:
+		
+		curl -X POST -d "contact=XXXXXXXurl=https://dl.dropboxusercontent.com/u/7386739/video.mp4" https://windu.herokuapp.com/api/message/send-voice/
 
 * Send vCard message:
 

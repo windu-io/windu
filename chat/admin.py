@@ -10,7 +10,7 @@ from .models import StatusMessage
 from .models import ContactsFromMessage
 from .models import ContactsNickname
 from .models import ThirdAuthToken
-from .models import ImageUpload
+from .models import FileUpload
 
 admin.site.register(Account)
 admin.site.register(Chat)
@@ -21,4 +21,4 @@ admin.site.register(StatusMessage)
 admin.site.register(ContactsFromMessage)
 admin.site.register(ContactsNickname)
 admin.site.register(ThirdAuthToken)
-admin.site.register(ImageUpload)
+admin.site.register(FileUpload)

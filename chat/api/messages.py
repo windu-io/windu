@@ -183,7 +183,7 @@ def __send_voice(request, voice):
         url = __get_url(request)
 
     if filename is None and url is None:
-        return Response('No image provided, you must pass a file (filename) or a url as parameter', 400)
+        return Response('No audio provided, you must pass a file (filename) or a url as parameter', 400)
 
     controller = messages_controller.Messages(request.account)
 
