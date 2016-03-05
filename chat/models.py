@@ -180,10 +180,10 @@ class Contact(models.Model):
         if preview:
             if self.preview_photo is None:
                 return None
-            return self.preview_photo.photo_url
+            return self.preview_photo.file_url
         if self.photo is None:
             return None
-        return self.photo.photo_url
+        return self.photo.file_url
 
 
 class ContactsFromMessage(models.Model):

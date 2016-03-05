@@ -112,13 +112,13 @@ class Messages:
         image_upload = FileUpload.objects.filter(hash=hash_image).first()
 
         if image_upload is not None:
-            return image_upload.photo_url
+            return image_upload.file_url
 
         path = file_info.get('path')
         image_url = uploader.upload_photo(path)
-        image_upload = FileUpload.objects.create(hash=hash_image, photo_url=image_url)
+        image_upload = FileUpload.objects.create(hash=hash_image, file_url=image_url)
 
-        return image_upload.photo_url
+        return image_upload.file_url
 
     @staticmethod
     def __ensure_audio_uploaded(file_info):
@@ -132,13 +132,13 @@ class Messages:
         file_upload = FileUpload.objects.filter(hash=hash_audio).first()
 
         if file_upload is not None:
-            return file_upload.photo_url
+            return file_upload.file_url
 
         path = file_info.get('path')
         audio_url = AudioUploader.upload_audio(path, mime_type)
-        image_upload = FileUpload.objects.create(hash=hash_audio, photo_url=audio_url)
+        image_upload = FileUpload.objects.create(hash=hash_audio, file_url=audio_url)
 
-        return image_upload.photo_url
+        return image_upload.file_url
 
     @staticmethod
     def __get_image_data_from_file(path):

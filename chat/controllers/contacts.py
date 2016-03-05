@@ -566,12 +566,12 @@ class Contacts:
             image_upload = FileUpload.objects.filter(hash=hash_photo).first()
 
             if image_upload is not None:
-                photo_results[contact_id]['photo_url'] = image_upload.photo_url
+                photo_results[contact_id]['photo_url'] = image_upload.file_url
                 continue
 
             path = photo_info.get('path')
             photo_url = uploader.upload_photo(path)
-            new_images.append(FileUpload(hash=hash_photo, photo_url=photo_url))
+            new_images.append(FileUpload(hash=hash_photo, file_url=photo_url))
             photo_results[contact_id]['photo_url'] = photo_url
 
         if len(new_images) == 0:
@@ -693,12 +693,12 @@ class Contacts:
         values = ProfilePhoto.objects.filter(account=self.__account, contact_id=contact_id, preview=preview).\
                                        order_by('-updated').\
                                        prefetch_related('photo').\
-                                       values('contact_id', 'photo_status', 'updated', 'photo__photo_url')
+                                       values('contact_id', 'photo_status', 'updated', 'photo__file_url')
 
         photo_urls = []
         for v in values:
             photo_urls.append({'photo_status': Contacts.__photo_status_to_code(v['photo_status']),
-                               'photo_url': v['photo__photo_url'],
+                               'photo_url': v['photo__file_url'],
                                'updated': v['updated']})
 
         return {'code': '200', 'contact_id': contact_id, 'photo_urls': photo_urls}
@@ -745,13 +745,13 @@ class Contacts:
         timeout_limit = timezone.now() - timedelta(0, 0, 0, 0, timeout_cache)
 
         if preview:
-            photo_url_field = 'preview_photo__photo_url'
+            photo_url_field = 'preview_photo__file_url'
             photo_status_field = 'preview_photo_status'
             contacts = ModelContact.objects.filter(account=self.__account,
                                                    preview_photo_updated__gte=timeout_limit).\
                                                    values('contact_id', photo_status_field, photo_url_field)
         else:
-            photo_url_field = 'photo__photo_url'
+            photo_url_field = 'photo__file_url'
             photo_status_field = 'preview_photo_status'
             contacts = ModelContact.objects.filter(account=self.__account,
                                                    photo_updated__gte=timeout_limit).\
