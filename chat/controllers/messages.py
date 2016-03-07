@@ -80,6 +80,16 @@ class Messages:
             result['code'] = '500'
         return result
 
+    def __send_video(self, contact_id, filename, caption):
+        result = {}
+        agent = self.__agent()
+        try:
+            result = agent.sendMessageVideo(contact_id, filename, caption)
+        except Exception as e:
+            result['error'] = 'Error sending video: ' + str(e)
+            result['code'] = '500'
+        return result
+
     def __send_audio(self, contact_id, filename, file_size = 0, file_hash='', voice=False):
         result = {}
         agent = self.__agent()
@@ -288,6 +298,46 @@ class Messages:
             return result
 
         result['audio_data'] = audio_data
+
+        self.__update_message_store(result)
+
+        return result
+
+    @staticmethod
+    def __get_video_path(path, url):
+        if path is not None:
+                filename, file_extension = os.path.splitext(path)
+                allowed_extensions = ['.3gp', '.mp4', '.mov', '.avi']
+                file_extension = file_extension.lower()
+                if file_extension not in allowed_extensions:
+                    return {'error': 'Invalid video extension (3gp, mp4, mov, avi)'}
+                return {'path' : path}
+        return {'path': url}
+
+    def send_video(self, contact_id, filename, url, caption):
+
+        if contact_id is None:
+            return {'error': 'Invalid contact_id', 'code': '400'}
+        contact = self.__check_contact(contact_id)
+        if contact.get('code') != '200':
+            return contact
+
+        path_data = Messages.__get_video_path(filename,url)
+        error = path_data.get('error')
+        if error is not None:
+            return {'error': error, 'code': '400'}
+
+        if caption is None:
+            caption = ''
+
+        path = path_data['path']
+
+        result = self.__send_video(contact_id, path, caption)
+
+        status_code = result.get('code')
+
+        if status_code is None or status_code[0] != '2':
+            return result
 
         self.__update_message_store(result)
 

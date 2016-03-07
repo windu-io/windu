@@ -192,3 +192,32 @@ def __send_voice(request, voice):
     status_code = int(result.pop('code'))
 
     return Response(result, status_code)
+
+
+# /api/message/send-video/
+@api_view(['POST'])
+@protected_resource()
+@active_account_required_400()
+def send_video(request):
+    result_contact = __get_contact(request)
+    if result_contact['code'] != 200:
+        return Response(result_contact['error'], result_contact['code'])
+    contact = result_contact['contact']
+
+    url = None
+    filename = __get_uploaded_filename(request)
+    if filename is None:
+        url = __get_url(request)
+
+    if filename is None and url is None:
+        return Response('No video provided, you must pass a file (filename) or a url as parameter', 400)
+
+    caption = __get_caption(request)
+
+    controller = messages_controller.Messages(request.account)
+
+    result = controller.send_video(contact, filename, url, caption)
+
+    status_code = int(result.pop('code'))
+
+    return Response(result, status_code)
