@@ -270,3 +270,34 @@ def send_vcard(request):
     status_code = int(result.pop('code'))
 
     return Response(result, status_code)
+
+
+def __set_typing(request, typing):
+    result_contact = __get_contact(request)
+    if result_contact['code'] != 200:
+        return Response(result_contact['error'], result_contact['code'])
+    contact = result_contact['contact']
+
+    controller = messages_controller.Messages(request.account)
+
+    result = controller.set_typing(contact, typing)
+
+    status_code = int(result.pop('code'))
+
+    return Response(result, status_code)
+
+
+# /api/message/set-paused/
+@api_view(['POST'])
+@protected_resource()
+@active_account_required_400()
+def set_paused(request):
+    return __set_typing(request, typing=False)
+
+
+# /api/message/set-typing/
+@api_view(['POST'])
+@protected_resource()
+@active_account_required_400()
+def set_typing(request):
+    return __set_typing(request, typing=True)

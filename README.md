@@ -28,7 +28,6 @@ REST API
 		curl -H "Authorization: Bearer <Token>" https://windu.herokuapp.com/api/call
 		
 
-
 ## Account
 
 An account is linked to your number, in order to use Windu API you need to add and register an account.
@@ -311,8 +310,7 @@ For *Media messages* (**Image**, **Video** and **Voice/Audio**) you can either p
 		
 	From URL:
 		
-		curl -X POST -d "contact=XXXXXXXurl=http://a.clyp.it/isks2.mp3" https://windu.herokuapp.com/api/message/send-voice/
-		
+		curl -X POST -d "contact=XXXXXXX&url=http://a.clyp.it/isks2.mp3" https://windu.herokuapp.com/api/message/send-voice/
 
 
 * Sending an audio message (uploaded):
@@ -321,8 +319,9 @@ For *Media messages* (**Image**, **Video** and **Voice/Audio**) you can either p
 		
 	From URL:
 		
-		curl -X POST -d "contact=XXXXXXXurl=http://a.clyp.it/isks2.mp3" https://windu.herokuapp.com/api/message/send-audio/
+		curl -X POST -d "contact=XXXXXXX&url=http://a.clyp.it/isks2.mp3" https://windu.herokuapp.com/api/message/send-audio/
 
+* **Send video message (valid extensions: *3gp*, *mp4*, *mov*, *avi]*)**:
 
 * Sending a video message (uploaded):
 
@@ -330,12 +329,27 @@ For *Media messages* (**Image**, **Video** and **Voice/Audio**) you can either p
 		
 	From URL:
 		
-		curl -X POST -d "contact=XXXXXXXurl=https://dl.dropboxusercontent.com/u/7386739/video.mp4" https://windu.herokuapp.com/api/message/send-voice/
+		curl -X POST -d "contact=XXXXXXX&url=https://dl.dropboxusercontent.com/u/7386739/video.mp4" https://windu.herokuapp.com/api/message/send-voice/
 
 * Send vCard message:
 
-*
+		curl -X POST -d "contact=XXXXXXX&name=Johh Doe&vcard=BEGIN:VCARD(... all card content here)" https://windu.herokuapp.com/api/message/send-vcard/		
+	From file:
+	
+		curl -X POST  -F"contact=XXXXXXX" -F"name=John" -F "filename=@johh.vcf"  https://windu.herokuapp.com/api/message/send-vcard/
+		
+
 ### Typing Status
+
+* Set typing status for a contact:
+
+		curl -X POST -d "contact=XXXXXXX" https://windu.herokuapp.com/api/message/set-typing/
+		
+* Set paused (typing) status for a contact:
+
+		curl -X POST -d "contact=XXXXXXX" https://windu.herokuapp.com/api/message/set-paused/
+	
+
 
 ### Read/Delivered Receipts
 

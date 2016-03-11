@@ -375,3 +375,34 @@ class Messages:
 
         return result
 
+    def __set_typing(self, contact_id, typing):
+        result = {}
+        agent = self.__agent()
+        try:
+            if typing:
+                result = agent.sendMessageComposing(contact_id)
+            else:
+                result = agent.sendMessagePaused(contact_id)
+
+        except Exception as e:
+            result['error'] = 'Error sending typing/paused: ' + str(e)
+            result['code'] = '500'
+        return result
+
+    def set_typing(self, contact_id, typing):
+
+        if contact_id is None:
+            return {'error': 'Invalid contact_id', 'code': '400'}
+        contact = self.__check_contact(contact_id)
+        if contact.get('code') != '200':
+            return contact
+
+        result = self.__set_typing(contact_id, typing)
+
+        status_code = result.get('code')
+
+        if status_code is None or status_code[0] != '2':
+            return result
+
+        return result
+

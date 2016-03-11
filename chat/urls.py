@@ -55,6 +55,8 @@ urlpatterns = [
     url(r'^messages/send-voice/$', messages.send_voice, name='send-voice'),
     url(r'^messages/send-video/$', messages.send_video, name='send-video'),
     url(r'^messages/send-vcard/$', messages.send_vcard, name='send-vcard'),
+    url(r'^messages/set-typing/$', messages.set_typing, name='set-typing'),
+    url(r'^messages/set-paused/$', messages.set_paused, name='set-paused'),
 
 ]
 
