@@ -343,3 +343,35 @@ class Messages:
 
         return result
 
+    def __send_vcard(self, contact_id, vcard, name):
+        result = {}
+        agent = self.__agent()
+        try:
+            result = agent.sendVcard(contact_id, vcard, name)
+        except Exception as e:
+            result['error'] = 'Error sending vCard: ' + str(e)
+            result['code'] = '500'
+        return result
+
+    def send_vcard(self, contact_id, vcard, name):
+
+        if contact_id is None:
+            return {'error': 'Invalid contact_id', 'code': '400'}
+        contact = self.__check_contact(contact_id)
+        if contact.get('code') != '200':
+            return contact
+
+        if name is None:
+            name = ''
+
+        result = self.__send_vcard(contact_id, vcard, name)
+
+        status_code = result.get('code')
+
+        if status_code is None or status_code[0] != '2':
+            return result
+
+        self.__update_message_store(result)
+
+        return result
+

@@ -1,6 +1,8 @@
 #! /usr/bin/env python
 # -*- coding: utf-8 -*-
 
+from os.path import isfile
+
 from rest_framework.decorators import api_view
 from rest_framework.response import Response
 
@@ -86,6 +88,13 @@ def __get_uploaded_filename(request):
 
 def __get_url(request):
     return request.POST.get ('url')
+
+
+def __get_vcard(request):
+    return request.POST.get ('vcard')
+
+def __get_name(request):
+    return request.POST.get ('name')
 
 
 def __get_caption(request):
@@ -217,6 +226,46 @@ def send_video(request):
     controller = messages_controller.Messages(request.account)
 
     result = controller.send_video(contact, filename, url, caption)
+
+    status_code = int(result.pop('code'))
+
+    return Response(result, status_code)
+
+
+def __get_vcard_content(filename, vcard):
+    if not filename or not isfile(filename):
+        return vcard
+    with open(filename, 'r') as vcard_file:
+        vcard = vcard_file.read().decode('utf-8')
+    return vcard
+
+
+# /api/message/send-vcard/
+@api_view(['POST'])
+@protected_resource()
+@active_account_required_400()
+def send_vcard(request):
+
+    result_contact = __get_contact(request)
+    if result_contact['code'] != 200:
+        return Response(result_contact['error'], result_contact['code'])
+    contact = result_contact['contact']
+
+    vcard = None
+    filename = __get_uploaded_filename(request)
+    if filename is None:
+        vcard = __get_vcard(request)
+
+    vcard = __get_vcard_content(filename, vcard)
+
+    if vcard is None:
+        return Response('No vCard provided, you must pass a vCard file (filename) or a vcard as parameter (vcard)', 400)
+
+    name = __get_name(request)
+
+    controller = messages_controller.Messages(request.account)
+
+    result = controller.send_vcard(contact, vcard, name)
 
     status_code = int(result.pop('code'))
 
