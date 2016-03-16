@@ -46,11 +46,11 @@ class Chat(models.Model):
     class Meta:
         unique_together = (('account', 'entity_id'),)
 
-    account = models.ForeignKey (Account)
-    entity_id = models.CharField (max_length=64, db_index=True,null=False)
-    title = models.CharField (max_length=256,null=False)
-    snippet = models.CharField (max_length=64, null=False)
-    time = models.DateTimeField (null=True,blank=True)
+    account = models.ForeignKey(Account)
+    entity_id = models.CharField(max_length=64, db_index=True,null=False)
+    title = models.CharField(max_length=256,null=False)
+    snippet = models.CharField(max_length=64, null=False)
+    time = models.DateTimeField(null=True,blank=True)
 
     def __str__(self):
         return self.title

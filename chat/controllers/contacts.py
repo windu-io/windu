@@ -105,7 +105,7 @@ class Contacts:
         c = ModelContact.objects.create(contact_id=contact_id, first_name=first_name, last_name=last_name, exists=False, account=self.__account)
         result = self.sync_contacts()
         result_code = result.get('code')
-        if result_code is None or result_code [0] != '2':
+        if result_code is None or result_code[0] != '2':
             c.delete()
             return result
         id = c.id
@@ -127,7 +127,7 @@ class Contacts:
             return {'message': 'No contact was deleted', 'code': '200'}
         result = self.sync_contacts(update_existing=False)
         result_code = result.get('code')
-        if result_code is None or result_code [0] != '2':
+        if result_code is None or result_code[0] != '2':
             return result
         return {'code': '200', 'total_deleted': total_deleted}
 

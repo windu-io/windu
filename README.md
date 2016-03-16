@@ -350,10 +350,11 @@ For *Media messages* (**Image**, **Video** and **Voice/Audio**) you can either p
 		curl -X POST -d "contact=XXXXXXX" https://windu.herokuapp.com/api/message/set-paused/
 	
 
+### Receiving Messages
 
 ### Read/Delivered Receipts
 
-### Receiving Messages
+
 
 
 

@@ -72,7 +72,7 @@ def send_message(request):
 
     controller = messages_controller.Messages(request.account)
 
-    result = controller.send_message (contact, message)
+    result = controller.send_message(contact, message)
 
     status_code = int(result.pop('code'))
 
@@ -80,7 +80,7 @@ def send_message(request):
 
 
 def __get_uploaded_filename(request):
-    temp_filename =  request.FILES.get ('filename')
+    temp_filename = request.FILES.get ('filename')
     if temp_filename is None:
         return None
     return temp_filename.temporary_file_path()

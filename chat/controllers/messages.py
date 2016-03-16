@@ -1,6 +1,8 @@
 #! /usr/bin/env python
 # -*- coding: utf-8 -*-
 
+from datetime import datetime
+
 from django.utils import timezone
 from .agent import get_agent_and_check_events
 
@@ -28,8 +30,80 @@ class Messages:
     def __check_contact(self, contact_id):
         return Contacts.contact_valid(self.__account, contact_id)
 
-    def __update_message_store(self, result):
-        pass
+
+    @staticmethod
+    def __get_message_sent_data_from_result(result):
+        message_id = result.get('id')
+        if message_id is None:
+            return None
+
+        entity_id = result.get('contact')
+        if entity_id is None:
+            return None
+
+        send_type = 's'     # sent
+        message_type = result.get('message_type')
+        if message_type is None:
+            return None
+
+        t = result.get('t')
+        if t is None:
+            time = None
+        else:
+            time = datetime.fromtimestamp(int(t))
+
+        data = None
+        url = None
+        caption = None
+        file_hash = None
+        latitude = None
+        longitude = None
+        data = result.get('data')
+        if data is not None and type(data) is dict:
+            caption = data.get('caption')
+            url = data.get('url')
+            file_hash = data.get('hash')
+            latitude = data.get('latitude')
+            longitude = data.get('longitude')
+
+        participant = result.get('participant')
+
+        return {
+                'message_id': message_id,
+                'entity_id': entity_id,
+                'send_type': send_type,
+                'message_type': message_type,
+                'time': time,
+                'data': data,
+                'url': url,
+                'caption': caption,
+                'participant': participant,
+                'file_hash': file_hash,
+                'latitude': latitude,
+                'longitude': longitude,
+                }
+
+    def create_message_model(self, message_data):
+        Message.objects.create(account=self.__account,
+                               message_id=message_data.get('message_id'),
+                               entity_id=message_data.get('entity_id'),
+                               send_type=message_data.get('send_type'),
+                               message_type=message_data.get('message_type'),
+                               time=message_data.get('time'),
+                               data=message_data.get('data'),
+                               url=message_data.get('url'),
+                               longitude=message_data.get('longitude'),
+                               latitude=message_data.get('latitude'),
+                               mimetype=message_data.get('mime_type'),
+                               file_hash=message_data.get('file_hash'),
+                               participant=message_data.get('participant'),
+                               )
+
+    def __create_message_sent_store(self, result):
+        message_data = Messages.__get_message_sent_data_from_result(result)
+        if message_data is None:
+            return
+        self.create_message_model(message_data)
 
     def __send_message(self, contact_id, message):
         result = {}
@@ -66,7 +140,11 @@ class Messages:
         if status_code is None or status_code[0] != '2':
             return result
 
-        self.__update_message_store (result)
+        result['contact'] = contact_id
+        result['data'] = message
+        result['message_type'] = 't'
+
+        self.__create_message_sent_store(result)
 
         return result
 
@@ -251,9 +329,11 @@ class Messages:
         if status_code is None or status_code[0] != '2':
             return result
 
-        result['image_data'] = image_data
+        result['data'] = {'data': image_data, 'caption': caption}
+        result['contact'] = contact_id
+        result['message_type'] = 'i'
 
-        self.__update_message_store(result)
+        self.__create_message_sent_store(result)
 
         return result
 
@@ -272,7 +352,11 @@ class Messages:
         if status_code is None or status_code[0] != '2':
             return result
 
-        self.__update_message_store (result)
+        result['data'] = {'latitude':latitude, 'longitude': longitude}
+        result['contact'] = contact_id
+        result['message_type'] = 'l'
+
+        self.__create_message_sent_store (result)
 
         return result
 
@@ -297,9 +381,11 @@ class Messages:
         if status_code is None or status_code[0] != '2':
             return result
 
-        result['audio_data'] = audio_data
+        result['data'] = {'data': audio_data, 'voice': voice}
+        result['contact'] = contact_id
+        result['message_type'] = 'a'
 
-        self.__update_message_store(result)
+        self.__create_message_sent_store(result)
 
         return result
 
@@ -339,7 +425,11 @@ class Messages:
         if status_code is None or status_code[0] != '2':
             return result
 
-        self.__update_message_store(result)
+        result['data'] = {'data': None, 'voice': caption}
+        result['contact'] = contact_id
+        result['message_type'] = 'v'
+
+        self.__create_message_sent_store(result)
 
         return result
 
@@ -371,7 +461,11 @@ class Messages:
         if status_code is None or status_code[0] != '2':
             return result
 
-        self.__update_message_store(result)
+        result['data'] = {'data': vcard, 'caption': name}
+        result['contact'] = contact_id
+        result['message_type'] = 'c'
+
+        self.__create_message_sent_store(result)
 
         return result
 
