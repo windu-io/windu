@@ -48,19 +48,25 @@ class Messages:
 
         t = result.get('t')
         if t is None:
-            time = None
+            time = timezone.now()
         else:
             time = datetime.fromtimestamp(int(t))
 
-        data = None
         url = None
         caption = None
         file_hash = None
         latitude = None
         longitude = None
         data = result.get('data')
+        text_data = data
         if data is not None and type(data) is dict:
+            text_data = ''
             caption = data.get('caption')
+            inner_data = data.get('data')
+
+            if inner_data is not None:
+                data = inner_data
+
             url = data.get('url')
             file_hash = data.get('hash')
             latitude = data.get('latitude')
@@ -74,7 +80,7 @@ class Messages:
                 'send_type': send_type,
                 'message_type': message_type,
                 'time': time,
-                'data': data,
+                'data': text_data,
                 'url': url,
                 'caption': caption,
                 'participant': participant,
@@ -146,7 +152,7 @@ class Messages:
 
         self.__create_message_sent_store(result)
 
-        return result
+        return {'message_id': result.get('id'), 'code': status_code}
 
     def __send_image(self, contact_id, filename, caption, file_size = 0, file_hash = ''):
         result = {}
@@ -335,7 +341,7 @@ class Messages:
 
         self.__create_message_sent_store(result)
 
-        return result
+        return {'id': result.get('id'), 'code': status_code, 'url': image_data.get('url'), 'hash': image_data.get('hash') }
 
     def send_location(self, contact_id, latitude, longitude, caption):
 
@@ -358,7 +364,7 @@ class Messages:
 
         self.__create_message_sent_store (result)
 
-        return result
+        return {'id': result.get('id'), 'code':  status_code}
 
     def send_audio(self, contact_id, filename, url, voice):
 
@@ -387,7 +393,7 @@ class Messages:
 
         self.__create_message_sent_store(result)
 
-        return result
+        return {'id': result.get('id'), 'code': status_code, 'url': audio_data.get('url'), 'hash': audio_data.get('hash') }
 
     @staticmethod
     def __get_video_path(path, url):
@@ -431,7 +437,7 @@ class Messages:
 
         self.__create_message_sent_store(result)
 
-        return result
+        return {'id': result.get('id'), 'code':  status_code}
 
     def __send_vcard(self, contact_id, vcard, name):
         result = {}
@@ -467,7 +473,7 @@ class Messages:
 
         self.__create_message_sent_store(result)
 
-        return result
+        return {'id': result.get('id'), 'code':  status_code}
 
     def __set_typing(self, contact_id, typing):
         result = {}
