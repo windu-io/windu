@@ -440,7 +440,7 @@ class Contacts:
                 last_seen = None
             elif last_seen_str.isdigit():
                 new_connected_status = 'offline'
-                last_seen = datetime.fromtimestamp(int(last_seen_str))
+                last_seen = datetime.utcfromtimestamp(int(last_seen_str))
             else:
                 continue
 

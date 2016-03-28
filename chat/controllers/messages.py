@@ -1,20 +1,20 @@
 #! /usr/bin/env python
 # -*- coding: utf-8 -*-
 
-from datetime import datetime
 
-from django.utils import timezone
 from .agent import get_agent_and_check_events
 
 from .contacts import Contacts
-from ..models import Account as ModelAccount
-from ..models import Message
-from ..models import MessageGroupRead
-from ..models import FileUpload
+
+from .events import check_events_now
 
 from ..util.image_uploader import ImageUploader
 from ..util.audio_uploader import AudioUploader
 from ..util.file_process import process_file
+
+from ..models import FileUpload
+
+from .message_store import MessagesStore
 
 import os
 
@@ -30,86 +30,8 @@ class Messages:
     def __check_contact(self, contact_id):
         return Contacts.contact_valid(self.__account, contact_id)
 
-
-    @staticmethod
-    def __get_message_sent_data_from_result(result):
-        message_id = result.get('id')
-        if message_id is None:
-            return None
-
-        entity_id = result.get('contact')
-        if entity_id is None:
-            return None
-
-        send_type = 's'     # sent
-        message_type = result.get('message_type')
-        if message_type is None:
-            return None
-
-        t = result.get('t')
-        if t is None:
-            time = timezone.now()
-        else:
-            time = datetime.fromtimestamp(int(t))
-
-        url = None
-        caption = None
-        file_hash = None
-        latitude = None
-        longitude = None
-        data = result.get('data')
-        text_data = data
-        if data is not None and type(data) is dict:
-            text_data = ''
-            caption = data.get('caption')
-            inner_data = data.get('data')
-
-            if inner_data is not None:
-                data = inner_data
-
-            url = data.get('url')
-            file_hash = data.get('hash')
-            latitude = data.get('latitude')
-            longitude = data.get('longitude')
-
-        participant = result.get('participant')
-
-        return {
-                'message_id': message_id,
-                'entity_id': entity_id,
-                'send_type': send_type,
-                'message_type': message_type,
-                'time': time,
-                'data': text_data,
-                'url': url,
-                'caption': caption,
-                'participant': participant,
-                'file_hash': file_hash,
-                'latitude': latitude,
-                'longitude': longitude,
-                }
-
     def create_message_model(self, message_data):
-        Message.objects.create(account=self.__account,
-                               message_id=message_data.get('message_id'),
-                               entity_id=message_data.get('entity_id'),
-                               send_type=message_data.get('send_type'),
-                               message_type=message_data.get('message_type'),
-                               time=message_data.get('time'),
-                               data=message_data.get('data'),
-                               url=message_data.get('url'),
-                               longitude=message_data.get('longitude'),
-                               latitude=message_data.get('latitude'),
-                               mimetype=message_data.get('mime_type'),
-                               file_hash=message_data.get('file_hash'),
-                               participant=message_data.get('participant'),
-                               )
-
-    def __create_message_sent_store(self, result):
-        message_data = Messages.__get_message_sent_data_from_result(result)
-        if message_data is None:
-            return
-        self.create_message_model(message_data)
+        return MessagesStore.create_message_model(self.__account, message_data)
 
     def __send_message(self, contact_id, message):
         result = {}
@@ -146,11 +68,16 @@ class Messages:
         if status_code is None or status_code[0] != '2':
             return result
 
-        result['contact'] = contact_id
-        result['data'] = message
-        result['message_type'] = 't'
+        message_data = {
+            'message_id': result.get('id'),
+            'entity_id': contact_id,
+            'data': message,
+            'message_type': 't',
+            'send_type': 's',
+            'time' : result.get('t')
+        }
 
-        self.__create_message_sent_store(result)
+        self.create_message_model(message_data)
 
         return {'message_id': result.get('id'), 'code': status_code}
 
@@ -335,11 +262,19 @@ class Messages:
         if status_code is None or status_code[0] != '2':
             return result
 
-        result['data'] = {'data': image_data, 'caption': caption}
-        result['contact'] = contact_id
-        result['message_type'] = 'i'
+        message_data = {
+            'message_id': result.get('id'),
+            'entity_id': contact_id,
+            'data': '',
+            'caption': caption,
+            'message_type': 'i',
+            'send_type': 's',
+            'time': result.get('t'),
+            'url': result.get('url'),
+            'file_hash': result.get('hash'),
+        }
 
-        self.__create_message_sent_store(result)
+        self.create_message_model(message_data)
 
         return {'id': result.get('id'), 'code': status_code, 'url': image_data.get('url'), 'hash': image_data.get('hash') }
 
@@ -358,11 +293,19 @@ class Messages:
         if status_code is None or status_code[0] != '2':
             return result
 
-        result['data'] = {'latitude':latitude, 'longitude': longitude}
-        result['contact'] = contact_id
-        result['message_type'] = 'l'
+        message_data = {
+            'message_id': result.get('id'),
+            'entity_id': contact_id,
+            'data': '',
+            'caption': caption,
+            'message_type': 'l',
+            'send_type': 's',
+            'time': result.get('t'),
+            'latitude': latitude,
+            'longitude': longitude,
+        }
 
-        self.__create_message_sent_store (result)
+        self.create_message_model(message_data)
 
         return {'id': result.get('id'), 'code':  status_code}
 
@@ -387,13 +330,25 @@ class Messages:
         if status_code is None or status_code[0] != '2':
             return result
 
-        result['data'] = {'data': audio_data, 'voice': voice}
-        result['contact'] = contact_id
-        result['message_type'] = 'a'
+        if voice:
+            message_type = 's'
+        else:
+            message_type = 'a'
 
-        self.__create_message_sent_store(result)
+        message_data = {
+            'message_id': result.get('id'),
+            'entity_id': contact_id,
+            'data': '',
+            'message_type': message_type,
+            'send_type': 's',
+            'time': result.get('t'),
+            'url': audio_data.get('url'),
+            'file_hash': audio_data.get('hash'),
+        }
 
-        return {'id': result.get('id'), 'code': status_code, 'url': audio_data.get('url'), 'hash': audio_data.get('hash') }
+        self.create_message_model(message_data)
+
+        return {'id': result.get('id'), 'code': status_code, 'url': audio_data.get('url'), 'hash': audio_data.get('hash')}
 
     @staticmethod
     def __get_video_path(path, url):
@@ -431,11 +386,17 @@ class Messages:
         if status_code is None or status_code[0] != '2':
             return result
 
-        result['data'] = {'data': None, 'voice': caption}
-        result['contact'] = contact_id
-        result['message_type'] = 'v'
+        message_data = {
+            'message_id': result.get('id'),
+            'entity_id': contact_id,
+            'data': '',
+            'message_type': 'v',
+            'send_type': 's',
+            'caption': caption,
+            'time': result.get('t'),
+        }
 
-        self.__create_message_sent_store(result)
+        self.create_message_model(message_data)
 
         return {'id': result.get('id'), 'code':  status_code}
 
@@ -467,11 +428,17 @@ class Messages:
         if status_code is None or status_code[0] != '2':
             return result
 
-        result['data'] = {'data': vcard, 'caption': name}
-        result['contact'] = contact_id
-        result['message_type'] = 'c'
+        message_data = {
+            'message_id': result.get('id'),
+            'entity_id': contact_id,
+            'data': vcard,
+            'message_type': 'c',
+            'send_type': 's',
+            'caption': name,
+            'time': result.get('t'),
+        }
 
-        self.__create_message_sent_store(result)
+        self.create_message_model(message_data)
 
         return {'id': result.get('id'), 'code':  status_code}
 
@@ -505,4 +472,24 @@ class Messages:
             return result
 
         return result
+
+    def get_messages(self, contact_id, after, limit, offset, received_only):
+
+        if contact_id is None:
+            return {'error': 'Invalid contact_id', 'code': '400'}
+        contact = self.__check_contact(contact_id)
+        if contact.get('code') != '200':
+            return contact
+
+        result = check_events_now(self.__account)
+
+        status_code = result.get('code')
+
+        if status_code is None or status_code[0] != '2':
+            return result
+
+        messages = MessagesStore.get_messages(self.__account, contact_id, after, limit, offset, received_only)
+
+        return {'code': '200', 'messages': messages}
+
 

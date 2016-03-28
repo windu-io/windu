@@ -47,7 +47,7 @@ urlpatterns = [
     url(r'^contacts/(?P<contact_id>[0-9]+)/block/$', contacts.block, name='block'),
     url(r'^contacts/(?P<contact_id>[0-9]+)/unblock/$', contacts.unblock, name='unblock'),
     url(r'^contacts/blocked-list/$', contacts.blocked_list, name='blocked-list'),
-
+    # sending message
     url(r'^messages/send-message/$', messages.send_message, name='send-message'),
     url(r'^messages/send-image/$', messages.send_image, name='send-image'),
     url(r'^messages/send-location/$', messages.send_location, name='send-location'),
@@ -55,9 +55,12 @@ urlpatterns = [
     url(r'^messages/send-voice/$', messages.send_voice, name='send-voice'),
     url(r'^messages/send-video/$', messages.send_video, name='send-video'),
     url(r'^messages/send-vcard/$', messages.send_vcard, name='send-vcard'),
+    # sending typing state
     url(r'^messages/set-typing/$', messages.set_typing, name='set-typing'),
     url(r'^messages/set-paused/$', messages.set_paused, name='set-paused'),
 
+    # getting message
+    url(r'^messages/chats/(?P<contact_id>[0-9]+)/$', messages.get_messages, name='get-messages'),
 ]
 
 

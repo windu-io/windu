@@ -1,6 +1,9 @@
 #! /usr/bin/env python
 # -*- coding: utf-8 -*-
 
+from datetime import datetime
+from dateutil.parser import parse
+
 from os.path import isfile
 
 from rest_framework.decorators import api_view
@@ -301,3 +304,54 @@ def set_paused(request):
 @active_account_required_400()
 def set_typing(request):
     return __set_typing(request, typing=True)
+
+
+def __get_messages_after(request):
+    after = request.GET.get('after')
+    if not after:
+        return datetime.utcfromtimestamp(0)
+    if after.isdigit():
+        return datetime.utcfromtimestamp(int(after))
+    return parse(after)
+
+
+def __get_messages_offset(request):
+    offset = request.GET.get('offset')
+    if offset is None or not offset.isdigit():
+        return 0
+    return int(offset)
+
+
+def __get_messages_limit(request):
+    limit = request.GET.get('limit')
+    if limit is None or not limit.isdigit():
+        return 20
+    return int(limit)
+
+
+def __get_messages_received_only(request):
+    received_only = request.GET.get('received_only')
+    if received_only is None or received_only != '1':
+        return False
+    return True
+
+
+# /api/message/chats/<contact-id>/
+@api_view(['GET'])
+@protected_resource()
+@active_account_required_400()
+def get_messages(request, contact_id):
+
+    after = __get_messages_after(request)
+    offset = __get_messages_offset(request)
+    limit = __get_messages_limit(request)
+    received_only = __get_messages_received_only(request)
+
+    controller = messages_controller.Messages(request.account)
+
+    result = controller.get_messages(contact_id, after, limit, offset, received_only)
+
+    status_code = int(result.pop('code'))
+
+    return Response(result, status_code)
+

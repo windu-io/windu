@@ -9,30 +9,48 @@ from agent_factory import create_agent
 from event_handlers import __find_event_handler
 
 
-def __process_event(name, data):
-    handler = __find_event_handler (name)
+def __process_event(account, name, data):
+    handler = __find_event_handler (account, name)
     if handler is None:
         return
-    handler(data)
+    handler(account, data)
 
 
-def __process_events(events):
+def __process_events(account, events):
     for event in events:
         name = event.get('name')
         data = event.get('data')
         if name is None or data is None:
             continue
-        __process_event(name, data)
+        __process_event(account, name, data)
 
 
 def __agent(account):
     return create_agent(account)
 
 
-def __flush_events(account):
+def __peek_events(account):
+    result = {}
     agent = __agent(account)
-    events = agent.peekEventsForce()
-    __process_events (events)
+    try:
+        events = agent.peekEvents()
+        return {'code': '200', 'events': events}
+    except Exception as e:
+        result['error'] = 'Error peeking events: ' + str(e)
+        result['code'] = '500'
+    return result
+
+
+def __flush_events(account):
+    result = __peek_events(account)
+
+    status_code = result.get('code')
+
+    if status_code is None or status_code[0] != '2':
+        return result
+
+    __process_events(account, result.get('events'))
+    return result
 
 
 def __schedule_flush_events(account):
@@ -60,3 +78,19 @@ def check_events(account):
 
     account.last_check_events = timezone.now()
     account.save()
+
+
+def check_events_now(account):
+    if not __can_check_events(account.last_check_events):
+        return
+
+    result = __flush_events(account)
+
+    status_code = result.get('code')
+
+    if status_code is None or status_code[0] != '2':
+        return result
+
+    account.last_check_events = timezone.now()
+    account.save()
+    return result

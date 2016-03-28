@@ -5,4 +5,7 @@ from wagent import WinduAgent
 
 
 def create_agent(account):
-    return WinduAgent.WinduAgent (account.account, account.nickname, account.password)
+    return WinduAgent.WinduAgent(phoneNumber=account.account,
+                                 nickName=account.nickname,
+                                 password=account.password,
+                                 autoReply=WinduAgent.WinduAgent.AUTOREPLY_DELIVERED)

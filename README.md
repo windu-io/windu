@@ -352,6 +352,56 @@ For *Media messages* (**Image**, **Video** and **Voice/Audio**) you can either p
 
 ### Receiving Messages
 
+To retrive the message there are two different models, the **chat list**, which will contain all chats with groups or contact and the **message list** the actual messages received or send to/by a contact or a group.
+
+* Getting the chat list:
+
+		curl -X GET https://windu.herokuapp.com/api/message/chats/
+		
+* Get message list (including the sent ones)
+
+	This method will retrive all messages (including the messages you sent):
+	
+	Parameters:
+	
+	`after` filter to retrive only messages after this timestamp
+	
+	`limit` limit the number of messages received
+	
+	`offset` skip the initial offset number of messages
+	
+	`received_only` set this to `1` to receive only messages received (and not the sent ones)
+
+
+		curl -X GET -d "after=<time>" -d "limit=20" -d "offset=0" https://windu.herokuapp.com/api/message/chats/<contact-id>/
+		
+	Result exemple:
+	
+		{
+			messages: [
+			{ 
+			  id: '12345',
+			  type: 't',
+			  received: true,
+			  text: 'Hello 😃'			
+			},
+			{ 
+			  id: '3445',
+			  type: 't',
+			  received: false,
+			  text: 'How you doing??'			
+			},
+			{ 
+			  id: '67789',
+			  type: 't',
+			  received: true,
+			  text: 'Quite good, and you?'
+			},
+			]
+		}
+
+
+
 ### Read/Delivered Receipts
 
 
