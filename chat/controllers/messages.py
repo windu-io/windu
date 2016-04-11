@@ -1,6 +1,7 @@
 #! /usr/bin/env python
 # -*- coding: utf-8 -*-
 
+import os
 
 from .agent import get_agent_and_check_events
 
@@ -8,15 +9,7 @@ from .contacts import Contacts
 
 from .events import check_events_now
 
-from ..util.image_uploader import ImageUploader
-from ..util.audio_uploader import AudioUploader
-from ..util.file_process import process_file
-
-from ..models import FileUpload
-
 from .message_store import MessagesStore
-
-import os
 
 
 class Messages:
@@ -126,117 +119,16 @@ class Messages:
                                  voice)
 
     @staticmethod
-    def __ensure_image_uploaded(file_info):
-
-        uploader = ImageUploader()
-        hash_image = file_info.get('hash')
-        image_upload = FileUpload.objects.filter(hash=hash_image).first()
-
-        if image_upload is not None:
-            return image_upload.file_url
-
-        path = file_info.get('path')
-        image_url = uploader.upload_photo(path)
-        image_upload = FileUpload.objects.create(hash=hash_image, file_url=image_url)
-
-        return image_upload.file_url
-
-    @staticmethod
-    def __ensure_audio_uploaded(file_info):
-
-        hash_audio = file_info.get('hash')
-        mime_type = file_info.get('mime_type')
-        if mime_type is None:
-            mime_type = 'audio/mpeg'
-        else:
-            mime_type = mime_type[0]
-        file_upload = FileUpload.objects.filter(hash=hash_audio).first()
-
-        if file_upload is not None:
-            return file_upload.file_url
-
-        path = file_info.get('path')
-        audio_url = AudioUploader.upload_audio(path, mime_type)
-        image_upload = FileUpload.objects.create(hash=hash_audio, file_url=audio_url)
-
-        return image_upload.file_url
-
-    @staticmethod
-    def __get_image_data_from_file(path):
-
-        filename, file_extension = os.path.splitext(path)
-
-        allowed_extensions = ['.jpg', '.jpeg', '.gif', '.png']
-
-        file_extension = file_extension.lower()
-
-        if file_extension not in allowed_extensions:
-            return {'error': 'Invalid image extension (jpg, jpeg, gif, png)'}
-
-        file_info = process_file(path)
-        if file_info is None:
-            return {'error': 'Fail to get image data from ' + path}
-
-        cached_url = Messages.__ensure_image_uploaded(file_info)
-
-        return {'filename': path,
-                'length': file_info['length'],
-                'hash': file_info['hash'],
-                'url': cached_url}
-
-    @staticmethod
-    def __get_audio_data_from_file(path):
-
-        filename, file_extension = os.path.splitext(path)
-
-        allowed_extensions = ['.3gp', '.caf', '.wav', '.mp3', '.wma', '.ogg', '.aif', '.aac', '.m4a'];
-
-        file_extension = file_extension.lower()
-
-        if file_extension not in allowed_extensions:
-            return {'error': 'Invalid audio extension (3gp, caf, wav, mp3, wma, ogg, aif, aac, m4a)'}
-
-        file_info = process_file(path)
-        if file_info is None:
-            return {'error': 'Fail to get audio data from ' + path}
-
-        cached_url = Messages.__ensure_audio_uploaded(file_info)
-
-        return {'filename': path,
-                'length': file_info['length'],
-                'hash': file_info['hash'],
-                'url': cached_url}
-
-    @staticmethod
-    def __get_image_data_from_url(url):
-        uploader = ImageUploader()
-        cached_url = uploader.upload_photo_from_url(url)
-
-        return {'filename': url,
-                'length': 0,
-                'hash': '',
-                'url': cached_url}
-
-    @staticmethod
-    def __get_audio_data_from_url(url):
-        cached_url = AudioUploader.upload_audio_from_url(url)
-
-        return {'filename': url,
-                'length': 0,
-                'hash': '',
-                'url': cached_url}
-
-    @staticmethod
     def __get_image_data(filename, url):
         if filename is not None:
-            return Messages.__get_image_data_from_file(filename)
-        return Messages.__get_image_data_from_url(url)
+            return MessagesStore.get_image_data_from_file(filename)
+        return MessagesStore.get_image_data_from_url(url)
 
     @staticmethod
     def __get_audio_data(filename, url):
         if filename is not None:
-            return Messages.__get_audio_data_from_file(filename)
-        return Messages.__get_audio_data_from_url(url)
+            return MessagesStore.get_audio_data_from_file(filename)
+        return MessagesStore.get_audio_data_from_url(url)
 
     def send_image(self, contact_id, filename, url, caption):
 
@@ -270,13 +162,13 @@ class Messages:
             'message_type': 'i',
             'send_type': 's',
             'time': result.get('t'),
-            'url': result.get('url'),
-            'file_hash': result.get('hash'),
+            'url': image_data.get('url'),
+            'file_hash': image_data.get('hash'),
         }
 
         self.create_message_model(message_data)
 
-        return {'id': result.get('id'), 'code': status_code, 'url': image_data.get('url'), 'hash': image_data.get('hash') }
+        return {'id': result.get('id'), 'code': status_code, 'url': image_data.get('url'), 'hash': image_data.get('hash')}
 
     def send_location(self, contact_id, latitude, longitude, caption):
 
@@ -491,5 +383,3 @@ class Messages:
         messages = MessagesStore.get_messages(self.__account, contact_id, after, limit, offset, received_only)
 
         return {'code': '200', 'messages': messages}
-
-
