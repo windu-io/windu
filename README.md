@@ -402,7 +402,7 @@ To retrive the message there are two different models, the **chat list**, which 
 
 
 
-### Read/Delivered Receipts
+### Read Receipts
 
 
 
