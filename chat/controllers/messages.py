@@ -375,10 +375,12 @@ class Messages:
 
         result = check_events_now(self.__account)
 
-        status_code = result.get('code')
+        if result is not None:
 
-        if status_code is None or status_code[0] != '2':
-            return result
+            status_code = result.get('code')
+
+            if status_code is None or status_code[0] != '2':
+                return result
 
         messages = MessagesStore.get_messages(self.__account, contact_id, after, limit, offset, received_only)
 

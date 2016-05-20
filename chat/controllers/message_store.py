@@ -193,11 +193,11 @@ class MessagesStore:
         if received_only:
             query_messages = Message.objects.filter(account=account,
                                                     entity_id=contact_id,
-                                                    time__gt=after, send_type='r')[offset:limit]
+                                                    time__gt=after, send_type='r').order_by('-time')[offset:limit]
         else:
             query_messages = Message.objects.filter(account=account,
                                                     entity_id=contact_id,
-                                                    time__gt=after)[offset:limit]
+                                                    time__gt=after).order_by('-time')[offset:limit]
 
         messages = []
 
@@ -206,3 +206,21 @@ class MessagesStore:
             messages.append(info)
 
         return messages
+
+    @staticmethod
+    def update_delivered_date(account, message_data):
+
+        t = message_data.get('time')
+        if t is None:
+            message_data['time'] = timezone.now()
+        else:
+            message_data['time'] = datetime.utcfromtimestamp(int(t))
+
+        model = Message.objects.filter(account=account,
+                                       message_id=message_data.get('message_id'),
+                                       entity_id=message_data.get('entity_id')).first()
+        if model is None:
+            return
+        model.delivered = message_data['time']
+        model.save()
+

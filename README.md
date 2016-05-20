@@ -286,68 +286,68 @@ For *Media messages* (**Image**, **Video** and **Voice/Audio**) you can either p
 
 * Sending a text message:
 
-		curl -X POST -d "message=😍&contact=XXXXXXX" https://windu.herokuapp.com/api/message/send-message/
+		curl -X POST -d "message=😍&contact=XXXXXXX" https://windu.herokuapp.com/api/messages/send-message/
 
 * Sending an image (uploaded):
 
-		curl -X POST -F "caption=Cool Image☺️" -F"contact=XXXXXXX" -F "filename=@photo.jpg"  https://windu.herokuapp.com/api/message/send-image/
+		curl -X POST -F "caption=Cool Image☺️" -F"contact=XXXXXXX" -F "filename=@photo.jpg"  https://windu.herokuapp.com/api/messages/send-image/
 		
 	From URL:
 		
-		curl -X POST -d "caption=Cool Image😏&contact=XXXXXXXurl=http://i.imgur.com/Vi4wcC3.jpg" https://windu.herokuapp.com/api/message/send-image/
+		curl -X POST -d "caption=Cool Image😏&contact=XXXXXXXurl=http://i.imgur.com/Vi4wcC3.jpg" https://windu.herokuapp.com/api/messages/send-image/
 
 
 * Send location message:
 
-		curl -X POST -d "caption=Cool Place🗼&contact=XXXXXXXlatitude=48.8571&longitude=2.2943" https://windu.herokuapp.com/api/message/send-location/
+		curl -X POST -d "caption=Cool Place🗼&contact=XXXXXXXlatitude=48.8571&longitude=2.2943" https://windu.herokuapp.com/api/messages/send-location/
 
 
 * **Send voice/audio message (valid extensions: *3gp*, *caf*, *mp3*, *ogg*, *aif*, *aac*, *m4a*)**:
 
 * Sending a voice message (uploaded):
 
-		curl -X POST  -F"contact=XXXXXXX" -F "filename=@voice.aac"  https://windu.herokuapp.com/api/message/send-voice/
+		curl -X POST  -F"contact=XXXXXXX" -F "filename=@voice.aac"  https://windu.herokuapp.com/api/messages/send-voice/
 		
 	From URL:
 		
-		curl -X POST -d "contact=XXXXXXX&url=http://a.clyp.it/isks2.mp3" https://windu.herokuapp.com/api/message/send-voice/
+		curl -X POST -d "contact=XXXXXXX&url=http://a.clyp.it/isks2.mp3" https://windu.herokuapp.com/api/messages/send-voice/
 
 
 * Sending an audio message (uploaded):
 
-		curl -X POST  -F"contact=XXXXXXX" -F "filename=@voice.aac"  https://windu.herokuapp.com/api/message/send-audio/
+		curl -X POST  -F"contact=XXXXXXX" -F "filename=@voice.aac"  https://windu.herokuapp.com/api/messages/send-audio/
 		
 	From URL:
 		
-		curl -X POST -d "contact=XXXXXXX&url=http://a.clyp.it/isks2.mp3" https://windu.herokuapp.com/api/message/send-audio/
+		curl -X POST -d "contact=XXXXXXX&url=http://a.clyp.it/isks2.mp3" https://windu.herokuapp.com/api/messages/send-audio/
 
 * **Send video message (valid extensions: *3gp*, *mp4*, *mov*, *avi]*)**:
 
 * Sending a video message (uploaded):
 
-		curl -X POST  -F"contact=XXXXXXX" -F "filename=@video.mp4"  https://windu.herokuapp.com/api/message/send-video/
+		curl -X POST  -F"contact=XXXXXXX" -F "filename=@video.mp4"  https://windu.herokuapp.com/api/messages/send-video/
 		
 	From URL:
 		
-		curl -X POST -d "contact=XXXXXXX&url=https://dl.dropboxusercontent.com/u/7386739/video.mp4" https://windu.herokuapp.com/api/message/send-voice/
+		curl -X POST -d "contact=XXXXXXX&url=https://dl.dropboxusercontent.com/u/7386739/video.mp4" https://windu.herokuapp.com/api/messages/send-voice/
 
 * Send vCard message:
 
-		curl -X POST -d "contact=XXXXXXX&name=Johh Doe&vcard=BEGIN:VCARD(... all card content here)" https://windu.herokuapp.com/api/message/send-vcard/		
+		curl -X POST -d "contact=XXXXXXX&name=Johh Doe&vcard=BEGIN:VCARD(... all card content here)" https://windu.herokuapp.com/api/messages/send-vcard/
 	From file:
 	
-		curl -X POST  -F"contact=XXXXXXX" -F"name=John" -F "filename=@johh.vcf"  https://windu.herokuapp.com/api/message/send-vcard/
+		curl -X POST  -F"contact=XXXXXXX" -F"name=John" -F "filename=@johh.vcf"  https://windu.herokuapp.com/api/messages/send-vcard/
 		
 
 ### Typing Status
 
 * Set typing status for a contact:
 
-		curl -X POST -d "contact=XXXXXXX" https://windu.herokuapp.com/api/message/set-typing/
+		curl -X POST -d "contact=XXXXXXX" https://windu.herokuapp.com/api/messages/set-typing/
 		
 * Set paused (typing) status for a contact:
 
-		curl -X POST -d "contact=XXXXXXX" https://windu.herokuapp.com/api/message/set-paused/
+		curl -X POST -d "contact=XXXXXXX" https://windu.herokuapp.com/api/messages/set-paused/
 	
 
 ### Receiving Messages
@@ -373,7 +373,7 @@ To retrive the message there are two different models, the **chat list**, which 
 	`received_only` set this to `1` to receive only messages received (and not the sent ones)
 
 
-		curl -X GET -d "after=<time>" -d "limit=20" -d "offset=0" https://windu.herokuapp.com/api/message/chats/<contact-id>/
+		curl -X GET -d "after=<time>" -d "limit=20" -d "offset=0" https://windu.herokuapp.com/api/messages/chats/<contact-id>/
 		
 	Result exemple:
 	

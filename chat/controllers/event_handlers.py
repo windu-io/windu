@@ -5,10 +5,19 @@ from message_store import MessagesStore
 
 
 def __on_message_received_client(account, data):
-    print ('__on_message_received_client')
-    print (data)
-    return
 
+    message_id = data.get('id')
+    entity_id = data.get('from')
+    if message_id is None or entity_id is None:
+        return
+
+    message_data = {
+        'entity_id': entity_id,
+        'message_id': message_id,
+        'time': data.get ('t'),
+    }
+
+    MessagesStore.update_delivered_date(account, message_data)
 
 def __on_get_receipt(account, data):
     print ('__on_get_receipt')
@@ -48,12 +57,15 @@ def __on_get_image(account, message_info):
     caption = message_info.get('caption')
     message_id = message_info.get('id')
     entity_id = message_info.get('from')
-    url = message_info.get('url')
+    file = message_info.get('file')
 
-    if url is None or message_id is None or entity_id is None:
+    if file is None or message_id is None or entity_id is None:
         return
-    # TODO: Check image data on file attribute?
-    image_data = MessagesStore.get_image_data_from_url(url)
+
+    image_data = MessagesStore.get_image_data_from_file(file)
+    if image_data is None or image_data.get('url') is None:
+        return
+
     message_data = {
         'message_id': message_id,
         'entity_id': entity_id,
