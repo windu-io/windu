@@ -19,10 +19,21 @@ def __on_message_received_client(account, data):
 
     MessagesStore.update_delivered_date(account, message_data)
 
+
 def __on_get_receipt(account, data):
-    print ('__on_get_receipt')
-    print (data)
-    return
+
+    message_id = data.get('id')
+    entity_id = data.get('from')
+    if message_id is None or entity_id is None:
+        return
+
+    message_data = {
+        'entity_id': entity_id,
+        'message_id': message_id,
+        'time': data.get('t'),
+    }
+
+    MessagesStore.update_read_date(account, message_data)
 
 
 def __on_get_group_message(account, data):

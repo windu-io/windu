@@ -201,7 +201,7 @@ class MessagesStore:
 
         messages = []
 
-        for message in query_messages:
+        for message in reversed(query_messages):
             info = MessagesStore.__model_to_message_result(message)
             messages.append(info)
 
@@ -222,5 +222,22 @@ class MessagesStore:
         if model is None:
             return
         model.delivered = message_data['time']
+        model.save()
+
+    @staticmethod
+    def update_read_date(account, message_data):
+
+        t = message_data.get('time')
+        if t is None:
+            message_data['time'] = timezone.now()
+        else:
+            message_data['time'] = datetime.utcfromtimestamp(int(t))
+
+        model = Message.objects.filter(account=account,
+                                       message_id=message_data.get('message_id'),
+                                       entity_id=message_data.get('entity_id')).first()
+        if model is None:
+            return
+        model.read = message_data['time']
         model.save()
 
