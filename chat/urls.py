@@ -61,6 +61,10 @@ urlpatterns = [
 
     # getting message
     url(r'^messages/chats/(?P<contact_id>[0-9]+)/$', messages.get_messages, name='get-messages'),
+
+    # read receipt
+    url(r'^messages/update-last-read/$', messages.update_last_read, name='update-last-read'),
+
 ]
 
 

@@ -3,6 +3,11 @@
 
 import os
 
+from datetime import datetime
+from django.utils import timezone
+
+from bulk_update.helper import bulk_update
+
 from .agent import get_agent_and_check_events
 
 from .contacts import Contacts
@@ -10,6 +15,7 @@ from .contacts import Contacts
 from .events import check_events_now
 
 from .message_store import MessagesStore
+
 
 
 class Messages:
@@ -369,9 +375,6 @@ class Messages:
 
         if contact_id is None:
             return {'error': 'Invalid contact_id', 'code': '400'}
-        contact = self.__check_contact(contact_id)
-        if contact.get('code') != '200':
-            return contact
 
         result = check_events_now(self.__account)
 
@@ -385,3 +388,48 @@ class Messages:
         messages = MessagesStore.get_messages(self.__account, contact_id, after, limit, offset, received_only)
 
         return {'code': '200', 'messages': messages}
+
+    def __send_message_read(self, contact_id, message_ids):
+
+        result = {}
+        agent = self.__agent()
+        try:
+                result = agent.sendMessageReadBatch(contact_id, message_ids)
+        except Exception as e:
+            result['error'] = 'Error sending message read: ' + str(e)
+            result['code'] = '500'
+        return result
+
+    def update_last_read (self, contact_id, date_limit):
+
+        if contact_id is None:
+            return {'error': 'Invalid contact_id', 'code': '400'}
+        if date_limit is None:
+            return {'error': 'Invalid date_limit', 'code': '400'}
+
+        message_ids = []
+        messages = MessagesStore.get_unread_received_messages (self.__account, contact_id, date_limit)
+        if messages is None:
+            return {'code': '200', 'message': 'No message found to mark as read'}
+
+        for message in messages:
+            message_ids.append(message.message_id)
+            message.read = timezone.now()
+
+        if len(messages) == 0:
+            return {'code': '200', 'message': 'No message found to mark as read'}
+
+        result = self.__send_message_read (contact_id, message_ids)
+
+        status_code = result.get('code')
+
+        if status_code is None or status_code[0] != '2':
+            return result
+
+        bulk_update(messages, update_fields=['read'])
+
+        return result
+
+
+
+

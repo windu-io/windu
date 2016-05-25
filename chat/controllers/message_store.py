@@ -208,6 +208,16 @@ class MessagesStore:
         return messages
 
     @staticmethod
+    def get_unread_received_messages(account, contact_id, date_limit):
+
+        messages = Message.objects.filter(account=account,
+                                                    entity_id=contact_id,
+                                                    time__lte=date_limit,
+                                                    read__isnull=True, send_type='r')
+        return messages
+
+
+    @staticmethod
     def update_delivered_date(account, message_data):
 
         t = message_data.get('time')

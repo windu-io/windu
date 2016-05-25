@@ -41,6 +41,16 @@ def __get_message(request):
     return {'message': message, 'code': 200}
 
 
+def __get_date_limit(request):
+
+    date_limit = request.POST.get('date_limit')
+    if not date_limit:
+        return datetime.utcnow()
+    if date_limit.isdigit():
+        return datetime.utcfromtimestamp(int(date_limit))
+    return parse(date_limit)
+
+
 def __get_latitude(request):
 
     latitude = request.POST.get('latitude')
@@ -354,4 +364,28 @@ def get_messages(request, contact_id):
     status_code = int(result.pop('code'))
 
     return Response(result, status_code)
+
+
+# /api/message/update-last-read/
+@api_view(['POST'])
+@protected_resource()
+@active_account_required_400()
+def update_last_read(request):
+
+    result_contact = __get_contact(request)
+    if result_contact['code'] != 200:
+        return Response(result_contact['error'], result_contact['code'])
+    contact = result_contact['contact']
+
+    date_limit = __get_date_limit(request)
+
+    controller = messages_controller.Messages(request.account)
+
+    result = controller.update_last_read (contact, date_limit)
+
+    status_code = int(result.pop('code'))
+
+    return Response(result, status_code)
+
+
 
