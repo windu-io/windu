@@ -388,4 +388,42 @@ def update_last_read(request):
     return Response(result, status_code)
 
 
+# /api/message/delivered/<contact-id>/
+@api_view(['GET'])
+@protected_resource()
+@active_account_required_400()
+def get_delivered_messages(request, contact_id):
+
+    after = __get_messages_after(request)
+    offset = __get_messages_offset(request)
+    limit = __get_messages_limit(request)
+
+    controller = messages_controller.Messages(request.account)
+
+    result = controller.get_delivered_messages(contact_id, after, limit, offset)
+
+    status_code = int(result.pop('code'))
+
+    return Response(result, status_code)
+
+
+# /api/message/read/<contact-id>/
+@api_view(['GET'])
+@protected_resource()
+@active_account_required_400()
+def get_read_messages(request, contact_id):
+
+    after = __get_messages_after(request)
+    offset = __get_messages_offset(request)
+    limit = __get_messages_limit(request)
+
+    controller = messages_controller.Messages(request.account)
+
+    result = controller.get_read_messages(contact_id, after, limit, offset)
+
+    status_code = int(result.pop('code'))
+
+    return Response(result, status_code)
+
+
 

@@ -389,6 +389,42 @@ class Messages:
 
         return {'code': '200', 'messages': messages}
 
+    def get_delivered_messages(self, contact_id, after, limit, offset):
+
+        if contact_id is None:
+            return {'error': 'Invalid contact_id', 'code': '400'}
+
+        result = check_events_now(self.__account)
+
+        if result is not None:
+
+            status_code = result.get('code')
+
+            if status_code is None or status_code[0] != '2':
+                return result
+
+        messages = MessagesStore.get_delivered_messages(self.__account, contact_id, after, limit, offset)
+
+        return {'code': '200', 'messages': messages}
+
+    def get_read_messages(self, contact_id, after, limit, offset):
+
+        if contact_id is None:
+            return {'error': 'Invalid contact_id', 'code': '400'}
+
+        result = check_events_now(self.__account)
+
+        if result is not None:
+
+            status_code = result.get('code')
+
+            if status_code is None or status_code[0] != '2':
+                return result
+
+        messages = MessagesStore.get_read_messages(self.__account, contact_id, after, limit, offset)
+
+        return {'code': '200', 'messages': messages}
+
     def __send_message_read(self, contact_id, message_ids):
 
         result = {}

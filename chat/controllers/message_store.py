@@ -141,6 +141,7 @@ class MessagesStore:
                                send_type=message_data.get('send_type'),
                                message_type=message_data.get('message_type'),
                                time=message_data.get('time'),
+                               delivered=message_data.get('time'),
                                data=message_data.get('data'),
                                url=message_data.get('url'),
                                longitude=message_data.get('longitude'),
@@ -160,7 +161,7 @@ class MessagesStore:
             model.file_hash = message_data.get('file_hash')
             model.caption = message_data.get('caption')
             model.participant = message_data.get('participant')
-            model.save ()
+            model.save()
 
     @staticmethod
     def __model_to_message_result(message):
@@ -208,14 +209,51 @@ class MessagesStore:
         return messages
 
     @staticmethod
+    def get_delivered_messages(account, contact_id, after, limit, offset):
+
+        query_messages = Message.objects.filter(account=account,
+                                                entity_id=contact_id,
+                                                delivered__gte=after, send_type='s',
+                                                delivered__isnull=False).order_by('-time')[offset:limit]
+
+        messages = []
+
+        for message in reversed(query_messages):
+            info = {
+                'id': message.message_id,
+                'delivered': message.delivered,
+            }
+            messages.append(info)
+
+        return messages
+
+    @staticmethod
+    def get_read_messages(account, contact_id, after, limit, offset):
+
+        query_messages = Message.objects.filter(account=account,
+                                                entity_id=contact_id,
+                                                read__gte=after, send_type='s',
+                                                read__isnull=False).order_by('-time')[offset:limit]
+
+        messages = []
+
+        for message in reversed(query_messages):
+            info = {
+                'id': message.message_id,
+                'read': message.read,
+            }
+            messages.append(info)
+
+        return messages
+
+    @staticmethod
     def get_unread_received_messages(account, contact_id, date_limit):
 
         messages = Message.objects.filter(account=account,
-                                                    entity_id=contact_id,
-                                                    time__lte=date_limit,
-                                                    read__isnull=True, send_type='r')
+                                          entity_id=contact_id,
+                                          time__lte=date_limit,
+                                          read__isnull=True, send_type='r')
         return messages
-
 
     @staticmethod
     def update_delivered_date(account, message_data):

@@ -406,41 +406,60 @@ To retrive the message there are two different models, the **chat list**, which 
 
 All messages succefully received will be marked as delivered as soon the messages is fetched to the server.
 
-* ** Send read receipt **:
+#### Send read receipt 
 
 * Update read receipts for all messages received from a contact before the `date_limit`:
 
 		curl -X POST -d "contact=XXXXXXX&date_limit=2016-06-06 10:00:00" https://windu.herokuapp.com/api/messages/update-last-read/
 		
-If `date_limit` is surpresed the current date time will be used as limit.
+If `date_limit` is suppressed the current date time will be used as limit.
 
-* ** Get delivered/read date **:
 
-* Get the latest messages delivered messages
+#### Get delivered/read date:
 
-This method will retrive all messages (including the messages you sent):
+* Get the latest **delivered** messages
 
-	curl -X GET -d "after=<time>" -d "limit=20" -d "offset=0" https://windu.herokuapp.com/api/messages/chats/<contact-id>/delivered-messages/
+		curl -X GET -d "after=<time>" -d "limit=20" -d "offset=0" https://windu.herokuapp.com/api/messages/delivered/<contact-id>/
 	
 Parameters:
 	
-	`after` filter to retrive only messages after this timestamp
+* `after` filter to retrive only messages delivered after this timestamp
 	
-	`limit` limit the number of messages received
+* `limit` limit the number of messages received
 	
-	`offset` skip the initial offset number of messages
+* `offset` skip the initial offset number of messages
+	
+Example:
 
+	{"messages":
+	[
+		{"delivered":"2016-05-20T05:52:45","id":"9E62584144AC9FE0692A4C"},
+		{"delivered":"2016-05-20T06:06:37","id":"0060FC74577D7D63CF8E68"},
+		{"delivered":"2016-05-20T06:07:47","id":"0060FC74577D7D63CF8E69"}
+	]}
+	
+* Get the latest **read** messages
 
+This method will retrive all messages (including the messages you sent):
 
+	curl -X GET -d "after=<time>" -d "limit=20" -d "offset=0" https://windu.herokuapp.com/api/messages/read/<contact-id>/
+	
+Parameters:
+	
+* `after` filter to retrive only messages read after this timestamp
+	
+* `limit` limit the number of messages received
+	
+* `offset` skip the initial offset number of messages
 
+Example:
 
-
-
-
-
-
-
-
+	{"messages":
+	[
+		{"read":"2016-05-20T05:52:45","id":"9E62584144AC9FE0692A4C"},
+		{"read":"2016-05-20T06:06:37","id":"0060FC74577D7D63CF8E68"},
+		{"read":"2016-05-20T06:07:47","id":"0060FC74577D7D63CF8E69"}
+	]}
 
 
 ##Groups

@@ -64,6 +64,9 @@ urlpatterns = [
 
     # read receipt
     url(r'^messages/update-last-read/$', messages.update_last_read, name='update-last-read'),
+    url(r'^messages/delivered/(?P<contact_id>[0-9]+)/$', messages.get_delivered_messages, name='delivered-messages'),
+    url(r'^messages/read/(?P<contact_id>[0-9]+)/$', messages.get_read_messages, name='read-messages'),
+
 
 ]
 
