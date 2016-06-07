@@ -404,6 +404,40 @@ To retrive the message there are two different models, the **chat list**, which 
 
 ### Read Receipts
 
+All messages succefully received will be marked as delivered as soon the messages is fetched to the server.
+
+* ** Send read receipt **:
+
+* Update read receipts for all messages received from a contact before the `date_limit`:
+
+		curl -X POST -d "contact=XXXXXXX&date_limit=2016-06-06 10:00:00" https://windu.herokuapp.com/api/messages/update-last-read/
+		
+If `date_limit` is surpresed the current date time will be used as limit.
+
+* ** Get delivered/read date **:
+
+* Get the latest messages delivered messages
+
+This method will retrive all messages (including the messages you sent):
+
+	curl -X GET -d "after=<time>" -d "limit=20" -d "offset=0" https://windu.herokuapp.com/api/messages/chats/<contact-id>/delivered-messages/
+	
+Parameters:
+	
+	`after` filter to retrive only messages after this timestamp
+	
+	`limit` limit the number of messages received
+	
+	`offset` skip the initial offset number of messages
+
+
+
+
+
+
+
+
+
 
 
 
