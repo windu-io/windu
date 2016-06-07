@@ -419,15 +419,15 @@ If `date_limit` is suppressed the current date time will be used as limit.
 
 * Get the latest **delivered** messages
 
-		curl -X GET -d "after=<time>" -d "limit=20" -d "offset=0" https://windu.herokuapp.com/api/messages/delivered/<contact-id>/
+		curl -X GET https://windu.herokuapp.com/api/messages/delivered/<contact-id>/?limit=20&offset=0&after=<time>
 	
 Parameters:
 	
-* `after` filter to retrive only messages delivered after this timestamp
+* `after` filter to retrive only messages delivered after this timestamp (default=1970-01-01)
 	
-* `limit` limit the number of messages received
+* `limit` limit the number of messages received (default=20)
 	
-* `offset` skip the initial offset number of messages
+* `offset` skip the initial offset number of messages (default=0)
 	
 Example:
 
@@ -442,15 +442,15 @@ Example:
 
 This method will retrive all messages (including the messages you sent):
 
-	curl -X GET -d "after=<time>" -d "limit=20" -d "offset=0" https://windu.herokuapp.com/api/messages/read/<contact-id>/
+	curl -X GET https://windu.herokuapp.com/api/messages/read/<contact-id>/?limit=20&offset=0&after=<time>
 	
 Parameters:
 	
-* `after` filter to retrive only messages read after this timestamp
+* `after` filter to retrive only messages read after this timestamp (default=1970-01-01)
 	
-* `limit` limit the number of messages received
+* `limit` limit the number of messages received (default=20)
 	
-* `offset` skip the initial offset number of messages
+* `offset` skip the initial offset number of messages (default=0)
 
 Example:
 
