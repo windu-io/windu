@@ -4,6 +4,7 @@ from . import views
 from api import account
 from api import contacts
 from api import messages
+from api import groups
 
 urlpatterns = [
     url(r'^chats/$', views.chats, name='chats'),
@@ -67,6 +68,11 @@ urlpatterns = [
     url(r'^messages/delivered/(?P<contact_id>[0-9]+)/$', messages.get_delivered_messages, name='delivered-messages'),
     url(r'^messages/read/(?P<contact_id>[0-9]+)/$', messages.get_read_messages, name='read-messages'),
 
+    # groups
+    url(r'^groups/create-group/$', groups.create_group, name='create-last-read'),
+    url(r'^groups/info-all/$', groups.get_info_all, name='info-all'),
+    url(r'^groups/(?P<group_id>[0-9]+-[0-9]+)/info/$', groups.get_group_info, name='group-info'),
+    url(r'^groups/(?P<group_id>[0-9]+-[0-9]+)/subject/$', groups.group_subject, name='subject'),
 
 ]
 

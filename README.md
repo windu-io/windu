@@ -462,7 +462,81 @@ Example:
 	]}
 
 
-##Groups
+##Groups (WIP)
+
+
+#### Create, Get groups, Subject and Photo:
+
+* Create a group. Parameters: `subject` and the `participants`. **All** participants need to be synced in your contact list.
+
+		curl -X POST -H "Content-Type: application/json" https://windu.herokuapp.com/api/groups/create-group/  -d "{\"participants\":[\"XXXXXX\",\"YYYYYY\",\"ZZZZZZZ\"], "subject": "Cool group 👍"}"
+
+		
+* Get information about all groups you participate:
+
+		curl -X GET https://windu.herokuapp.com/api/groups/info-all/ 
+		
+* Get information about one group:
+
+		curl -X GET https://windu.herokuapp.com/api/groups/<group-id>/info/ 
+		
+* Change group suject:
+
+		curl -X POST -d "subject=Even more cool group😎&group_id=<group-id>" https://windu.herokuapp.com/api/groups/subject/
+		
+* #### Group photo
+
+
+* Get group **preview** photo URL:
+
+		curl -X GET https://windu.herokuapp.com/api/groups/<group-id>/preview-photo-url/
+		
+* Get group **preview** photo history URLs:
+
+		curl -X GET https://windu.herokuapp.com/api/groups/<group-id>/preview-photo-history-urls/
+		
+* Get group photo URL:
+
+		curl -X GET https://windu.herokuapp.com/api/contacts/<group-id>/photo-url/
+		
+* Get group photo history URLs:
+
+		curl -X GET https://windu.herokuapp.com/api/contacts/<group-id>/photo-history-urls/
+		
+		
+##### Add/Remove Participant, Promote/Demote Participant, Leave Group
+
+* Add participant: Parameter: `contact` and `group_id`, remember the contact must be in your contact list:
+
+	_You need to be admin of the group in order to add participant_
+
+		curl -X POST -d "contact=XXXXXXX&group_id=YYYYYYYY" https://windu.herokuapp.com/api/groups/add-participant/
+		
+* Remove participant: Parameter: `contact` and `group_id`:
+
+	_You need to be admin of the group in order to remove participant_
+
+		curl -X POST -d "contact=XXXXXXX&group_id=YYYYYYYY" https://windu.herokuapp.com/api/groups/remove-participant/
+		
+* Promote participant: Parameter: `contact` and `group_id`:
+
+	_You need to be admin of the group in order to promote participant_
+
+		curl -X POST -d "contact=XXXXXXX&group_id=YYYYYYYY" https://windu.herokuapp.com/api/groups/promote-participant/
+		
+* Demote participant: Parameter: `contact` and `group_id`:
+
+	_You need to be admin of the group in order to demote participant_
+
+		curl -X POST -d "contact=XXXXXXX&group_id=YYYYYYYY" https://windu.herokuapp.com/api/groups/demote-participant/
+
+* Laeve a group: `group_id` of the group you want to leave:
+
+
+		curl -X POST -d "group_id=<group-id>" https://windu.herokuapp.com/api/groups/leave-group/
+		
+##### Group Messages Read Receipts
+		
 	
 
 		

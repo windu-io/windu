@@ -17,7 +17,6 @@ from .events import check_events_now
 from .message_store import MessagesStore
 
 
-
 class Messages:
 
     def __init__(self, account):
@@ -450,7 +449,7 @@ class Messages:
 
         for message in messages:
             message_ids.append(message.message_id)
-            message.read = timezone.now()
+            message.read = datetime.utcnow()
 
         if len(messages) == 0:
             return {'code': '200', 'message': 'No message found to mark as read'}

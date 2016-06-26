@@ -284,6 +284,11 @@ class Contacts:
         return controller.check_contact(contact_id)
 
     @staticmethod
+    def existing_contacts_from_ids(account, contacts_ids):
+        controller = Contacts(account)
+        return controller.__contacts_from_contacts_ids(contacts_ids)
+
+    @staticmethod
     def current_contacts(account):
         controller = Contacts(account)
         return controller.__current_contacts()
