@@ -2,26 +2,9 @@
 # -*- coding: utf-8 -*-
 
 
-from datetime import timedelta
-from datetime import datetime
-
-from django.utils import timezone
-from django.db.models import Q
-
 from .agent_factory import create_agent
-from bulk_update.helper import bulk_update
-
-from windu.settings import WINDU_PROFILE_PHOTO_CACHE_MINUTES
 
 from ..controllers.contacts import Contacts
-from .account import Account
-from ..models import Contact as ModelContact
-from ..models import ContactsFromMessage
-from ..models import StatusMessage
-from ..models import ProfilePhoto
-from ..models import FileUpload
-
-from ..util.image_uploader import ImageUploader
 from ..util.file_process import process_file
 
 import os
@@ -94,6 +77,45 @@ class Groups:
 
     def update_subject (self, group_id, subject):
         return self.__update_subject(group_id, subject)
+
+    def __get_photo_from_server(self, contact_id, preview):
+        result = {}
+        agent = self.__agent()
+        try:
+            if preview:
+                result = agent.sendGetProfilePicturePreview(contact_id)
+            else:
+                result = agent.sendGetProfilePicture(contact_id)
+        except Exception as e:
+            result['error'] = 'Error getting group photo preview: ' + str(e)
+            result['code'] = '500'
+        return result
+
+    def __get_photo(self, contact_id, preview):
+
+        server_result = self.__get_photo_from_server(contact_id, preview)
+
+        status_code = server_result.get('code')
+        if status_code is None or status_code[0] != '2':
+            return server_result
+        path = server_result.get('filename')
+        if not path or not os.path.isfile(path):
+            return {'error': 'Group photo not found', 'code': '404'}
+
+        return process_file(path)
+
+    def photo(self, group_id, preview):
+
+        if group_id is None:
+            return {'error': 'Invalid group_id', 'code': '400'}
+
+        photo = self.__get_photo(group_id, preview=preview)
+
+        photo_data = {group_id: photo}
+
+        Contacts.ensure_images_are_uploaded(photo_data)
+
+        return photo
 
 
 

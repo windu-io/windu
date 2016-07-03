@@ -490,19 +490,12 @@ Example:
 * Get group **preview** photo URL:
 
 		curl -X GET https://windu.herokuapp.com/api/groups/<group-id>/preview-photo-url/
-		
-* Get group **preview** photo history URLs:
 
-		curl -X GET https://windu.herokuapp.com/api/groups/<group-id>/preview-photo-history-urls/
 		
 * Get group photo URL:
 
 		curl -X GET https://windu.herokuapp.com/api/contacts/<group-id>/photo-url/
-		
-* Get group photo history URLs:
 
-		curl -X GET https://windu.herokuapp.com/api/contacts/<group-id>/photo-history-urls/
-		
 		
 ##### Add/Remove Participant, Promote/Demote Participant, Leave Group
 

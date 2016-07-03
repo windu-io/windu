@@ -557,7 +557,7 @@ class Contacts:
         return None
 
     @staticmethod
-    def __ensure_images_are_uploaded (photo_results):
+    def ensure_images_are_uploaded (photo_results):
 
         uploader = ImageUploader()
         new_images = []
@@ -589,7 +589,7 @@ class Contacts:
         if len(photo_results) == 0:
             return
 
-        Contacts.__ensure_images_are_uploaded(photo_results)
+        Contacts.ensure_images_are_uploaded(photo_results)
 
         contact_ids = photo_results.keys()
         contacts = self.__contacts_from_contacts_ids(contact_ids)

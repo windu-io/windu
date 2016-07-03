@@ -1,6 +1,8 @@
 #! /usr/bin/env python
 # -*- coding: utf-8 -*-
 
+from django.http import HttpResponse
+
 from rest_framework.decorators import api_view
 from rest_framework.response import Response
 
@@ -97,4 +99,95 @@ def group_subject(request, group_id):
     return Response(result, status_code)
 
 
-# #### Group photo
+# #### Group Photo
+
+# /api/groups/<group-id>/preview-photo/
+@api_view(['GET'])
+@protected_resource()
+@active_account_required_400()
+def preview_photo(request, group_id):
+
+    if not group_id:
+        return Response({'error': 'No group_id provided (group_id=XXX-XXX)'}, 400)
+
+    controller = groups_controller.Groups(request.account)
+
+    result = controller.photo(group_id, preview=True)
+
+    status_code = int(result.pop('code'))
+
+    if status_code != 200:
+        return Response (result, status_code)
+
+    picture_data = result['picture_data']
+    mime_type = result['mime_type']
+    return HttpResponse (picture_data, mime_type)
+
+
+# /api/groups/<group-id>/preview-photo-url/
+@api_view(['GET'])
+@protected_resource()
+@active_account_required_400()
+def preview_photo_url(request, group_id):
+
+    if not group_id:
+        return Response({'error': 'No group_id provided (group_id=XXX-XXX)'}, 400)
+
+    controller = groups_controller.Groups(request.account)
+
+    result = controller.photo(group_id, preview=True)
+
+    status_code = result.pop('code')
+    if status_code is None or status_code[0] == '5':
+        return Response(result, int(status_code))
+
+    response = {'photo_url': result['photo_url'],
+                'photo_status': status_code }
+
+    return Response(response)
+
+
+# /api/groups/<group-id>/photo/
+@api_view(['GET'])
+@protected_resource()
+@active_account_required_400()
+def photo(request, group_id):
+
+    if not group_id:
+        return Response({'error': 'No group_id provided (group_id=XXX-XXX)'}, 400)
+
+    controller = groups_controller.Groups(request.account)
+
+    result = controller.photo(group_id, preview=False)
+
+    status_code = int(result.pop('code'))
+
+    if status_code != 200:
+        return Response(result, status_code)
+
+    picture_data = result['picture_data']
+    mime_type = result['mime_type']
+    return HttpResponse (picture_data, mime_type)
+
+
+# /api/groups/<group-id>/photo-url/
+@api_view(['GET'])
+@protected_resource()
+@active_account_required_400()
+def photo_url(request, group_id):
+
+    if not group_id:
+        return Response({'error': 'No group_id provided (group_id=XXX-XXX)'}, 400)
+
+    controller = groups_controller.Groups(request.account)
+
+    result = controller.photo(group_id, preview=False)
+
+    status_code = result.pop('code')
+    if status_code is None or status_code[0] == '5':
+        return Response(result, int(status_code))
+
+    response = {'photo_url': result['photo_url'],
+                'photo_status': status_code }
+
+    return Response(response)
