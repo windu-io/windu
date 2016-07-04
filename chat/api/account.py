@@ -45,7 +45,7 @@ def status_message(request):
 
 
 # /api/account/profile-photo
-@api_view(['GET','POST','DELETE'])
+@api_view(['GET', 'POST', 'DELETE'])
 @protected_resource()
 @active_account_required_400()
 def profile_photo(request):

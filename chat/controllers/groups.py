@@ -78,6 +78,32 @@ class Groups:
     def update_subject (self, group_id, subject):
         return self.__update_subject(group_id, subject)
 
+    def __update_group_photo(self, group_id, picture):
+        result = {}
+        agent = self.__agent()
+        try:
+            result = agent.sendSetGroupPicture(group_id, picture)
+        except Exception as e:
+            result['error'] = 'Error updating group photo: ' + str(e)
+            result['code'] = '500'
+        return result
+
+    def update_group_photo(self, group_id, picture):
+        return self.__update_group_photo(group_id, picture)
+
+    def __delete_group_photo(self, group_id):
+        result = {}
+        agent = self.__agent()
+        try:
+            result = agent.sendRemoveGroupPicture(group_id)
+        except Exception as e:
+            result['error'] = 'Error removing group photo: ' + str(e)
+            result['code'] = '500'
+        return result
+
+    def delete_group_photo (self, group_id):
+        return self.__delete_group_photo(group_id)
+
     def __get_photo_from_server(self, contact_id, preview):
         result = {}
         agent = self.__agent()

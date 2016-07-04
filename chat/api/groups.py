@@ -147,15 +147,7 @@ def preview_photo_url(request, group_id):
     return Response(response)
 
 
-# /api/groups/<group-id>/photo/
-@api_view(['GET'])
-@protected_resource()
-@active_account_required_400()
-def photo(request, group_id):
-
-    if not group_id:
-        return Response({'error': 'No group_id provided (group_id=XXX-XXX)'}, 400)
-
+def __get_profile_photo(request, group_id):
     controller = groups_controller.Groups(request.account)
 
     result = controller.photo(group_id, preview=False)
@@ -167,7 +159,56 @@ def photo(request, group_id):
 
     picture_data = result['picture_data']
     mime_type = result['mime_type']
-    return HttpResponse (picture_data, mime_type)
+    return HttpResponse(picture_data, mime_type)
+
+
+def __update_group_photo(request, group_id):
+
+    photo_file = request.FILES.get ('photo')
+
+    if photo_file is None:
+        picture = request.POST.get('url')
+    else:
+        picture = photo_file.temporary_file_path()
+
+    if picture is None:
+        return Response({'error': 'No photo file provided multi-part (photo)'}, 400)
+
+    controller = groups_controller.Groups(request.account)
+    result = controller.update_group_photo(group_id, picture)
+    status_code = int(result.pop('code'))
+    if status_code != 200:
+        return Response(result, status_code)
+
+    return Response({}, status_code)
+
+
+def __delete_group_photo(request, group_id):
+
+    controller = groups_controller.Groups(request.account)
+    result = controller.delete_group_photo(group_id)
+    status_code = int(result.pop('code'))
+
+    if status_code != 200:
+        return Response(result, status_code)
+
+    return Response({}, status_code)
+
+
+# /api/groups/<group-id>/photo/
+@api_view(['GET', 'POST', 'DELETE'])
+@protected_resource()
+@active_account_required_400()
+def photo(request, group_id):
+
+    if not group_id:
+        return Response({'error': 'No group_id provided (group_id=XXX-XXX)'}, 400)
+
+    if request.method == 'POST':
+        return __update_group_photo(request, group_id)
+    if request.method == 'DELETE':
+        return __delete_group_photo(request, group_id)
+    return __get_profile_photo(request, group_id)
 
 
 # /api/groups/<group-id>/photo-url/

@@ -494,7 +494,15 @@ Example:
 		
 * Get group photo URL:
 
-		curl -X GET https://windu.herokuapp.com/api/contacts/<group-id>/photo-url/
+		curl -X GET https://windu.herokuapp.com/api/groups/<group-id>/photo-url/
+		
+* Update group photo:
+
+		curl -X POST -F "photo=@photo.jpg" https://windu.herokuapp.com/groups/<group-id>/photo/
+		
+* Remove group photo:
+
+		curl -X DELETE https://windu.herokuapp.com/groups/<group-id>/photo/
 
 		
 ##### Add/Remove Participant, Promote/Demote Participant, Leave Group
