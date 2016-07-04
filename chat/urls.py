@@ -74,6 +74,11 @@ urlpatterns = [
     url(r'^groups/(?P<group_id>[0-9]+-[0-9]+)/photo-url/$', groups.photo_url, name='group-photo-url'),
     url(r'^groups/(?P<group_id>[0-9]+-[0-9]+)/preview-photo/$', groups.preview_photo, name='group-preview-photo'),
     url(r'^groups/(?P<group_id>[0-9]+-[0-9]+)/preview-photo-url/$', groups.preview_photo_url, name='group-preview-photo-url'),
+    url(r'^groups/(?P<group_id>[0-9]+-[0-9]+)/add-participant/$', groups.add_participant, name='add-participant'),
+    url(r'^groups/(?P<group_id>[0-9]+-[0-9]+)/remove-participant/$', groups.remove_participant, name='remove-participant'),
+    url(r'^groups/(?P<group_id>[0-9]+-[0-9]+)/promote-participant/$', groups.promote_participant, name='promote-participant'),
+    url(r'^groups/(?P<group_id>[0-9]+-[0-9]+)/demote-participant/$', groups.demote_participant, name='demote-participant'),
+    url(r'^groups/(?P<group_id>[0-9]+-[0-9]+)/leave/$', groups.leave_group, name='leave-group'),
 
 ]
 

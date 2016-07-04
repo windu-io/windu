@@ -15,6 +15,18 @@ from ..controllers import groups as groups_controller
 from ..decorators import active_account_required_400
 
 from normalize_id import normalize_list
+from normalize_id import normalize
+
+
+def __get_contact(request):
+
+    contact_id = request.POST.get('contact')
+    if not contact_id:
+        return {'code': 400, 'error': 'No contact provided (contact=XXXXXX)'}
+    contact_id = normalize(contact_id)
+    if contact_id is None:
+        return {'code': 400, 'error': 'Invalid contact value [contact=XXXXXX]'}
+    return {'contact': contact_id, 'code': 200}
 
 # Create/List/Handle groups
 
@@ -232,3 +244,132 @@ def photo_url(request, group_id):
                 'photo_status': status_code }
 
     return Response(response)
+
+
+# /api/groups/<group-id>/add-participant/
+@api_view(['POST'])
+@protected_resource()
+@active_account_required_400()
+def add_participant(request, group_id):
+
+    if not group_id:
+        return Response({'error': 'No group_id provided (group_id=XXX-XXX)'}, 400)
+
+    result_contact = __get_contact(request)
+    if result_contact['code'] != 200:
+        return Response(result_contact['error'], result_contact['code'])
+
+    contact = result_contact['contact']
+
+    controller = groups_controller.Groups(request.account)
+
+    result = controller.add_participant(group_id, contact)
+
+    status_code = int(result.pop('code'))
+
+    if status_code != 200:
+        return Response(result, status_code)
+
+    return Response({}, status_code)
+
+
+# /api/groups/<group-id>/remove-participant/
+@api_view(['POST'])
+@protected_resource()
+@active_account_required_400()
+def remove_participant(request, group_id):
+
+    if not group_id:
+        return Response({'error': 'No group_id provided (group_id=XXX-XXX)'}, 400)
+
+    result_contact = __get_contact(request)
+    if result_contact['code'] != 200:
+        return Response(result_contact['error'], result_contact['code'])
+
+    contact = result_contact['contact']
+
+    controller = groups_controller.Groups(request.account)
+
+    result = controller.remove_participant(group_id, contact)
+
+    status_code = int(result.pop('code'))
+
+    if status_code != 200:
+        return Response(result, status_code)
+
+    return Response({}, status_code)
+
+
+# /api/groups/<group-id>/promote-participant/
+@api_view(['POST'])
+@protected_resource()
+@active_account_required_400()
+def promote_participant(request, group_id):
+
+    if not group_id:
+        return Response({'error': 'No group_id provided (group_id=XXX-XXX)'}, 400)
+
+    result_contact = __get_contact(request)
+    if result_contact['code'] != 200:
+        return Response(result_contact['error'], result_contact['code'])
+
+    contact = result_contact['contact']
+
+    controller = groups_controller.Groups(request.account)
+
+    result = controller.promote_participant(group_id, contact)
+
+    status_code = int(result.pop('code'))
+
+    if status_code != 200:
+        return Response(result, status_code)
+
+    return Response({}, status_code)
+
+
+# /api/groups/<group-id>/demote-participant/
+@api_view(['POST'])
+@protected_resource()
+@active_account_required_400()
+def demote_participant(request, group_id):
+
+    if not group_id:
+        return Response({'error': 'No group_id provided (group_id=XXX-XXX)'}, 400)
+
+    result_contact = __get_contact(request)
+    if result_contact['code'] != 200:
+        return Response(result_contact['error'], result_contact['code'])
+
+    contact = result_contact['contact']
+
+    controller = groups_controller.Groups(request.account)
+
+    result = controller.demote_participant(group_id, contact)
+
+    status_code = int(result.pop('code'))
+
+    if status_code != 200:
+        return Response(result, status_code)
+
+    return Response({}, status_code)
+
+
+# /api/groups/<group-id>/leave/
+@api_view(['POST'])
+@protected_resource()
+@active_account_required_400()
+def leave_group(request, group_id):
+
+    if not group_id:
+        return Response({'error': 'No group_id provided (group_id=XXX-XXX)'}, 400)
+
+    controller = groups_controller.Groups(request.account)
+
+    result = controller.leave_group(group_id)
+
+    status_code = int(result.pop('code'))
+
+    if status_code != 200:
+        return Response(result, status_code)
+
+    return Response({}, status_code)

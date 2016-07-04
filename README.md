@@ -462,7 +462,7 @@ Example:
 	]}
 
 
-##Groups (WIP)
+##Groups
 
 
 #### Create, Get groups, Subject and Photo:
@@ -511,32 +511,32 @@ Example:
 
 	_You need to be admin of the group in order to add participant_
 
-		curl -X POST -d "contact=XXXXXXX&group_id=YYYYYYYY" https://windu.herokuapp.com/api/groups/add-participant/
+		curl -X POST -d "contact=XXXXXXX" https://windu.herokuapp.com/api/groups/<group-id>/add-participant/
 		
 * Remove participant: Parameter: `contact` and `group_id`:
 
 	_You need to be admin of the group in order to remove participant_
 
-		curl -X POST -d "contact=XXXXXXX&group_id=YYYYYYYY" https://windu.herokuapp.com/api/groups/remove-participant/
+		curl -X POST -d "contact=XXXXXXX" https://windu.herokuapp.com/api/groups/<group-id>/remove-participant/
 		
-* Promote participant: Parameter: `contact` and `group_id`:
+* Promote participant: Parameter: `contact`:
 
 	_You need to be admin of the group in order to promote participant_
 
-		curl -X POST -d "contact=XXXXXXX&group_id=YYYYYYYY" https://windu.herokuapp.com/api/groups/promote-participant/
+		curl -X POST -d "contact=XXXXXXX" https://windu.herokuapp.com/api/groups/<group-id>/promote-participant/
 		
-* Demote participant: Parameter: `contact` and `group_id`:
+* Demote participant: Parameter: `contact`:
 
 	_You need to be admin of the group in order to demote participant_
 
-		curl -X POST -d "contact=XXXXXXX&group_id=YYYYYYYY" https://windu.herokuapp.com/api/groups/demote-participant/
+		curl -X POST -d "contact=XXXXXXX" https://windu.herokuapp.com/api/groups/<group-id>/demote-participant/
 
-* Laeve a group: `group_id` of the group you want to leave:
+* Laeve a group: 
 
 
-		curl -X POST -d "group_id=<group-id>" https://windu.herokuapp.com/api/groups/leave-group/
+		curl -X POST -d "group_id=<group-id>" https://windu.herokuapp.com/api/groups/<group-id>/leave/
 		
-##### Group Messages Read Receipts
+##### Group Messages Read Receipts  (WIP)
 		
 	
 

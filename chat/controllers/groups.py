@@ -18,6 +18,9 @@ class Groups:
     def __agent(self):
         return create_agent(self.__account)
 
+    def __check_contact(self, contact_id):
+        return Contacts.contact_valid(self.__account, contact_id)
+
     def __create_group (self, participants, subject):
         result = {}
         agent = self.__agent()
@@ -142,6 +145,110 @@ class Groups:
         Contacts.ensure_images_are_uploaded(photo_data)
 
         return photo
+
+    def __add_participant(self, group_id, contact_id):
+
+        result = {}
+        agent = self.__agent()
+        try:
+            result = agent.sendGroupsParticipantAdd(group_id, contact_id)
+        except Exception as e:
+            result['error'] = 'Error adding participant to the group: ' + str(e)
+            result['code'] = '500'
+        return result
+
+    def add_participant(self, group_id, contact_id):
+
+        if group_id is None:
+            return {'error': 'Invalid group_id', 'code': '400'}
+        if contact_id is None:
+            return {'error': 'Invalid contact_id', 'code': '400'}
+
+        contact = self.__check_contact(contact_id)
+        if contact.get('code') != '200':
+            return contact
+
+        return self.__add_participant(group_id, contact_id)
+
+    def __remove_participant(self, group_id, contact_id):
+
+        result = {}
+        agent = self.__agent()
+        try:
+            result = agent.sendGroupsParticipantRemove(group_id, contact_id)
+        except Exception as e:
+            result['error'] = 'Error removing participant to the group: ' + str(e)
+            result['code'] = '500'
+        return result
+
+    def remove_participant(self, group_id, contact_id):
+
+        if group_id is None:
+            return {'error': 'Invalid group_id', 'code': '400'}
+        if contact_id is None:
+            return {'error': 'Invalid contact_id', 'code': '400'}
+
+        return self.__remove_participant(group_id, contact_id)
+
+    def __promote_participant(self, group_id, contact_id):
+
+        result = {}
+        agent = self.__agent()
+        try:
+            result = agent.sendPromoteParticipant(group_id, contact_id)
+        except Exception as e:
+            result['error'] = 'Error promoting participant to the group: ' + str(e)
+            result['code'] = '500'
+        return result
+
+    def promote_participant(self, group_id, contact_id):
+
+        if group_id is None:
+            return {'error': 'Invalid group_id', 'code': '400'}
+        if contact_id is None:
+            return {'error': 'Invalid contact_id', 'code': '400'}
+
+        return self.__promote_participant(group_id, contact_id)
+
+    def __demote_participant(self, group_id, contact_id):
+
+        result = {}
+        agent = self.__agent()
+        try:
+            result = agent.sendDemoteParticipant(group_id, contact_id)
+        except Exception as e:
+            result['error'] = 'Error demoting participant to the group: ' + str(e)
+            result['code'] = '500'
+        return result
+
+    def demote_participant(self, group_id, contact_id):
+
+        if group_id is None:
+            return {'error': 'Invalid group_id', 'code': '400'}
+        if contact_id is None:
+            return {'error': 'Invalid contact_id', 'code': '400'}
+
+        return self.__demote_participant(group_id, contact_id)
+
+    def __leave_group(self, group_id):
+
+        result = {}
+        agent = self.__agent()
+        try:
+            result = agent.sendGroupsLeave(group_id)
+        except Exception as e:
+            result['error'] = 'Error leaving group: ' + str(e)
+            result['code'] = '500'
+        return result
+
+    def leave_group(self, group_id, contact_id):
+
+        if group_id is None:
+            return {'error': 'Invalid group_id', 'code': '400'}
+
+        return self.__leave_group(group_id)
+
+
 
 
 
