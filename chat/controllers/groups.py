@@ -241,7 +241,7 @@ class Groups:
             result['code'] = '500'
         return result
 
-    def leave_group(self, group_id, contact_id):
+    def leave_group(self, group_id):
 
         if group_id is None:
             return {'error': 'Invalid group_id', 'code': '400'}

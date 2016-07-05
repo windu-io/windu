@@ -25,17 +25,19 @@ class Messages:
     def __agent(self):
         return get_agent_and_check_events(self.__account)
 
-    def __check_contact(self, contact_id):
-        return Contacts.contact_valid(self.__account, contact_id)
+    def __check_target(self, target_id, is_group):
+        if is_group:  # TODO: Check if the group id is valid?
+            return {'code': '200'}
+        return Contacts.contact_valid(self.__account, target_id)
 
     def create_message_model(self, message_data):
         return MessagesStore.create_message_model(self.__account, message_data)
 
-    def __send_message(self, contact_id, message):
+    def __send_message(self, target_id, message):
         result = {}
         agent = self.__agent()
         try:
-            result = agent.sendMessage(contact_id, message)
+            result = agent.sendMessage(target_id, message)
         except Exception as e:
             result['error'] = 'Error sending message: ' + str(e)
             result['code'] = '500'
@@ -51,15 +53,15 @@ class Messages:
             result['code'] = '500'
         return result
 
-    def send_message(self, contact_id, message):
+    def send_message(self, target_id, message, is_group):
 
-        if contact_id is None:
-            return {'error': 'Invalid contact_id', 'code': '400'}
-        contact = self.__check_contact(contact_id)
+        if target_id is None:
+            return {'error': 'Invalid target_id', 'code': '400'}
+        contact = self.__check_target(target_id, is_group)
         if contact.get('code') != '200':
             return contact
 
-        result = self.__send_message(contact_id, message)
+        result = self.__send_message(target_id, message)
 
         status_code = result.get('code')
 
@@ -68,7 +70,7 @@ class Messages:
 
         message_data = {
             'message_id': result.get('id'),
-            'entity_id': contact_id,
+            'entity_id': target_id,
             'data': message,
             'message_type': 't',
             'send_type': 's',
@@ -135,11 +137,11 @@ class Messages:
             return MessagesStore.get_audio_data_from_file(filename)
         return MessagesStore.get_audio_data_from_url(url)
 
-    def send_image(self, contact_id, filename, url, caption):
+    def send_image(self, target_id, filename, url, caption, is_group):
 
-        if contact_id is None:
-            return {'error': 'Invalid contact_id', 'code': '400'}
-        contact = self.__check_contact(contact_id)
+        if target_id is None:
+            return {'error': 'Invalid target_id', 'code': '400'}
+        contact = self.__check_target(target_id, is_group)
         if contact.get('code') != '200':
             return contact
 
@@ -152,7 +154,7 @@ class Messages:
         if caption is None:
             caption = ''
 
-        result = self.__send_image_from_data(contact_id, caption, image_data)
+        result = self.__send_image_from_data(target_id, caption, image_data)
 
         status_code = result.get('code')
 
@@ -161,7 +163,7 @@ class Messages:
 
         message_data = {
             'message_id': result.get('id'),
-            'entity_id': contact_id,
+            'entity_id': target_id,
             'data': '',
             'caption': caption,
             'message_type': 'i',
@@ -175,15 +177,15 @@ class Messages:
 
         return {'id': result.get('id'), 'code': status_code, 'url': image_data.get('url'), 'hash': image_data.get('hash')}
 
-    def send_location(self, contact_id, latitude, longitude, caption):
+    def send_location(self, target_id, latitude, longitude, caption, is_group):
 
-        if contact_id is None:
-            return {'error': 'Invalid contact_id', 'code': '400'}
-        contact = self.__check_contact(contact_id)
+        if target_id is None:
+            return {'error': 'Invalid target_id', 'code': '400'}
+        contact = self.__check_target(target_id, is_group)
         if contact.get('code') != '200':
             return contact
 
-        result = self.__send_location(contact_id, latitude, longitude, caption)
+        result = self.__send_location(target_id, latitude, longitude, caption)
 
         status_code = result.get('code')
 
@@ -192,7 +194,7 @@ class Messages:
 
         message_data = {
             'message_id': result.get('id'),
-            'entity_id': contact_id,
+            'entity_id': target_id,
             'data': '',
             'caption': caption,
             'message_type': 'l',
@@ -206,11 +208,11 @@ class Messages:
 
         return {'id': result.get('id'), 'code':  status_code}
 
-    def send_audio(self, contact_id, filename, url, voice):
+    def send_audio(self, target_id, filename, url, voice, is_group):
 
-        if contact_id is None:
-            return {'error': 'Invalid contact_id', 'code': '400'}
-        contact = self.__check_contact(contact_id)
+        if target_id is None:
+            return {'error': 'Invalid target_id', 'code': '400'}
+        contact = self.__check_target(target_id, is_group)
         if contact.get('code') != '200':
             return contact
 
@@ -220,7 +222,7 @@ class Messages:
         if error is not None:
             return {'error': error, 'code': '400'}
 
-        result = self.__send_audio_from_data(contact_id, audio_data, voice)
+        result = self.__send_audio_from_data(target_id, audio_data, voice)
 
         status_code = result.get('code')
 
@@ -234,7 +236,7 @@ class Messages:
 
         message_data = {
             'message_id': result.get('id'),
-            'entity_id': contact_id,
+            'entity_id': target_id,
             'data': '',
             'message_type': message_type,
             'send_type': 's',
@@ -258,11 +260,11 @@ class Messages:
                 return {'path' : path}
         return {'path': url}
 
-    def send_video(self, contact_id, filename, url, caption):
+    def send_video(self, target_id, filename, url, caption, is_group):
 
-        if contact_id is None:
-            return {'error': 'Invalid contact_id', 'code': '400'}
-        contact = self.__check_contact(contact_id)
+        if target_id is None:
+            return {'error': 'Invalid target_id', 'code': '400'}
+        contact = self.__check_target(target_id, is_group)
         if contact.get('code') != '200':
             return contact
 
@@ -276,7 +278,7 @@ class Messages:
 
         path = path_data['path']
 
-        result = self.__send_video(contact_id, path, caption)
+        result = self.__send_video(target_id, path, caption)
 
         status_code = result.get('code')
 
@@ -285,7 +287,7 @@ class Messages:
 
         message_data = {
             'message_id': result.get('id'),
-            'entity_id': contact_id,
+            'entity_id': target_id,
             'data': '',
             'message_type': 'v',
             'send_type': 's',
@@ -307,18 +309,18 @@ class Messages:
             result['code'] = '500'
         return result
 
-    def send_vcard(self, contact_id, vcard, name):
+    def send_vcard(self, target_id, vcard, name, is_group):
 
-        if contact_id is None:
+        if target_id is None:
             return {'error': 'Invalid contact_id', 'code': '400'}
-        contact = self.__check_contact(contact_id)
+        contact = self.__check_target(target_id, is_group)
         if contact.get('code') != '200':
             return contact
 
         if name is None:
             name = ''
 
-        result = self.__send_vcard(contact_id, vcard, name)
+        result = self.__send_vcard(target_id, vcard, name)
 
         status_code = result.get('code')
 
@@ -327,7 +329,7 @@ class Messages:
 
         message_data = {
             'message_id': result.get('id'),
-            'entity_id': contact_id,
+            'entity_id': target_id,
             'data': vcard,
             'message_type': 'c',
             'send_type': 's',
@@ -353,15 +355,15 @@ class Messages:
             result['code'] = '500'
         return result
 
-    def set_typing(self, contact_id, typing):
+    def set_typing(self, target_id, typing, is_group):
 
-        if contact_id is None:
-            return {'error': 'Invalid contact_id', 'code': '400'}
-        contact = self.__check_contact(contact_id)
+        if target_id is None:
+            return {'error': 'Invalid target_id', 'code': '400'}
+        contact = self.__check_target(target_id, is_group)
         if contact.get('code') != '200':
             return contact
 
-        result = self.__set_typing(contact_id, typing)
+        result = self.__set_typing(target_id, typing)
 
         status_code = result.get('code')
 
@@ -370,10 +372,10 @@ class Messages:
 
         return result
 
-    def get_messages(self, contact_id, after, limit, offset, received_only):
+    def get_messages(self, target_id, after, limit, offset, received_only):
 
-        if contact_id is None:
-            return {'error': 'Invalid contact_id', 'code': '400'}
+        if target_id is None:
+            return {'error': 'Invalid target_id', 'code': '400'}
 
         result = check_events_now(self.__account)
 
@@ -384,7 +386,7 @@ class Messages:
             if status_code is None or status_code[0] != '2':
                 return result
 
-        messages = MessagesStore.get_messages(self.__account, contact_id, after, limit, offset, received_only)
+        messages = MessagesStore.get_messages(self.__account, target_id, after, limit, offset, received_only)
 
         return {'code': '200', 'messages': messages}
 

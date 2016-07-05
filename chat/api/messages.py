@@ -9,11 +9,6 @@ from os.path import isfile
 from rest_framework.decorators import api_view
 from rest_framework.response import Response
 
-from rest_framework.decorators import parser_classes
-from rest_framework.parsers import JSONParser
-
-from django.http import HttpResponse
-
 from oauth2_provider.decorators import protected_resource
 
 from ..controllers import messages as messages_controller
@@ -22,7 +17,7 @@ from ..decorators import active_account_required_400
 from normalize_id import normalize
 
 
-def __get_contact (request):
+def __get_contact(request):
 
     contact_id = request.POST.get('contact')
     if not contact_id:
@@ -31,6 +26,26 @@ def __get_contact (request):
     if contact_id is None:
         return {'code': 400, 'error': 'Invalid contact value [contact=XXXXXX]'}
     return {'contact': contact_id, 'code': 200}
+
+
+def __get_group(request):
+
+    group_id = request.POST.get('group_id')
+    if not group_id:
+        return {'code': 400, 'error': 'No group id provided (group_id=XXXXXX)'}
+    return {'group_id': group_id, 'code': 200}
+
+
+def __get_target(request):
+
+    contact = __get_contact(request)
+    if contact.get('code') == 200:
+        return {'target': contact['contact'], 'code': 200, 'is_group': False}
+
+    group = __get_group(request)
+    if group.get('code') == 200:
+        return {'target': group['group_id'], 'code': 200, 'is_group': True}
+    return contact
 
 
 def __get_message(request):
@@ -73,10 +88,11 @@ def __get_longitude(request):
 @active_account_required_400()
 def send_message(request):
 
-    result_contact = __get_contact(request)
-    if result_contact['code'] != 200:
-        return Response(result_contact['error'], result_contact['code'])
-    contact = result_contact['contact']
+    result_target = __get_target(request)
+    if result_target['code'] != 200:
+        return Response(result_target['error'], result_target['code'])
+    target = result_target['target']
+    is_group = result_target['is_group']
 
     result_message = __get_message(request)
     if result_message['code'] != 200:
@@ -85,7 +101,7 @@ def send_message(request):
 
     controller = messages_controller.Messages(request.account)
 
-    result = controller.send_message(contact, message)
+    result = controller.send_message(target, message, is_group)
 
     status_code = int(result.pop('code'))
 
@@ -120,10 +136,12 @@ def __get_caption(request):
 @active_account_required_400()
 def send_image(request):
 
-    result_contact = __get_contact(request)
-    if result_contact['code'] != 200:
-        return Response(result_contact['error'], result_contact['code'])
-    contact = result_contact['contact']
+    result_target = __get_target(request)
+    if result_target['code'] != 200:
+        return Response(result_target['error'], result_target['code'])
+
+    target = result_target['target']
+    is_group = result_target['is_group']
 
     url = None
     filename = __get_uploaded_filename(request)
@@ -137,7 +155,7 @@ def send_image(request):
 
     controller = messages_controller.Messages(request.account)
 
-    result = controller.send_image(contact, filename, url, caption)
+    result = controller.send_image(target, filename, url, caption, is_group)
 
     status_code = int(result.pop('code'))
 
@@ -150,13 +168,15 @@ def send_image(request):
 @active_account_required_400()
 def send_location(request):
 
-    result_contact = __get_contact(request)
-    if result_contact['code'] != 200:
-        return Response(result_contact['error'], result_contact['code'])
-    contact = result_contact['contact']
+    result_target = __get_target(request)
+    if result_target['code'] != 200:
+        return Response(result_target['error'], result_target['code'])
+
+    target = result_target['target']
+    is_group = result_target['is_group']
 
     result_latitude = __get_latitude(request)
-    if result_contact['code'] != 200:
+    if result_target['code'] != 200:
         return Response(result_latitude['error'], result_latitude['code'])
     latitude = result_latitude['latitude']
 
@@ -169,7 +189,7 @@ def send_location(request):
 
     controller = messages_controller.Messages(request.account)
 
-    result = controller.send_location(contact, latitude, longitude, caption)
+    result = controller.send_location(target, latitude, longitude, caption, is_group)
 
     status_code = int(result.pop('code'))
 
@@ -194,10 +214,12 @@ def send_voice(request):
 
 def __send_voice(request, voice):
 
-    result_contact = __get_contact(request)
-    if result_contact['code'] != 200:
-        return Response(result_contact['error'], result_contact['code'])
-    contact = result_contact['contact']
+    result_target = __get_target(request)
+    if result_target['code'] != 200:
+        return Response(result_target['error'], result_target['code'])
+
+    target = result_target['target']
+    is_group = result_target['is_group']
 
     url = None
     filename = __get_uploaded_filename(request)
@@ -209,7 +231,7 @@ def __send_voice(request, voice):
 
     controller = messages_controller.Messages(request.account)
 
-    result = controller.send_audio(contact, filename, url, voice)
+    result = controller.send_audio(target, filename, url, voice, is_group)
 
     status_code = int(result.pop('code'))
 
@@ -221,10 +243,12 @@ def __send_voice(request, voice):
 @protected_resource()
 @active_account_required_400()
 def send_video(request):
-    result_contact = __get_contact(request)
-    if result_contact['code'] != 200:
-        return Response(result_contact['error'], result_contact['code'])
-    contact = result_contact['contact']
+    result_target = __get_target(request)
+    if result_target['code'] != 200:
+        return Response(result_target['error'], result_target['code'])
+
+    target = result_target['target']
+    is_group = result_target['is_group']
 
     url = None
     filename = __get_uploaded_filename(request)
@@ -238,7 +262,7 @@ def send_video(request):
 
     controller = messages_controller.Messages(request.account)
 
-    result = controller.send_video(contact, filename, url, caption)
+    result = controller.send_video(target, filename, url, caption, is_group)
 
     status_code = int(result.pop('code'))
 
@@ -259,10 +283,12 @@ def __get_vcard_content(filename, vcard):
 @active_account_required_400()
 def send_vcard(request):
 
-    result_contact = __get_contact(request)
-    if result_contact['code'] != 200:
-        return Response(result_contact['error'], result_contact['code'])
-    contact = result_contact['contact']
+    result_target = __get_target(request)
+    if result_target['code'] != 200:
+        return Response(result_target['error'], result_target['code'])
+
+    target = result_target['target']
+    is_group = result_target['is_group']
 
     vcard = None
     filename = __get_uploaded_filename(request)
@@ -278,7 +304,7 @@ def send_vcard(request):
 
     controller = messages_controller.Messages(request.account)
 
-    result = controller.send_vcard(contact, vcard, name)
+    result = controller.send_vcard(target, vcard, name, is_group)
 
     status_code = int(result.pop('code'))
 
@@ -286,14 +312,16 @@ def send_vcard(request):
 
 
 def __set_typing(request, typing):
-    result_contact = __get_contact(request)
-    if result_contact['code'] != 200:
-        return Response(result_contact['error'], result_contact['code'])
-    contact = result_contact['contact']
+    result_target = __get_target(request)
+    if result_target['code'] != 200:
+        return Response(result_target['error'], result_target['code'])
+
+    target = result_target['target']
+    is_group = result_target['is_group']
 
     controller = messages_controller.Messages(request.account)
 
-    result = controller.set_typing(contact, typing)
+    result = controller.set_typing(target, typing, is_group)
 
     status_code = int(result.pop('code'))
 
@@ -350,7 +378,7 @@ def __get_messages_received_only(request):
 @api_view(['GET'])
 @protected_resource()
 @active_account_required_400()
-def get_messages(request, contact_id):
+def get_messages(request, target_id):
 
     after = __get_messages_after(request)
     offset = __get_messages_offset(request)
@@ -359,7 +387,7 @@ def get_messages(request, contact_id):
 
     controller = messages_controller.Messages(request.account)
 
-    result = controller.get_messages(contact_id, after, limit, offset, received_only)
+    result = controller.get_messages(target_id, after, limit, offset, received_only)
 
     status_code = int(result.pop('code'))
 
