@@ -1,7 +1,7 @@
 #! /usr/bin/env python
 # -*- coding: utf-8 -*-
 
-from django.utils import timezone
+from datetime import datetime
 from .agent import get_agent_and_check_events
 
 from ..models import Account as ModelAccount
@@ -38,7 +38,7 @@ class Account:
     def request_sms_code(self):
         result = {}
         agent = self.__agent()
-        self.__account.code_requested = timezone.now()
+        self.__account.code_requested = datetime.utcnow()
         self.__account.save(update_field=['code_requested'])
         try:
             result = agent.codeRequestSMS()
@@ -50,7 +50,7 @@ class Account:
     def request_voice_code(self):
         result = {}
         agent = self.__agent()
-        self.__account.code_requested = timezone.now()
+        self.__account.code_requested = datetime.utcnow()
         self.__account.save(update_field=['code_requested'])
         try:
             result = agent.codeRequestVoice()

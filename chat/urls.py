@@ -58,7 +58,7 @@ urlpatterns = [
     url(r'^messages/set-paused/$', messages.set_paused, name='set-paused'),
 
     # getting message
-    url(r'^messages/chats/(?P<contact_id>[0-9]+)/$', messages.get_messages, name='get-messages'),
+    url(r'^messages/chats/(?P<target_id>[0-9]+-?[0-9]+)/$', messages.get_messages, name='get-messages'),
 
     # read receipt
     url(r'^messages/update-last-read/$', messages.update_last_read, name='update-last-read'),

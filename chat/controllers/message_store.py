@@ -128,7 +128,7 @@ class MessagesStore:
 
         t = message_data.get('time')
         if t is None:
-            message_data['time'] = timezone.now()
+            message_data['time'] = datetime.utcnow()
         else:
             message_data['time'] = datetime.utcfromtimestamp(int(t))
 

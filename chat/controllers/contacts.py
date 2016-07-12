@@ -439,7 +439,7 @@ class Contacts:
 
             if last_seen_str == 'online':
                 new_connected_status = 'online'
-                last_seen = timezone.now()
+                last_seen = datetime.utcnow()
             elif last_seen_str == 'deny':
                 new_connected_status = 'deny'
                 last_seen = None
@@ -611,7 +611,7 @@ class Contacts:
 
             photo_hash = photo_info.get('hash')
 
-            contact.update_photo_updated(preview, timezone.now())
+            contact.update_photo_updated(preview, datetime.utcnow())
 
             if current_photo_status != new_photo_status or photo_hash != current_photo_hash:
 
@@ -712,7 +712,7 @@ class Contacts:
     def __can_use_contact_preview_photo_cache(contact):
 
         timeout_cache = WINDU_PROFILE_PHOTO_CACHE_MINUTES
-        timeout_limit = timezone.now() - timedelta(0, 0, 0, 0, timeout_cache)
+        timeout_limit = datetime.utcnow() - timedelta(0, 0, 0, 0, timeout_cache)
 
         if contact.preview_photo_updated is None:
             return False
@@ -722,7 +722,7 @@ class Contacts:
     def __can_use_contact_photo_cache(contact):
 
         timeout_cache = WINDU_PROFILE_PHOTO_CACHE_MINUTES
-        timeout_limit = timezone.now() - timedelta(0, 0, 0, 0, timeout_cache)
+        timeout_limit = datetime.utcnow() - timedelta(0, 0, 0, 0, timeout_cache)
 
         if contact.photo_updated is None:
             return False
@@ -747,7 +747,7 @@ class Contacts:
 
         cached_photo_info = {}
         timeout_cache = WINDU_PROFILE_PHOTO_CACHE_MINUTES
-        timeout_limit = timezone.now() - timedelta(0, 0, 0, 0, timeout_cache)
+        timeout_limit = datetime.utcnow() - timedelta(0, 0, 0, 0, timeout_cache)
 
         if preview:
             photo_url_field = 'preview_photo__file_url'
@@ -771,7 +771,7 @@ class Contacts:
     def __contacts_without_cached_photos(self, preview):
 
         timeout_cache = WINDU_PROFILE_PHOTO_CACHE_MINUTES
-        timeout_limit = timezone.now() - timedelta(0, 0, 0, 0, timeout_cache)
+        timeout_limit = datetime.utcnow() - timedelta(0, 0, 0, 0, timeout_cache)
 
         if preview:
             return ModelContact.objects.\

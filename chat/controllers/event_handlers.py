@@ -36,12 +36,6 @@ def __on_get_receipt(account, data):
     MessagesStore.update_read_date(account, message_data)
 
 
-def __on_get_group_message(account, data):
-    print ('__on_get_group_message')
-    print (data)
-    return
-
-
 def __on_get_message(account, message_info):
 
     text = message_info.get('data')
@@ -58,6 +52,7 @@ def __on_get_message(account, message_info):
         'message_type': 't',
         'send_type': 'r',
         'time': message_info.get('t'),
+        'participant': message_info.get('participant'),
     }
 
     MessagesStore.create_message_model(account, message_data)
@@ -87,6 +82,7 @@ def __on_get_image(account, message_info):
         'time': message_info.get('t'),
         'url': image_data.get('url'),
         'file_hash': image_data.get('hash'),
+        'participant': message_info.get('participant'),
     }
 
     MessagesStore.create_message_model(account, message_data)
@@ -113,6 +109,7 @@ def __on_get_video(account, message_info):
         'url': message_info.get('url'),
         'file_hash': message_info.get('filehash'),
         'mime_type': message_info.get('mimetype'),
+        'participant': message_info.get('participant'),
     }
 
     MessagesStore.create_message_model(account, message_data)
@@ -138,6 +135,7 @@ def __on_get_audio(account, message_info):
             'time': message_info.get('t'),
             'url': audio_data.get('url'),
             'file_hash': audio_data.get('hash'),
+            'participant': message_info.get('participant'),
         }
 
         MessagesStore.create_message_model(account, message_data)
@@ -161,6 +159,7 @@ def __on_get_vcard(account, message_info):
             'message_type': 'c',
             'send_type': 'r',
             'time': message_info.get('t'),
+            'participant': message_info.get('participant'),
         }
 
         MessagesStore.create_message_model(account, message_data)
@@ -194,6 +193,7 @@ def __on_get_location(account, message_info):
         'message_type': 'l',
         'send_type': 'r',
         'time': message_info.get('t'),
+        'participant': message_info.get('participant'),
     }
 
     MessagesStore.create_message_model(account, message_data)
@@ -203,12 +203,23 @@ def __find_event_handler(account, name):
     handlers = {
         'onmessagereceivedclient': __on_message_received_client,
         'ongetreceipt': __on_get_receipt,
-        'ongetgroupimage': __on_get_group_message,
-        'ongetmessage': __on_get_message,
+
+        'ongetgroupmessage': __on_get_message,
+        'ongetmessage':    __on_get_message,
+
+        'ongetgroupimage': __on_get_image,
         'ongetimage': __on_get_image,
+
+        'ongetgroupvideo': __on_get_video,
         'ongetvideo': __on_get_video,
+
+        'ongetgroupaudio': __on_get_audio,
         'ongetaudio': __on_get_audio,
+
+        'ongetgroupvcard': __on_get_vcard,
         'ongetvcard': __on_get_vcard,
+
+        'ongetgrouplocation': __on_get_location,
         'ongetlocation': __on_get_location,
     }
     return handlers.get(name)

@@ -1,6 +1,7 @@
 #! /usr/bin/env python
 # -*- coding: utf-8 -*-
 
+from datetime import datetime
 from django.utils import timezone
 
 from threading import Timer
@@ -76,13 +77,13 @@ def check_events(account):
 
     __schedule_flush_events (account)
 
-    account.last_check_events = timezone.now()
+    account.last_check_events = datetime.utcnow()
     account.save()
 
 
 def check_events_now(account):
-    if not __can_check_events(account.last_check_events):
-        return
+    # if not __can_check_events(account.last_check_events):
+    #     return None
 
     result = __flush_events(account)
 
@@ -91,6 +92,6 @@ def check_events_now(account):
     if status_code is None or status_code[0] != '2':
         return result
 
-    account.last_check_events = timezone.now()
+    account.last_check_events = datetime.utcnow()
     account.save()
     return result
