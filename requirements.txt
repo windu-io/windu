@@ -1,6 +1,6 @@
 dj-database-url==0.4.1
 dj-static==0.0.6
-Django==1.10
+Django==1.10.1
 django-toolbelt==0.0.1
 django-postgrespool==0.3.0
 gunicorn==19.6.0
@@ -9,7 +9,7 @@ wheel==0.29.0
 wagent==1.0.259
 oauthlib==1.1.2
 whitenoise==3.2.1
-djangorestframework==3.4.5
+djangorestframework==3.4.6
 django-oauth-toolkit==0.10.0
 django-cors-headers==1.1.0
 django-bulk-update==1.1.10
