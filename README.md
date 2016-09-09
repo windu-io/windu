@@ -9,6 +9,53 @@
 REST API
 ========
 
+## User
+
+You will need a registered user with e-mail address in order to use Windu.
+
+* Create New User:
+
+	After create the e-mail you will need to confirm e-mail, to avoid register a wrong e-mail, and make impossible to reset your password.
+	
+		curl -X POST -d "username=johnlennon&password&email=johnlennon@abbeyroad.com&first_name=John&last_name=Lennon" https://windu.herokuapp.com/api/user/create-user/
+		
+* E-mail confirmation:
+	
+	To confirm the e-mail send the SHA256 6 digits code receive by **e-mail**.
+	
+		curl -X POST -d "hash_code=<sha256-of-code>" https://windu.herokuapp.com/api/user/<username>/confirm-email/
+		
+* Update user information:
+
+	* `update-user` receive the same parameters of `create-user`, although will update only the parameters passed.
+	
+		_The OAuth token will be needed to update the user information_
+		_If you use this method to update the password, you will need to refresh your OAuth token_
+	
+			curl -X POST -d "username=johnlennon&password&email=johnlennon@abbeyroad.com&first_name=John&last_name=Lennon" https://windu.herokuapp.com/api/user/update-user/
+			
+* Remove user:
+
+	* `remove-user` will remove all accounts, all messages.
+	_The OAuth token will be needed to remove the user_
+	
+			curl -X POST -d "username=johnlennon&password&email=johnlennon@abbeyroad.com&first_name=John&last_name=Lennon" https://windu.herokuapp.com/api/user/remove-user/
+
+		
+### Password:
+
+* Reset password:
+
+	To reset password, just issue the `reset-password` method, and an e-mail with 6 digits will be sent to the user.
+
+		curl -X POST https://windu.herokuapp.com/api/user/<username>/reset-password/
+		
+	To update the password after a reset call `update-reset-password` passing the 6 digits received by e-mail.
+	
+		_If you use this method to update the password, you will need to refresh your OAuth token_
+	
+		curl -X POST -d "hash_code=<sha256-of-code>&password=<new-password>" https://windu.herokuapp.com/api/user/<username>/update-reset-password/
+		
 
 ## Login/Token Request
 
@@ -25,7 +72,7 @@ REST API
 
 	*You will need send the Authentication header for every request, the next examples will omit the authentication header only for the sake of cleanliness.*
 		
-		curl -H "Authorization: Bearer <Token>" https://windu.herokuapp.com/api/call
+		curl -H "Authorization: Bearer <Token>" https://windu.herokuapp.com/api/<endpoint>
 		
 
 ## Account
@@ -33,6 +80,13 @@ REST API
 An account is linked to your number, in order to use Windu API you need to add and register an account.
 
 With exception of `create-account` every method accept an optional `account=000000` parameter, if you don't provide any account the first account will be used.
+
+### List accounts
+
+* List current accounts:
+	
+		curl -X GET  https://windu.herokuapp.com/api/account/list/
+
 
 ### Adding, Registering and Removing account number.
 

@@ -2,11 +2,14 @@ from django.conf.urls import url
 
 
 from api import account
+from api import user
 from api import contacts
 from api import messages
 from api import groups
 
 urlpatterns = [
+    url(r'^user/create-user/$', user.create_user, name='create-user'),
+
     url(r'^account/status-message/$', account.status_message, name='status-message'),
     url(r'^account/profile-photo/$', account.profile_photo, name='profile-photo'),
     url(r'^account/connected-status/$', account.connected_status, name='connected-status'),
