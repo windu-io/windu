@@ -2,7 +2,7 @@
 # -*- coding: utf-8 -*-
 
 from django.contrib.auth.models import User as ModelUser
-
+from .mail import Mail
 
 class User:
 
@@ -20,11 +20,12 @@ class User:
         try:
             user = ModelUser.objects.create_user(username, email, password)
         except Exception as e:
-            return { 'error':'Error creating user:' + str(e), 'code': '500'}
+            return { 'error': 'Error creating user:' + str(e), 'code': '500'}
 
         user.first_name = first_name[:30]
         user.last_name = last_name[:30]
         user.save()
+
 
         return {'code': '200'}
 

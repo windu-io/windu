@@ -1,10 +1,10 @@
 
 from datetime import timedelta
+from datetime import datetime
 
 from django.db import  models
 from django.contrib.auth.models import User
 
-from django.utils import timezone
 
 from windu.settings import WINDU_PROFILE_PHOTO_CACHE_MINUTES
 
@@ -19,6 +19,12 @@ class ThirdAuthToken(models.Model):
 
     def __str__(self):
         return self.name + " (" + self.access_token + ")"
+
+
+class CodeVerification(models.Model):
+
+    user = models.OneToOneField(User, on_delete=models.CASCADE, db_index=True, unique=True)
+    hash_code = models.CharField(max_length=64)
 
 
 class Account(models.Model):
@@ -125,8 +131,8 @@ class Contact(models.Model):
     preview_photo_status = models.CharField (max_length=1, null=False, default='i')
     photo_hash = models.CharField(max_length=64, db_index=True, null=True)
     preview_photo_hash = models.CharField(max_length=64, db_index=True, null=True)
-    preview_photo_updated = models.DateTimeField(null=False, blank=False, default=timezone.now() - timedelta(0, 0, 0, 0, WINDU_PROFILE_PHOTO_CACHE_MINUTES))
-    photo_updated = models.DateTimeField(null=False, blank=False, default=timezone.now() - timedelta(0, 0, 0, 0, WINDU_PROFILE_PHOTO_CACHE_MINUTES))
+    preview_photo_updated = models.DateTimeField(null=False, blank=False, default=datetime.utcnow() - timedelta(0, 0, 0, 0, WINDU_PROFILE_PHOTO_CACHE_MINUTES))
+    photo_updated = models.DateTimeField(null=False, blank=False, default=datetime.utcnow() - timedelta(0, 0, 0, 0, WINDU_PROFILE_PHOTO_CACHE_MINUTES))
     exists = models.BooleanField(null=False)
 
     def __str__(self):
